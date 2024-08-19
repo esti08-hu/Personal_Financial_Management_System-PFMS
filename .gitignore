@@ -1,0 +1,66 @@
+# compiled output
+/client/dist
+/server/dist
+/client/build
+/server/build
+
+/client/.next
+/server/test
+# Node modules
+/client/node_modules
+/server/node_modules
+
+# Logs
+logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# OS
+.DS_Store
+
+# Tests
+/client/coverage
+/server/coverage
+/client/.nyc_output
+/server/.nyc_output
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# dotenv environment variable files
+.env
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+
+# Client-specific environment files
+/client/.env
+/client/.env.development.local
+/client/.env.test.local
+/client/.env.production.local
+/client/.env.local
+
+# Server-specific environment files
+/server/.env
+/server/.env.development.local
+/server/.env.test.local
+/server/.env.production.local
+/server/.env.local
