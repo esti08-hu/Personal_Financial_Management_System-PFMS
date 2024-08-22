@@ -1,0 +1,1 @@
+ALTER TABLE "Admins" ALTER COLUMN "refreshToken" DROP NOT NULL;

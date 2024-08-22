@@ -25,4 +25,4 @@ export const ROLE_PERMISSION_ASSOCIATION = [
     role: Role.USER,
     permissions: [],
   },
-];
+]

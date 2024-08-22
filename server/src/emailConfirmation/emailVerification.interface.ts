@@ -1,4 +1,4 @@
 interface VerificationTokenPayload {
-  email: string;
+  email: string
 }
-export default VerificationTokenPayload;
+export default VerificationTokenPayload

@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1724080901086,
+      "tag": "0000_lyrical_the_hunter",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1724096689697,
+      "tag": "0001_nostalgic_the_hunter",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1724312860430,
+      "tag": "0002_plain_maximus",
+      "breakpoints": true
+    }
+  ]
+}

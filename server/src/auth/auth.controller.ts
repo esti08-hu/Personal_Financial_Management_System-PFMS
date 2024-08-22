@@ -6,20 +6,22 @@ import {
   Get,
   HttpCode,
   Post,
+  Req,
   Request,
   Response,
   UseGuards,
-} from '@nestjs/common';
-import { AuthDto } from './auth.dto';
-import { AuthService } from './services/auth.service';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { Permissions, Roles } from 'src/permissions/permissions.decorators';
-import { Permission, Role } from 'src/permissions/role.emum';
-import { Public, User } from './guards/auth.decorators';
-import { JwtRefreshTokenGuard } from './guards/refresh-token.guard';
-import { AccessTokenPayload } from './auth.interfaces';
-import { RegisterUserDto } from 'src/users/users.dto';
-import { EmailConfirmationService } from 'src/emailConfirmation/emailConfirmation.service';
+} from '@nestjs/common'
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
+import { EmailConfirmationGuard } from 'src/emailConfirmation/emailConfirmation.guard'
+import { EmailConfirmationService } from 'src/emailConfirmation/emailConfirmation.service'
+import { Permissions, Roles } from 'src/permissions/permissions.decorators'
+import { Permission, Role } from 'src/permissions/role.emum'
+import { RegisterUserDto } from 'src/users/users.dto'
+import { AuthDto } from './auth.dto'
+import { AccessTokenPayload } from './auth.interfaces'
+import { Public, User } from './guards/auth.decorators'
+import { JwtRefreshTokenGuard } from './guards/refresh-token.guard'
+import { AuthService } from './services/auth.service'
 
 @Controller('auth')
 @ApiBearerAuth()
@@ -31,48 +33,50 @@ export class AuthController {
   ) {}
 
   @Post('login')
+  // @UseGuards(EmailConfirmationGuard)
   @Public()
   async singIn(
     @Body() signInDto: AuthDto,
     @Response({ passthrough: true }) res,
+    @Request() req,
   ): Promise<any> {
-    let accessToken: string;
-    let refreshToken: string;
+    let accessToken: string
+    let refreshToken: string
 
     if (signInDto.isAdmin) {
-      ({ accessToken, refreshToken } = await this.authService.signInAdmin(
+      ;({ accessToken, refreshToken } = await this.authService.signInAdmin(
         signInDto.email,
         signInDto.password,
-      ));
+      ))
     } else {
-      ({ accessToken, refreshToken } = await this.authService.signIn(
+      ;({ accessToken, refreshToken } = await this.authService.signIn(
         signInDto.email,
         signInDto.password,
-      ));
+      ))
     }
 
     res.cookie('refresh_token', refreshToken, {
       maxAge: 1000 * 60 * 60 * 7, // 7 days
       httpOnly: true,
-    });
+    })
     res.cookie('access_token', accessToken, {
-      maxAge: 1000 * 60 * 2, // 30 seconds
+      maxAge: 1000 * 60 * 3, // 3 minuts
       httpOnly: true,
-    });
+    })
 
-    return { accessToken, refreshToken };
+    return { accessToken, refreshToken }
   }
 
   @Post('register')
   @Public()
   async register(@Body() registerBody: RegisterUserDto): Promise<any> {
-    const user = await this.authService.register(registerBody);
-    if (user)
-      await this.emailConfirmationService.sendVerificationLink(
-        registerBody.email,
-      );
-    else throw new BadRequestException('User not created');
-    return user;
+    const user = await this.authService.register(registerBody)
+    await this.emailConfirmationService.sendVerificationLink(registerBody.email)
+
+    return {
+      message:
+        'Verification link sent to your email. If you could not fint it check in you spam foler.',
+    }
   }
 
   @Get('refresh')
@@ -82,21 +86,19 @@ export class AuthController {
     @Request() req,
     @Response({ passthrough: true }) res,
   ) {
-    const cookies = req.cookies ?? req.signedCookies;
-    const refreshToken = cookies.refresh_token;
+    const cookies = req.cookies ?? req.signedCookies
+    const refreshToken = cookies.refresh_token
     if (!cookies.access_token) {
-      const accessToken =
-        await this.authService.updateAccessToken(refreshToken);
-      console.log('asdf');
+      const accessToken = await this.authService.updateAccessToken(refreshToken)
 
       res.cookie('access_token', accessToken, {
-        maxAge: 1000 * 30, // 30 seconds
+        maxAge: 1000 * 60 * 3, // 3 minuts
         httpOnly: true,
         path: '/',
-      });
-      return { message: 'Access token refreshed' };
+      })
+      return { message: 'Access token refreshed' }
     }
-    return { message: 'Access token is still valid' };
+    return { message: 'Access token is still valid' }
   }
 
   @Post('logout')
@@ -107,31 +109,38 @@ export class AuthController {
     @Response({ passthrough: true }) res,
   ) {
     if (!user) {
-      return { message: 'User not found' };
+      return { message: 'User not found' }
     }
-    await this.authService.logout(user.pid, user.roles);
-    // Clear cookies
-    res.clearCookie('access_token');
-    res.clearCookie('refresh_token');
 
-    return { message: 'Logout successful' };
+    await this.authService.logout(user.pid, user.roles)
+    // Clear cookies
+    res.clearCookie('access_token')
+    res.clearCookie('refresh_token')
+
+    return { message: 'Logout successful' }
   }
 
   @Get('admin-profile')
   @Roles(Role.ADMIN)
   getAdminProfile(@Request() req) {
-    return req.user;
+    return req.user
   }
 
   @Get('user-profile')
   @Roles(Role.USER)
   getUserProfile(@Request() req) {
-    return req.user;
+    return req.user
   }
 
   @Get('create-user')
   @Permissions(Permission.CREATE_USER)
   createUser() {
-    return 'Create User page!';
+    return 'Create User page!'
+  }
+
+  @Get('check-cookies')
+  @Public()
+  async checkCookies(@Req() req) {
+    return req.cookies
   }
 }

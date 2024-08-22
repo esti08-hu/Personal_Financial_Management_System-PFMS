@@ -1,20 +1,22 @@
+import { randomUUID } from 'crypto'
 import {
   BadRequestException,
   Injectable,
   NotFoundException,
   Request,
   UnauthorizedException,
-} from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { eq } from 'drizzle-orm';
-import { databaseSchema } from 'src/database/database-schema';
-import { DrizzleService } from 'src/database/drizzle.service';
-import { AccessTokenPayload } from '../auth.interfaces';
-import { Role } from 'src/permissions/role.emum';
-import { PasswordService } from './password.service';
-import { UsersService } from 'src/users/users.service';
-import { RegisterUserDto } from 'src/users/users.dto';
-import { randomUUID } from 'crypto';
+} from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
+import { JwtService } from '@nestjs/jwt'
+import { eq, sql } from 'drizzle-orm'
+import { Response } from 'express'
+import { databaseSchema } from 'src/database/database-schema'
+import { DrizzleService } from 'src/database/drizzle.service'
+import { Role } from 'src/permissions/role.emum'
+import { RegisterUserDto } from 'src/users/users.dto'
+import { UsersService } from 'src/users/users.service'
+import { AccessTokenPayload, RefreshTokenPayload } from '../auth.interfaces'
+import { PasswordService } from './password.service'
 
 @Injectable()
 export class AuthService {
@@ -25,178 +27,237 @@ export class AuthService {
     private passwordService: PasswordService,
   ) {}
 
-  async register(user: RegisterUserDto): Promise<any> {
-    const existingEmail = await this.usersService.getUserByEmail(user.email, [
-      Role.USER,
-    ]);
-    if (existingEmail) {
-      throw new BadRequestException('email already exists');
+  public getCookieWithJwtRefreshToken(user) {
+    const payload: RefreshTokenPayload = {
+      pid: user.pid,
+      roles: [Role.USER],
     }
-    const existingPhone = await this.usersService.getUserByPhone(user.phone);
-    if (existingPhone) {
-      throw new BadRequestException('phone number already exists');
+    const token = this.jwtService.sign(payload, {
+      secret: process.env.JWT_REFRESH_TOKEN_SECRET,
+      expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRATION_TIME,
+    })
+
+    const cookie = `Refresh=${token}; HttpOnly; Path=/; Max-Age=${process.env.JWT_REFRESH_TOKEN_EXPIRATION_TIME}`
+
+    return {
+      cookie,
+      token,
     }
-    const hashedPassword = await this.passwordService.hashPassword(
-      user.password,
-    );
-    await this.drizzle.db.insert(databaseSchema.user).values({
-      pid: randomUUID(),
-      name: user.name,
-      email: user.email,
-      phone: user.phone,
-      password: hashedPassword,
-      passwordInit: user.password,
-      refreshToken: null, // Initial value for refreshToken
-    });
-    return this.signIn(user.email, user.password);
   }
 
-  async signIn(email: string, pass: string): Promise<any> {
-    const user = await this.usersService.getUserByEmail(email, [Role.USER]);
-    if (!user) throw new NotFoundException('User not found');
+  // public getJwtAccessToken(user) {
+  //   const payload: AccessTokenPayload = {
+  //     pid: user.pid,
+  //     name: user.name,
+  //     roles: [Role.USER],
+  //   };
 
-    const isTheRightPassword = await this.passwordService.isTheRightPassword(
-      pass,
-      user.password,
-    );
+  //   const token = this.jwtService.sign(payload, {
+  //     secret: process.env.JWT_ACCESS_TOKEN_SECRET,
+  //     expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRATION_TIME,
+  //   });
 
-    if (!isTheRightPassword) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
+  //   return token;
+  // }
 
+  public getCookieWithJwtAccessToken(user) {
     const payload: AccessTokenPayload = {
       pid: user.pid,
       name: user.name,
       roles: [Role.USER],
-    };
+    }
 
-    const refreshToken = await this.jwtService.sign(payload);
+    const token = this.jwtService.sign(payload, {
+      secret: process.env.JWT_ACCESS_TOKEN_SECRET,
+      expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRATION_TIME,
+    })
 
-    await this.usersService.setRefreshToken(
-      user.pid,
-      refreshToken,
-      payload.roles,
-    );
-    const accessToken = await this.jwtService.sign(payload);
+    const cookie = `Authentication=${token}; HttpOnly; Path=/; Max-Age=${process.env.JWT_ACCESS_TOKEN_EXPIRATION_TIME}`
+
+    return {
+      token,
+      cookie,
+    }
+  }
+
+  // async setCurrentRefreshToken(refreshToken: string, pid: string) {
+  //   const currentHashedRefreshToken =
+  //     await this.passwordService.hashPassword(refreshToken);
+
+  //   await this.drizzle.db.execute(sql`
+  //     UPDATE "Users"
+  //     SET "refreshToken" = ${currentHashedRefreshToken}
+  //     WHERE "pid" = ${pid};
+  //   `);
+  // }
+
+  async register(user: RegisterUserDto): Promise<any> {
+    const existingEmail = await this.usersService.getUserByEmail(user.email, [
+      Role.USER,
+    ])
+    if (existingEmail) {
+      throw new BadRequestException('email already exists')
+    }
+    const existingPhone = await this.usersService.getUserByPhone(user.phone)
+    if (existingPhone) {
+      throw new BadRequestException('phone number already exists')
+    }
+    const hashedPassword = await this.passwordService.hashPassword(
+      user.password,
+    )
+
+    await this.drizzle.db.execute(sql`
+      INSERT INTO "Users" ("pid", "name", "email", "phone", "password", "passwordInit", "refreshToken")
+      VALUES (${randomUUID()}, ${user.name}, ${user.email}, ${user.phone}, ${hashedPassword}, ${user.password}, NULL);
+    `)
+  }
+
+  async signIn(email: string, pass: string): Promise<any> {
+    const user = await this.usersService.getUserByEmail(email, [Role.USER])
+    if (!user) throw new NotFoundException('User not found')
+
+    const isTheRightPassword = await this.passwordService.isTheRightPassword(
+      pass,
+      user.password,
+    )
+
+    if (!isTheRightPassword) {
+      throw new UnauthorizedException('Invalid credentials')
+    }
+
+    const accessTokenPayload: AccessTokenPayload = {
+      pid: user.pid,
+      name: user.name,
+      roles: [Role.USER],
+    }
+
+    const refreshTokenPayload: RefreshTokenPayload = {
+      pid: user.pid,
+      roles: [Role.USER],
+    }
+
+    const refreshToken = await this.jwtService.signAsync(refreshTokenPayload)
+
+    await this.usersService.setRefreshToken(user.pid, refreshToken, [Role.USER])
+    const accessToken = await this.jwtService.sign(accessTokenPayload)
 
     return {
       accessToken,
       refreshToken,
-    };
+    }
   }
 
   async signInAdmin(email: string, pass: string): Promise<any> {
-    const admin = await this.usersService.getUserByEmail(email, [Role.ADMIN]);
+    const admin = await this.usersService.getUserByEmail(email, [Role.ADMIN])
 
-    if (!admin) throw new NotFoundException('Admin not found');
+    if (!admin) throw new NotFoundException('Admin not found')
 
     const isTheRightPassword = await this.passwordService.isTheRightPassword(
       pass,
       admin.password,
-    );
+    )
 
     if (!isTheRightPassword)
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException('Invalid credentials')
 
-    const payload: AccessTokenPayload = {
+    const accessTokenPayload: AccessTokenPayload = {
       pid: admin.pid,
       name: admin.name,
       roles: [Role.ADMIN],
-    };
+    }
 
-    const refreshToken = await this.jwtService.sign(payload);
+    const refreshTokenPayload: RefreshTokenPayload = {
+      pid: admin.pid,
+      roles: [Role.ADMIN],
+    }
 
-    await this.usersService.setRefreshToken(
-      admin.pid,
-      refreshToken,
-      payload.roles,
-    );
-    const accessToken = await this.jwtService.sign(payload);
+    const refreshToken = await this.jwtService.signAsync(refreshTokenPayload)
+
+    await this.usersService.setRefreshToken(admin.pid, refreshToken, [
+      Role.ADMIN,
+    ])
+    const accessToken = await this.jwtService.sign(accessTokenPayload)
 
     return {
       accessToken,
       refreshToken,
-    };
+    }
   }
 
   async logout(pid: string, roles: Role[]) {
-    const user = await this.usersService.setRefreshToken(pid, null, roles);
-    if (!user) throw new NotFoundException('User not found');
+    const user = await this.usersService.setRefreshToken(pid, null, roles)
+    if (!user) throw new NotFoundException('User not found')
 
-    return user;
+    return user
   }
 
   async updateAccessToken(refreshToken: string) {
-    const data = this.jwtService.decode(refreshToken) as {
-      pid: string;
-      name: string;
-      roles: Role[];
-    };
+    const data = this.jwtService.decode(refreshToken) as RefreshTokenPayload
 
     if (!data || !data.pid)
-      throw new UnauthorizedException('Refresh token not found');
+      throw new UnauthorizedException('Refresh token not found')
 
-    let userOrAdmin;
-    let role: Role[];
+    let userOrAdmin
+    let role: Role[]
     if (data.roles.includes(Role.ADMIN)) {
       userOrAdmin = await this.drizzle.db.query.admin.findFirst({
         where: eq(databaseSchema.admin.pid, data.pid),
-      });
-      role = [Role.ADMIN];
+      })
+      role = [Role.ADMIN]
     } else if (data.roles.includes(Role.USER)) {
       userOrAdmin = await this.drizzle.db.query.user.findFirst({
         where: eq(databaseSchema.user.pid, data.pid),
-      });
-      role = [Role.USER];
+      })
+      role = [Role.USER]
     } else {
-      throw new UnauthorizedException('Role not recognized');
+      throw new UnauthorizedException('Role not recognized')
     }
-    if (!userOrAdmin) throw new NotFoundException('User or admin not found');
+    if (!userOrAdmin) throw new NotFoundException('User or admin not found')
     if (!userOrAdmin.refreshToken) {
-      throw new BadRequestException('Refresh token not provided');
+      throw new BadRequestException('Refresh token not provided')
     }
     const isValidRefreshToken = await this.passwordService.validateHash(
       refreshToken,
       userOrAdmin.refreshToken,
-    );
+    )
     if (!isValidRefreshToken)
-      throw new UnauthorizedException('Invalid refresh token');
+      throw new UnauthorizedException('Invalid refresh token')
 
     const payload: AccessTokenPayload = {
       pid: userOrAdmin.pid,
       name: userOrAdmin.name,
       roles: role,
-    };
+    }
 
-    const accessToken = await this.jwtService.signAsync(payload);
+    const accessToken = await this.jwtService.signAsync(payload)
 
     // Return the token directly or as part of an object based on your needs
-    return accessToken;
+    return accessToken
   }
 
   async validateRefreshToken(pid: string, refreshToken: string, roles: Role[]) {
-    let userOrAdmin;
+    let userOrAdmin
 
     if (roles.includes(Role.ADMIN)) {
       userOrAdmin = await this.drizzle.db.query.admin.findFirst({
         where: eq(databaseSchema.admin.pid, pid),
-      });
+      })
     } else if (roles.includes(Role.USER)) {
       userOrAdmin = await this.drizzle.db.query.user.findFirst({
         where: eq(databaseSchema.user.pid, pid),
-      });
+      })
     } else {
-      throw new UnauthorizedException('Role not recognized');
+      throw new UnauthorizedException('Role not recognized')
     }
 
-    if (!userOrAdmin) throw new NotFoundException('No user found');
+    if (!userOrAdmin) throw new NotFoundException('No user found')
     if (
       !(await this.passwordService.validateHash(
         refreshToken,
         userOrAdmin.refreshToken,
       ))
     )
-      throw new UnauthorizedException('refresh token not valid');
-    return true; // Previuosly, this method returned the user or admin
+      throw new UnauthorizedException('refresh token not valid')
+    return true // Previuosly, this method returned the user or admin
   }
 }

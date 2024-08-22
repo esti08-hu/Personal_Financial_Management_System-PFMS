@@ -1,22 +1,30 @@
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { AuthModule } from './auth/auth.module';
-import { DatabaseModule } from './database/database.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { UsersModule } from './users/users.module';
-import 'dotenv/config';
-import { PermissionsModule } from './permissions/permissions.module';
-import { EmailConfirmationModule } from './emailConfirmation/emailConfirmation.module';
+import { Module } from '@nestjs/common'
+import { ConfigModule, ConfigService } from '@nestjs/config'
+import { AppController } from './app.controller'
+import { AppService } from './app.service'
+import { AuthModule } from './auth/auth.module'
+import { DatabaseModule } from './database/database.module'
+import { UsersModule } from './users/users.module'
+import 'dotenv/config'
+import * as Joi from '@hapi/joi'
+import { EmailConfirmationModule } from './emailConfirmation/emailConfirmation.module'
+import { GoogleAuthenticationModule } from './googleAuth/googleAuth.module'
+import { PermissionsModule } from './permissions/permissions.module'
 
 @Module({
   imports: [
     ConfigModule.forRoot({
+      validationSchema: Joi.object({
+        GOOGLE_AUTH_CLIENT_ID: Joi.string().required(),
+        GOOGLE_AUTH_CLIENT_SECRET: Joi.string().required(),
+        // ...
+      }),
       isGlobal: true,
     }),
     AuthModule,
     UsersModule,
     EmailConfirmationModule,
+    GoogleAuthenticationModule,
     PermissionsModule,
     DatabaseModule.forRootAsync({
       imports: [ConfigModule],

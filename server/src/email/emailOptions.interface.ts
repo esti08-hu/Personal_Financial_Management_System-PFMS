@@ -1,7 +1,7 @@
 interface EmailOptions {
-  service: string;
-  user: string;
-  password: string;
+  service: string
+  user: string
+  password: string
 }
 
-export default EmailOptions;
+export default EmailOptions

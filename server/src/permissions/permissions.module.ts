@@ -1,8 +1,8 @@
-import { Module } from '@nestjs/common';
-import { APP_GUARD } from '@nestjs/core';
-import { UsersService } from 'src/users/users.service';
-import { RolesGuard } from './roles.guard';
-import { PermissionsGuard } from './permissions.guard';
+import { Module } from '@nestjs/common'
+import { APP_GUARD } from '@nestjs/core'
+import { UsersService } from 'src/users/users.service'
+import { PermissionsGuard } from './permissions.guard'
+import { RolesGuard } from './roles.guard'
 
 @Module({
   providers: [

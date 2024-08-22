@@ -1,6 +1,6 @@
-import { Controller, Get } from '@nestjs/common';
-import { AppService } from './app.service';
-import { Public } from './auth/guards/auth.decorators';
+import { Controller, Get } from '@nestjs/common'
+import { AppService } from './app.service'
+import { Public } from './auth/guards/auth.decorators'
 
 @Controller()
 export class AppController {
@@ -9,6 +9,6 @@ export class AppController {
   @Get()
   @Public()
   getHello(): string {
-    return this.appService.getHello();
+    return this.appService.getHello()
   }
 }

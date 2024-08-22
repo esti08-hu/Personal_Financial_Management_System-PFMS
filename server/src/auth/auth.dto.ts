@@ -1,33 +1,33 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger'
+import { IsBoolean, IsString } from 'class-validator'
 
 export class AuthDto {
   @ApiProperty({
-    example: 'admin@mail.com',
+    example: 'estio9121@gmail.com',
   })
   @IsString()
-  email: string;
+  email: string
 
   @ApiProperty({
     example: '123',
   })
   @IsString()
-  password: string;
+  password: string
 
   @ApiProperty({ required: false })
   @IsBoolean()
-  isAdmin: boolean;
+  isAdmin: boolean
 }
 
 export class EmailVerificationDto {
   @IsString()
-  pid: number;
+  pid: number
 
   @ApiProperty({ uniqueItems: true })
   @IsString()
-  email: string;
+  email: string
 
   @ApiProperty({ required: false })
   @IsBoolean()
-  isEmailConfirmed: boolean;
+  isEmailConfirmed: boolean
 }

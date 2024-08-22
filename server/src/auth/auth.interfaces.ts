@@ -1,7 +1,12 @@
-import { Role } from "src/permissions/role.emum";
+import { Role } from 'src/permissions/role.emum'
 
 export interface AccessTokenPayload {
-  pid: string;
-  name: string;
-  roles: Role[];
+  pid: string
+  name: string
+  roles: Role[]
+}
+
+export interface RefreshTokenPayload {
+  pid: string
+  roles: Role[]
 }

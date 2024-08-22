@@ -1,21 +1,25 @@
 import { GoogleLoginResponse } from "@react-oauth/google";
 
 function useGoogleAuthentication() {
-  const handleSuccess = (response: GoogleLoginResponse) => {
-    if (response.access_token) {
-      // Access token is now 'access_token'
-      const accessToken = response.access_token;
-      console.log(accessToken)
+  const handleSuccess = (response: GoogleLoginResponse, isSignup: boolean) => {
+    console.log(response);
+    if (response.credential) {
+      const credential = response.credential;
+      const endpoint = isSignup ? "signup" : "login";
 
-      fetch(`${process.env.NEXT_APP_API_URL}/google-authentication`, {
+      fetch(`http://localhost:3001/google-auth/${endpoint}`, {
         method: "POST",
-        body: JSON.stringify({
-          token: accessToken,
-        }),
+        body: JSON.stringify({ token: credential, endpoint: endpoint }),
         headers: {
           "Content-Type": "application/json",
         },
-      });
+        credentials: "include", // This ensures cookies are sent with the request
+      })
+        .then((res) => res.json()) // Handle the response
+        .then((data) => console.log(data)) // Process the data
+        .catch((error) => console.error("Error:", error)); // Handle errors
+    } else {
+      console.error("No credential found in response");
     }
   };
 
@@ -23,4 +27,5 @@ function useGoogleAuthentication() {
     handleSuccess,
   };
 }
+
 export default useGoogleAuthentication;

@@ -1,12 +1,12 @@
-import { Global, Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common'
+import { Pool } from 'pg'
+import type { DatabaseOptions } from './database-options'
 import {
-  ConfigurableDatabaseModule,
   CONNECTION_POOL,
+  ConfigurableDatabaseModule,
   DATABASE_OPTIONS,
-} from './database.module-definition';
-import type { DatabaseOptions } from './database-options';
-import { Pool } from 'pg';
-import { DrizzleService } from './drizzle.service';
+} from './database.module-definition'
+import { DrizzleService } from './drizzle.service'
 
 @Global()
 @Module({
@@ -23,7 +23,7 @@ import { DrizzleService } from './drizzle.service';
           user: databaseOptions.user,
           password: databaseOptions.password,
           database: databaseOptions.database,
-        });
+        })
       },
     },
   ],

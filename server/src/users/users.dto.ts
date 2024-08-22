@@ -1,37 +1,37 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
-import { databaseSchema } from 'src/database/database-schema';
+import { ApiProperty } from '@nestjs/swagger'
+import { IsString } from 'class-validator'
+import { databaseSchema } from 'src/database/database-schema'
 
-export type User = typeof databaseSchema.user.$inferSelect;
-export type Admin = typeof databaseSchema.admin.$inferSelect;
+export type User = typeof databaseSchema.user.$inferSelect
+export type Admin = typeof databaseSchema.admin.$inferSelect
 
 export class RegisterUserDto {
   @IsString()
   @ApiProperty({
     example: 'userx',
   })
-  name: string;
+  name: string
   @IsString()
   @ApiProperty({
-    example: 'userx@mail.com',
+    example: 'estio9121@gmail.com',
   })
-  email: string;
+  email: string
 
   @IsString()
   @ApiProperty({
-    example: '1234567890',
+    example: '1111',
   })
-  phone: string;
-
-  @IsString()
-  @ApiProperty({
-    example: '123',
-  })
-  password: string;
+  phone: string
 
   @IsString()
   @ApiProperty({
     example: '123',
   })
-  passwordInit: string;
+  password: string
+
+  @IsString()
+  @ApiProperty({
+    example: '123',
+  })
+  passwordInit: string
 }

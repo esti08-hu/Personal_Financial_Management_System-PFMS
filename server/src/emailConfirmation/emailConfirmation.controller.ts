@@ -1,4 +1,5 @@
 import {
+  Body,
   ClassSerializerInterceptor,
   Controller,
   Get,
@@ -6,14 +7,16 @@ import {
   Query,
   Req,
   UseInterceptors,
-} from '@nestjs/common';
-import { EmailConfirmationService } from './emailConfirmation.service';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { Public } from 'src/auth/guards/auth.decorators';
+} from '@nestjs/common'
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
+import { Public } from 'src/auth/guards/auth.decorators'
+import { ConfirmEmailDto } from './confirmEmail.dto'
+import { EmailConfirmationService } from './emailConfirmation.service'
 
 @Controller('email-confirmation')
 @ApiBearerAuth()
 @ApiTags('email-confirmation')
+@Public()
 @UseInterceptors(ClassSerializerInterceptor)
 export class EmailConfirmationController {
   constructor(
@@ -22,16 +25,14 @@ export class EmailConfirmationController {
 
   @Post('resend-confirmation-link')
   async resendConfirmationLink(@Req() request) {
-    await this.emailConfirmationService.resendConfirmationLink(
-      request.user.pid,
-    );
+    await this.emailConfirmationService.resendConfirmationLink(request.user.pid)
   }
 
   @Get('confirm')
   async confirm(@Query('token') token: string) {
     const email =
-      await this.emailConfirmationService.decodeConfirmationToken(token);
-    await this.emailConfirmationService.confirmEmail(email);
-    return { message: 'Email confirmed successfully!' };
+      await this.emailConfirmationService.decodeConfirmationToken(token)
+    await this.emailConfirmationService.confirmEmail(email)
+    return { message: 'Email confirmed successfully!' }
   }
 }
