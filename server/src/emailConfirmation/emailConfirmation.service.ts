@@ -11,7 +11,6 @@ import { DrizzleService } from "src/database/drizzle.service";
 import EmailService from "src/email/email.service";
 import { UsersService } from "src/users/users.service";
 import VerificationTokenPayload from "./emailVerification.interface";
-import { addHours, isAfter } from 'date-fns';
 
 @Injectable()
 export class EmailConfirmationService {

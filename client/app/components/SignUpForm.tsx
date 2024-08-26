@@ -13,6 +13,9 @@ import { signupSchema } from "../common/validationSchema";
 import { z } from "zod";
 import Confetti from "react-confetti";
 import { OrbitProgress } from "react-loading-indicators";
+import { motion, AnimatePresence } from "framer-motion";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const SignupForm = () => {
   const router = useRouter();
@@ -62,7 +65,7 @@ const SignupForm = () => {
         parsedData
       );
 
-      alert(response.data.message);
+      toast.success(response.data.message);
 
       setShowConfetti(true);
       setTimeout(() => {
@@ -77,10 +80,10 @@ const SignupForm = () => {
         });
         setErrors(fieldErrors);
       } else if (axios.isAxiosError(err)) {
-        alert(err.response.data.message);
+        toast.error(err.response.data.message);
         // Handle specific server responses
       } else {
-        alert("An unexpected error occurred. Please try again.");
+        toast.error("An unexpected error occurred. Please try again.");
       }
     } finally {
       setIsLoading(false); // Hide loading indicator
@@ -91,88 +94,117 @@ const SignupForm = () => {
     const minLength = 8;
     const hasNumber = /\d/;
     const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/;
-
+    const hasLowerCase = /[a-z]/;
+    const hasUpperCase = /[A-Z]/;
+  
     if (password.length < minLength) {
       setPasswordError("Password must be at least 8 characters long.");
+      setIsPasswordValid(false);
     } else if (!hasNumber.test(password)) {
       setPasswordError("Password must contain at least one number.");
       setIsPasswordValid(false);
     } else if (!hasSpecialChar.test(password)) {
       setPasswordError("Password must contain at least one special character.");
       setIsPasswordValid(false);
+    } else if (!hasLowerCase.test(password)) {
+      setPasswordError("Password must contain at least one lowercase letter.");
+      setIsPasswordValid(false);
+    } else if (!hasUpperCase.test(password)) {
+      setPasswordError("Password must contain at least one uppercase letter.");
+      setIsPasswordValid(false);
     } else {
       setPasswordError("");
       setIsPasswordValid(true);
     }
   };
+  
 
   return (
-    <div className="signupformcontainer h-full flex justify-center items-center bg-[#E5E5E5]">
-      {showConfetti && (
-        <Confetti width={window.innerWidth} height={window.innerHeight} />
-      )}
-      <div className="container  max-w-fit max-h-fit flex justify-center items-center gap-16 border-2 pt-10 pb-10 bg-white p-8">
-        {isLoading && (
-          <div
-            className="absolute w-full h-full flex justify-center items-center z-50 "
-            style={{ backgroundColor: "rgba(0, 172, 205, 0.25)" }}
-            >
-            <OrbitProgress color="#37a5bb" size="medium" />
-          </div>
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={{
+        hidden: { opacity: 0, y: 50 },
+        visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+      }}
+      exit={{ opacity: 0 }}
+      className="container max-w-fit h-auto flex justify-center items-center p-4 pl-8 pr-8 border-2 bg-white rounded-lg shadow-lg m-8"
+    >
+      <AnimatePresence>
+        {showConfetti && (
+          <Confetti width={window.innerWidth} height={window.innerHeight} />
         )}
-        <div className="">
-          <div>
-            <div className="max-w-fit mb-2">
-              <Link href="/">
-                <Image
-                  src="/moneymaster.png"
-                  width={90}
-                  height={90}
-                  alt="Money Master Logo"
-                />
-              </Link>
-            </div>
-            <h1 className="text-2xl font-black text-[#22577A] mb-4">Sign Up</h1>
-            <p className="w-5/6 mb-4 text-[#6C7278]">
-              Fill your information below or register using your social account.
-            </p>
-          </div>
+      </AnimatePresence>
+      <AnimatePresence>
+        {isLoading && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute w-full h-full flex justify-center items-center z-50"
+            style={{ backgroundColor: "rgba(0, 0, 0, 0.25)" }}
+          >
+            <OrbitProgress color="#37a5bb" size="medium" />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-          <form onSubmit={handleSubmit} className="w-full">
-            <div>
-              <label
-                htmlFor="name"
-                className="block mb-2 text-md font-medium text-gray-900"
-              >
-                Name <span className="text-red-500">*</span>
-              </label>
+      <div className="">
+        <div>
+          <div className="max-w-fit mb-2">
+            <Link href="/">
+              <Image
+                src="/moneymaster.png"
+                width={90}
+                height={90}
+                alt="Money Master Logo"
+              />
+            </Link>
+          </div>
+          <h1 className="text-2xl font-black text-[#22577A] mb-4">Sign Up</h1>
+          <p className="w-5/6 mb-4 text-[#6C7278]">
+            Fill your information below or register using your social account.
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="w-full">
+          <div>
+            <label
+              htmlFor="name"
+              className="block mb-2 text-md font-medium text-gray-900"
+            >
+              Name <span className="text-red-500">*</span>
+            </label>
+            <div className="relative">
               <input
                 type="text"
                 id="name"
                 name="name"
+                placeholder="Enter your name"
                 value={formData.name}
                 onChange={handleChange}
-                className={`shadow-sm bg-gray-50 text-gray-900 text-sm rounded-lg block w-full p-2.5 ${
+                className={`shadow-sm bg-gray-50 text-gray-900 text-sm rounded-lg block w-full p-2.5 pr-10 transition-all duration-300 focus:ring-2 focus:ring-[#37a5bb] ${
                   errors.name
                     ? "border-2 border-red-500"
                     : "border border-gray-300"
                 }`}
-                placeholder="Enter your name"
                 required
               />
-              <div className="min-h-[24px] mt-1">
-                {errors.name && (
-                  <p className="text-red-500 text-sm">{errors.name}</p>
-                )}
-              </div>
             </div>
-            <div>
-              <label
-                htmlFor="email"
-                className="block mb-2 text-md font-medium text-gray-900"
-              >
-                Email <span className="text-red-500">*</span>
-              </label>
+            <div className="min-h-[24px] mt-1">
+              {errors.name && (
+                <p className="text-red-500 text-sm">{errors.name}</p>
+              )}
+            </div>
+          </div>
+          <div>
+            <label
+              htmlFor="email"
+              className="block mb-2 text-md font-medium text-gray-900"
+            >
+              Email <span className="text-red-500">*</span>
+            </label>
+            <div className="relative">
               <input
                 type="email"
                 id="email"
@@ -180,27 +212,29 @@ const SignupForm = () => {
                 placeholder="example@gmail.com"
                 value={formData.email}
                 onChange={handleChange}
-                className={`shadow-sm bg-gray-50 text-gray-900 text-sm rounded-lg block w-full p-2.5 ${
+                className={`shadow-sm bg-gray-50 text-gray-900 text-sm rounded-lg block w-full p-2.5 pr-10 transition-all duration-300 focus:ring-2 focus:ring-[#37a5bb] ${
                   errors.email
                     ? "border-2 border-red-500"
                     : "border border-gray-300"
                 }`}
                 required
               />
-              <div className="min-h-[24px] mt-1">
-                {errors.email && (
-                  <p className="text-red-500 text-sm">{errors.email}</p>
-                )}
-              </div>
             </div>
+            <div className="min-h-[24px] mt-1">
+              {errors.email && (
+                <p className="text-red-500 text-sm">{errors.email}</p>
+              )}
+            </div>
+          </div>
 
-            <div>
-              <label
-                htmlFor="phone"
-                className="block mb-2 text-md font-medium text-gray-900"
-              >
-                Phone <span className="text-red-500">*</span>
-              </label>
+          <div className="">
+            <label
+              htmlFor="phone"
+              className="block mb-2 text-md font-medium text-gray-900"
+            >
+              Phone <span className="text-red-500">*</span>
+            </label>
+            <div className="relative">
               <input
                 type="tel"
                 id="phone"
@@ -208,109 +242,114 @@ const SignupForm = () => {
                 placeholder="Enter your phone number"
                 value={formData.phone}
                 onChange={handleChange}
-                className={`shadow-sm bg-gray-50 text-gray-900 text-sm rounded-lg block w-full p-2.5 ${
+                className={`shadow-sm bg-gray-50 text-gray-900 text-sm rounded-lg block w-full p-2.5 pr-10 transition-all duration-300 focus:ring-2 focus:ring-[#37a5bb] ${
                   errors.phone
                     ? "border-2 border-red-500"
                     : "border border-gray-300"
                 }`}
                 required
               />
-              <div className="min-h-[24px] mt-1">
-                {errors.phone && (
-                  <p className="text-red-500 text-sm">{errors.phone}</p>
-                )}
-              </div>
             </div>
+            <div className="min-h-[24px] mt-1">
+              {errors.phone && (
+                <p className="text-red-500 text-sm">{errors.phone}</p>
+              )}
+            </div>
+          </div>
 
-            <div className="mb-5">
-              <label
-                htmlFor="password"
-                className="block mb-2 text-md font-medium text-gray-900"
-              >
-                Password <span className="text-red-500">*</span>
-              </label>
-              <div className="relative">
-                <input
-                  type={type}
-                  name="password"
-                  id="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="Enter password"
-                  className={`shadow-sm bg-gray-50 text-gray-900 text-sm rounded-lg border-2 block w-full p-2.5 ${
+          <div className="">
+            <label
+              htmlFor="password"
+              className="block mb-2 text-md font-medium text-gray-900"
+            >
+              Password <span className="text-red-500">*</span>
+            </label>
+            <div className="relative">
+              <input
+                type={type}
+                name="password"
+                id="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="Enter password"
+               className={`shadow-sm bg-gray-50 text-gray-900 text-sm rounded-lg border-2 block w-full p-2.5 ${
                     formData.password.length === 0
                       ? "border-gray-200"
                       : isPasswordValid
-                      ? "border-green-600"
-                      : "border-red-600"
+                      ? "border-green-400"
+                      : "border-red-400"
                   }`}
-                  required
-                />
-                <span
-                  className=" absolute right-10 top-0 mt-2 mr-2 cursor-pointer"
-                  onClick={handleToggle}
-                >
-                  <Icon className="absolute mr-10" icon={icon} size={25} />
-                </span>
-              </div>
-
-              <div className="min-h-[24px] mt-1">
-                {formData.password.length > 0 && (
-                  <>
-                    {passwordError && (
-                      <p className="text-red-500 text-sm">{passwordError}</p>
-                    )}
-                    {isPasswordValid && !passwordError && (
-                      <p className="text-green-500 text-sm">
-                        Password is valid
-                      </p>
-                    )}
-                  </>
-                )}
-              </div>
-            </div>
-            <div className="flex justify-center">
+                required
+              />
               <button
-                type="submit"
-                className="text-white hover:bg-[#37a5bb] focus:ring-4 focus:outline-none focus:ring-blue-300 text-md px-5 py-2.5 text-center bg-[#00ABCD] font-bold border-2 h-[47px] w-[250px] flex justify-center items-center rounded-full"
+                type="button"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 focus:outline-none"
+                onClick={handleToggle}
               >
-                Sign Up
+                <Icon icon={icon} size={20} />
               </button>
             </div>
 
-            <div className="w-full flex justify-around items-center mt-5 mb-5">
-              <div className="w-1/3 h-0.5 bg-[#D9D9D9]"></div>
-              <div className="">
-                <p className="text-center w-fit text-[#b7b7b7]">
-                  OR SIGNUP WITH
-                </p>
-              </div>
-              <div className="w-1/3 h-0.5 bg-[#D9D9D9]"></div>
+               <div className="min-h-[24px] mt-1">
+              {formData.password.length > 0 && (
+                <>
+                  {passwordError && (
+                    <p className="text-red-500 text-sm">{passwordError}</p>
+                  )}
+                  {isPasswordValid && !passwordError && (
+                    <p className="text-green-500 text-sm">Password is valid</p>
+                  )}
+                </>
+              )}
             </div>
+          </div>
 
-            <div>
-              <GoogleSignUpButton />
+          <motion.button
+            whileTap="tap"
+            whileHover="hover"
+            type="submit"
+            disabled={isLoading}
+            className="w-full flex justify-center text-white bg-[#00ABCD] hover:bg-[#37a5bb] focus:ring-4 focus:outline-none focus:ring-blue-300 font-bold text-md px-5 py-2.5 text-center rounded-full transition-all duration-300 mt-5"
+          >
+            Sign Up
+          </motion.button>
+
+          <div className="w-full flex justify-around items-center mt-5 mb-5">
+            <div className="w-1/3 h-0.5 bg-[#D9D9D9]"></div>
+            <div className="">
+              <p className="text-center w-fit text-[#b7b7b7]">OR SIGNUP WITH</p>
             </div>
-            <label className="text-center">
-              <p className="mt-2">
-                Already have an account?{" "}
-                <span className="text-[#00ABCD] font-black underline">
-                  <Link href="/login">Log In</Link>
-                </span>
-              </p>
-            </label>
-          </form>
-        </div>
-        <div className="welcome-img">
-          <Image
-            width={500}
-            height={500}
-            src="/images/welcome.png"
-            alt="signup-illustration"
-          />
-        </div>
+            <div className="w-1/3 h-0.5 bg-[#D9D9D9]"></div>
+          </div>
+
+          <div>
+            <GoogleSignUpButton />
+          </div>
+          <label className="text-center">
+            <p className="mt-2">
+              Already have an account?{" "}
+              <span className="text-[#00ABCD] font-black underline">
+                <Link href="/login">Log In</Link>
+              </span>
+            </p>
+          </label>
+        </form>
       </div>
-    </div>
+      <div className="welcome-img hidden lg:block ml-10">
+        <Image
+          width={500}
+          height={500}
+          src="/images/welcome.png"
+          alt="signup-illustration"
+          className="object-cover rounded-lg shadow-md"
+        />
+      </div>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+      />
+    </motion.div>
   );
 };
 

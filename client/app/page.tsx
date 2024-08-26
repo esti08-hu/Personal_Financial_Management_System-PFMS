@@ -1,17 +1,12 @@
-import React from "react";
-import Link from "next/link";
+import React from 'react'
+import LoginForm from './components/LoginForm'
 
-const Login = () => {
+const HomePage = () => {
   return (
-    <main className="h-screen">
-      <div>
-        <Link href="/login">Login</Link>
-      </div>
-      <div>
-        <Link href="/signup">Sign Up</Link>
-      </div>
-    </main>
-  );
-};
+    <div className="h-fill relative flex justify-center items-center bg-[#E5E5E5]">
+        <LoginForm/>
+    </div>
+  )
+}
 
-export default Login;
+export default HomePage

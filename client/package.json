@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@hookform/resolvers": "^3.9.0",
     "@react-oauth/google": "^0.12.1",
     "@types/passport-google-oauth20": "^2.0.16",
     "axios": "^1.7.4",
@@ -16,7 +17,9 @@
     "flowbite": "^2.5.1",
     "flowbite-react": "^0.10.1",
     "framer-motion": "^11.3.30",
+    "lodash": "^4.17.21",
     "next": "14.2.5",
+    "next-themes": "^0.3.0",
     "passport-google-oauth20": "^2.0.0",
     "react": "^18",
     "react-confetti": "^6.1.0",
@@ -27,6 +30,7 @@
     "react-icons-kit": "^2.0.0",
     "react-loading-indicators": "^1.0.0",
     "react-router-dom": "^6.26.1",
+    "react-toastify": "^10.0.5",
     "zod": "^3.23.8"
   },
   "devDependencies": {

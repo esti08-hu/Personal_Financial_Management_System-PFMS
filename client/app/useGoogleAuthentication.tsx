@@ -1,5 +1,6 @@
 import { GoogleLoginResponse } from "@react-oauth/google";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 function useGoogleAuthentication() {
   const router = useRouter();
@@ -22,16 +23,16 @@ function useGoogleAuthentication() {
           if(data.redirectUrl){
             router.push(data.redirectUrl);
           }else if (data.message){
-            alert(data.message);
+            toast.error(data.message);
           }else {
-            alert("Sign-in successful, but no redirect URL found. Please try again.");
+            toast.error("Sign-in successful, but no redirect URL found. Please try again.");
           }
         })
         .catch((error) => {
-         alert("An error occurred. Please try again.");
+         toast.error("An error occurred. Please try again.");
         });
     } else {
-      alert("No credential found. Please try again.");
+      toast.error("No credential found. Please try again.");
     }
   };
 
