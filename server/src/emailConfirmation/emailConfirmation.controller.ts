@@ -6,33 +6,40 @@ import {
   Post,
   Query,
   Req,
+  Res,
   UseInterceptors,
-} from '@nestjs/common'
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
-import { Public } from 'src/auth/guards/auth.decorators'
-import { ConfirmEmailDto } from './confirmEmail.dto'
-import { EmailConfirmationService } from './emailConfirmation.service'
+} from "@nestjs/common";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import { Public } from "src/auth/guards/auth.decorators";
+import { EmailConfirmationService } from "./emailConfirmation.service";
+import { ConfirmEmailDto } from "./confirmEmail.dto";
 
-@Controller('email-confirmation')
+@Controller("email-confirmation")
 @ApiBearerAuth()
-@ApiTags('email-confirmation')
-@Public()
+@ApiTags("email-confirmation")
 @UseInterceptors(ClassSerializerInterceptor)
 export class EmailConfirmationController {
   constructor(
-    private readonly emailConfirmationService: EmailConfirmationService,
+    private readonly emailConfirmationService: EmailConfirmationService
   ) {}
 
-  @Post('resend-confirmation-link')
-  async resendConfirmationLink(@Req() request) {
-    await this.emailConfirmationService.resendConfirmationLink(request.user.pid)
+  @Post("resend-confirmation-link")
+  @Public()
+  async resendConfirmationLink(@Body('email') email:string) {
+
+    await this.emailConfirmationService.resendConfirmationLink(
+      email
+    );
   }
 
-  @Get('confirm')
-  async confirm(@Query('token') token: string) {
-    const email =
-      await this.emailConfirmationService.decodeConfirmationToken(token)
-    await this.emailConfirmationService.confirmEmail(email)
-    return { message: 'Email confirmed successfully!' }
+  @Get("confirm")
+  @Public()
+  async confirm(@Query("token") token: string, @Res() res) {
+      const email = await this.emailConfirmationService.decodeConfirmationToken(token);
+      await this.emailConfirmationService.confirmEmail(email);
+  
+      // Redirect to the login page after successful confirmation
+      return res.redirect("http://localhost:3000/login?emailConfirmed=true");
   }
+  
 }

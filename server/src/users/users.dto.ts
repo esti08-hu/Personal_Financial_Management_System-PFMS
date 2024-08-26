@@ -29,9 +29,9 @@ export class RegisterUserDto {
   })
   password: string
 
-  @IsString()
-  @ApiProperty({
-    example: '123',
-  })
-  passwordInit: string
+  // @IsString()
+  // @ApiProperty({
+  //   example: '123',
+  // })
+  // passwordInit: string
 }

@@ -6,81 +6,83 @@ import {
   Request,
   Response,
   UseInterceptors,
-} from '@nestjs/common'
-import { ApiBasicAuth, ApiBearerAuth, ApiTags } from '@nestjs/swagger'
-import { Public } from 'src/auth/guards/auth.decorators'
-import { AuthService } from 'src/auth/services/auth.service'
-import { GoogleAuthenticationService } from './googleAuth.service'
-import TokenVerificationDto from './tokenValidatation'
-// import { Request } from "express";
+} from "@nestjs/common";
+import { ApiBasicAuth, ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import { Public } from "src/auth/guards/auth.decorators";
+import { AuthService } from "src/auth/services/auth.service";
+import { GoogleAuthenticationService } from "./googleAuth.service";
+import TokenVerificationDto from "./tokenValidatation";
 
-@Controller('google')
+@Controller("google")
 @ApiBearerAuth()
-@ApiTags('googleAuth')
+@ApiTags("googleAuth")
 @UseInterceptors(ClassSerializerInterceptor)
 export class GoogleAuthenticationController {
   constructor(
     private readonly googleAuthenticationService: GoogleAuthenticationService,
-    private readonly authService: AuthService,
   ) {}
 
-  @Post('signin')
+  @Post("signin")
   @Public()
   async authenticate(
     @Body() tokenData: TokenVerificationDto,
     @Response({ passthrough: true }) res,
-    @Request() req,
+    @Request() req
   ) {
-    const isSignup = req.body.endpoint
+    const isSignup = req.body.endpoint;
     const { accessToken, refreshToken, user } =
       await this.googleAuthenticationService.authenticate(
         tokenData.token,
-        isSignup,
-      )
-
-    res.cookie('refresh_token', refreshToken, {
+        isSignup
+      );
+    // Set cookies
+    res.cookie("refresh_token", refreshToken, {
       maxAge: 1000 * 60 * 60 * 7, // 7 days
       httpOnly: true,
-      path: '/',
-    })
-    res.cookie('access_token', accessToken, {
-      maxAge: 1000 * 60 * 3, // 3 minuts
+      path: "/",
+    });
+    res.cookie("access_token", accessToken, {
+      maxAge: 1000 * 60 * 3, // 3 minutes
       httpOnly: true,
-      path: '/',
-    })
+      path: "/",
+    });
 
-    console.log('login with google ')
+    console.log("login with google");
+  
+    const redirectUrl = "/user";
 
-    return { accessToken, refreshToken }
+    return { accessToken, refreshToken, redirectUrl };
   }
 
-  @Post('signup')
+  @Post("signup")
   @Public()
   async signup(
     @Body() tokenData: TokenVerificationDto,
     @Response({ passthrough: true }) res,
-    @Request() req,
+    @Request() req
   ) {
-    const isSignup = req.body.endpoint
+    const isSignup = req.body.endpoint;
     const { accessToken, refreshToken, user } =
       await this.googleAuthenticationService.authenticate(
         tokenData.token,
-        isSignup,
-      )
+        isSignup
+      );
 
-    res.cookie('refresh_token', refreshToken, {
+    res.cookie("refresh_token", refreshToken, {
       maxAge: 1000 * 60 * 60 * 7, // 7 days
       httpOnly: true,
-      path: '/',
-    })
-    res.cookie('access_token', accessToken, {
+      path: "/",
+    });
+
+    res.cookie("access_token", accessToken, {
       maxAge: 1000 * 60 * 3, // 3 minuts
       httpOnly: true,
-      path: '/',
-    })
+      path: "/",
+    });
 
-    console.log('Signup with google ')
+    console.log("Signup with google ");
 
-    return { accessToken, refreshToken }
+    const redirectUrl = "/user";
+    return { accessToken, refreshToken, redirectUrl };
   }
 }

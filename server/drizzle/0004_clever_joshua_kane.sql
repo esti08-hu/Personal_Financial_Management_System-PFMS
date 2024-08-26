@@ -1,0 +1,1 @@
+ALTER TABLE "Users" ADD COLUMN "confirmationSentAt" timestamp with time zone;

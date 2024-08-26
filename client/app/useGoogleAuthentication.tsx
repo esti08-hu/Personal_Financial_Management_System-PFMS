@@ -1,13 +1,15 @@
 import { GoogleLoginResponse } from "@react-oauth/google";
+import { useRouter } from "next/navigation";
 
 function useGoogleAuthentication() {
+  const router = useRouter();
+
   const handleSuccess = (response: GoogleLoginResponse, isSignup: boolean) => {
-    console.log(response);
     if (response.credential) {
       const credential = response.credential;
-      const endpoint = isSignup ? "signup" : "login";
+      const endpoint = isSignup ? "signup" : "signin";
 
-      fetch(`http://localhost:3001/google-auth/${endpoint}`, {
+      fetch(`http://localhost:3001/google/${endpoint}`, {
         method: "POST",
         body: JSON.stringify({ token: credential, endpoint: endpoint }),
         headers: {
@@ -16,10 +18,20 @@ function useGoogleAuthentication() {
         credentials: "include", // This ensures cookies are sent with the request
       })
         .then((res) => res.json()) // Handle the response
-        .then((data) => console.log(data)) // Process the data
-        .catch((error) => console.error("Error:", error)); // Handle errors
+        .then((data) => {
+          if(data.redirectUrl){
+            router.push(data.redirectUrl);
+          }else if (data.message){
+            alert(data.message);
+          }else {
+            alert("Sign-in successful, but no redirect URL found. Please try again.");
+          }
+        })
+        .catch((error) => {
+         alert("An error occurred. Please try again.");
+        });
     } else {
-      console.error("No credential found in response");
+      alert("No credential found. Please try again.");
     }
   };
 

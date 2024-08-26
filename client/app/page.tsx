@@ -1,11 +1,16 @@
 import React from "react";
-import GoogleButton from "./GoogleButton";
+import Link from "next/link";
 
 const Login = () => {
   return (
-    <div>
-      <GoogleButton />
-    </div>
+    <main className="h-screen">
+      <div>
+        <Link href="/login">Login</Link>
+      </div>
+      <div>
+        <Link href="/signup">Sign Up</Link>
+      </div>
+    </main>
   );
 };
 

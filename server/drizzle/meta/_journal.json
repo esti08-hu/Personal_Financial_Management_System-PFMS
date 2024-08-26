@@ -22,6 +22,20 @@
       "when": 1724312860430,
       "tag": "0002_plain_maximus",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1724331255018,
+      "tag": "0003_bumpy_miss_america",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1724615859040,
+      "tag": "0004_clever_joshua_kane",
+      "breakpoints": true
     }
   ]
 }
