@@ -9,6 +9,14 @@ import { Role } from 'src/permissions/role.emum'
 export class UsersService {
   constructor(private drizzle: DrizzleService) {}
 
+  public async updatePasswordResetToken(pid: string, token: string) {
+    await this.drizzle.db.execute(sql`
+      UPDATE "Users"
+      SET "passwordResetToken" = ${token}, "passwordResetTokenExpires"=${new Date(Date.now() + 3600 * 1000)}
+      WHERE "pid" = ${pid};
+    `)
+  }
+
   async findUserByEmail(email: string): Promise<any> {
     return this.drizzle.db.query.user.findFirst({
       where: eq(databaseSchema.user.email, email),
@@ -44,7 +52,6 @@ export class UsersService {
       WHERE "email" = ${email};
     `)
   }
-
 
   async setRefreshToken(
     pid: string,

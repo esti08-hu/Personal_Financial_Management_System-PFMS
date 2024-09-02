@@ -11,7 +11,9 @@ export class EmailConfirmationGuard implements CanActivate {
     const request = context.switchToHttp().getRequest()
 
     if (!request.user?.isEmailConfirmed) {
-      throw new UnauthorizedException('Confirm your email first to login please')
+      throw new UnauthorizedException(
+        'Confirm your email first to login please',
+      )
     }
 
     return true

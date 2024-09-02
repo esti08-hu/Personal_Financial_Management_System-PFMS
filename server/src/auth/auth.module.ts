@@ -1,11 +1,14 @@
 import { Module } from '@nestjs/common'
 import { JwtModule } from '@nestjs/jwt'
 import { UsersModule } from 'src/users/users.module'
-import { AuthController } from './auth.controller'
 import { AuthService } from './services/auth.service'
 import 'dotenv/config'
+import { ConfigModule, ConfigService } from '@nestjs/config'
 import { APP_GUARD } from '@nestjs/core'
+import { EmailModule } from 'src/email/email.module' // Import EmailModule
 import { EmailConfirmationModule } from 'src/emailConfirmation/emailConfirmation.module'
+import { AuthController } from './controllers/auth.controller'
+import { PasswordController } from './controllers/password.controller'
 import { AuthGuard } from './guards/auth.guard'
 import { JwtStrategy } from './guards/jwt.strategy'
 import { PasswordService } from './services/password.service'
@@ -14,9 +17,20 @@ import { PasswordService } from './services/password.service'
   imports: [
     UsersModule,
     EmailConfirmationModule,
+
+    EmailModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        service: configService.get('EMAIL_SERVICE'),
+        user: configService.get('EMAIL_USER'),
+        password: configService.get('EMAIL_PASSWORD'),
+      }),
+    }),
+
     JwtModule.register({
-      global: true, // Makes the JwtModule available globally
-      secret: process.env.JWT_ACCESS_TOKEN_SECRET, // Use the secret from the environment variable }, // Token expiration time
+      global: true,
+      secret: process.env.JWT_ACCESS_TOKEN_SECRET,
     }),
   ],
   providers: [
@@ -25,10 +39,10 @@ import { PasswordService } from './services/password.service'
     JwtStrategy,
     {
       provide: APP_GUARD,
-      useClass: AuthGuard, // Apply AuthGuard globally to the application
+      useClass: AuthGuard,
     },
   ],
-  controllers: [AuthController],
-  exports: [AuthService], // Export AuthService for use in other modules
+  controllers: [AuthController, PasswordController],
+  exports: [AuthService],
 })
 export class AuthModule {}

@@ -31,3 +31,23 @@ export class EmailVerificationDto {
   @IsBoolean()
   isEmailConfirmed: boolean
 }
+
+export class UpdatePasswordDto {
+  @ApiProperty({
+    example: '123',
+  })
+  @IsString()
+  pid: string
+
+  @ApiProperty({
+    example: '123',
+  })
+  @IsString()
+  currentPassword: string
+
+  @ApiProperty({
+    example: '1234',
+  })
+  @IsString()
+  newPassword: string
+}

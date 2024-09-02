@@ -8,38 +8,35 @@ import {
   Req,
   Res,
   UseInterceptors,
-} from "@nestjs/common";
-import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
-import { Public } from "src/auth/guards/auth.decorators";
-import { EmailConfirmationService } from "./emailConfirmation.service";
-import { ConfirmEmailDto } from "./confirmEmail.dto";
+} from '@nestjs/common'
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
+import { Public } from 'src/auth/guards/auth.decorators'
+import { ConfirmEmailDto } from './confirmEmail.dto'
+import { EmailConfirmationService } from './emailConfirmation.service'
 
-@Controller("email-confirmation")
+@Controller('email-confirmation')
 @ApiBearerAuth()
-@ApiTags("email-confirmation")
+@ApiTags('email-confirmation')
 @UseInterceptors(ClassSerializerInterceptor)
 export class EmailConfirmationController {
   constructor(
-    private readonly emailConfirmationService: EmailConfirmationService
+    private readonly emailConfirmationService: EmailConfirmationService,
   ) {}
 
-  @Post("resend-confirmation-link")
+  @Post('resend-confirmation-link')
   @Public()
-  async resendConfirmationLink(@Body('email') email:string) {
-
-    await this.emailConfirmationService.resendConfirmationLink(
-      email
-    );
+  async resendConfirmationLink(@Body('email') email: string) {
+    await this.emailConfirmationService.resendConfirmationLink(email)
   }
 
-  @Get("confirm")
+  @Get('confirm')
   @Public()
-  async confirm(@Query("token") token: string, @Res() res) {
-      const email = await this.emailConfirmationService.decodeConfirmationToken(token);
-      await this.emailConfirmationService.confirmEmail(email);
-  
-      // Redirect to the login page after successful confirmation
-      return res.redirect("http://localhost:3000/login?emailConfirmed=true");
+  async confirm(@Query('token') token: string, @Res() res) {
+    const email =
+      await this.emailConfirmationService.decodeConfirmationToken(token)
+    await this.emailConfirmationService.confirmEmail(email)
+
+    // Redirect to the login page after successful confirmation
+    return res.redirect('http://localhost:3000/login?emailConfirmed=true')
   }
-  
 }

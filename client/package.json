@@ -12,6 +12,7 @@
     "@hookform/resolvers": "^3.9.0",
     "@react-oauth/google": "^0.12.1",
     "@types/passport-google-oauth20": "^2.0.16",
+    "antd": "^5.20.3",
     "axios": "^1.7.4",
     "dotenv": "^16.4.5",
     "flowbite": "^2.5.1",

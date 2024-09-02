@@ -3,7 +3,7 @@
 import { Icon } from "react-icons-kit";
 import { eyeOff } from "react-icons-kit/feather/eyeOff";
 import { eye } from "react-icons-kit/feather/eye";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -23,6 +23,7 @@ const LoginForm = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
+    rememberMe: false,
   });
   const [type, setType] = useState("password");
   const [icon, setIcon] = useState(eyeOff);
@@ -31,6 +32,10 @@ const LoginForm = () => {
 
   const handleCancel = () => {
     setConfirmedMessage(false);
+  };
+
+  const handleRememberMe = () => {
+    setFormData({ ...formData, rememberMe: !formData.rememberMe });
   };
 
   useEffect(() => {
@@ -102,9 +107,16 @@ const LoginForm = () => {
         }
       );
 
-      if (response.status === 201) {
-        router.push("/user");
+      if (formData.rememberMe) {
+        alert("Remember me is checked");
       }
+
+        setTimeout(() => {
+          if (response.status === 201) {
+            router.push("/user");
+          }
+        }, 1000);
+    
     } catch (err) {
       if (err instanceof z.ZodError) {
         const fieldErrors: Record<string, string> = {};
@@ -160,11 +172,12 @@ const LoginForm = () => {
             className="absolute w-full h-full flex justify-center items-center z-50"
             style={{ backgroundColor: "rgba(0, 172, 205, 0.25)" }}
           >
-            <motion.div 
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            className="bg-white rounded-lg shadow-lg p-8">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              className="bg-white rounded-lg shadow-lg p-8"
+            >
               <h3 className="mb-5 text-lg font-semibold text-gray-700">
                 Confirm your email first to login please.
               </h3>
@@ -200,7 +213,7 @@ const LoginForm = () => {
               />
             </Link>
           </div>
-          <h1 className="text-2xl font-black text-[#22577A] mb-6">Log In</h1>
+          <h1 className="text-2xl font-black text-[#22577A] mb-6">Sign In</h1>
           <p className="w-5/6 mb-10 text-[#6C7278]">
             Fill your information below or register using your social account.
           </p>
@@ -275,13 +288,15 @@ const LoginForm = () => {
           <div className="flex items-center justify-around mb-6">
             <div className="flex items-center">
               <input
-                id="remember-me"
-                name="remember-me"
+                id="rememberMe"
+                name="rememberMe"
                 type="checkbox"
                 className="h-4 w-4 text-[#37a5bb] focus:ring-[#37a5bb] border-gray-300 rounded"
+                checked={formData.rememberMe}
+                onChange={handleRememberMe}
               />
               <label
-                htmlFor="remember-me"
+                htmlFor="rememberMe"
                 className="ml-2 block text-sm text-gray-900"
               >
                 Remember me
@@ -290,7 +305,7 @@ const LoginForm = () => {
 
             <div className="text-sm">
               <a
-                href="#"
+                href="/forgotpassword"
                 className="font-medium text-[#37a5bb] hover:text-[#37a5bb]"
               >
                 Forgot your password?
@@ -311,7 +326,7 @@ const LoginForm = () => {
                 viewBox="0 0 24 24"
                 aria-labelledby="loadingTitle"
               >
-                    <title id="loadingTitle">Loading...</title>
+                <title id="loadingTitle">Loading...</title>
                 <circle
                   className="opacity-25"
                   cx="12"
@@ -327,11 +342,10 @@ const LoginForm = () => {
                 />
               </svg>
             ) : (
-              "Log In"
+              "Sign In"
             )}
           </motion.button>
 
-         
           <div className="w-full flex justify-around items-center mt-5 mb-5">
             <div className="w-1/3 h-0.5 bg-[#D9D9D9]"></div>
             <div className="">

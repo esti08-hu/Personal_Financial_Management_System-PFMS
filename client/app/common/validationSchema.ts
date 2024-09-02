@@ -16,13 +16,40 @@ export const signupSchema = z.object({
     .min(8, "Password must be at least 8 characters long")
     .regex(/\d/, "Password must contain at least one number")
     .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-    .regex(/[A-Z]/, "Password must contain at least one uppercase letter") 
-    .regex(/[!@#$%^&*(),.?":{}|<>]/, "Password must contain at least one special character"), 
+    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .regex(
+      /[!@#$%^&*(),.?":{}|<>]/,
+      "Password must contain at least one special character"
+    ),
 });
-
 
 // Define a schema for the signin form
 export const signinSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(8, "Password must be at least 8 characters"),
+  rememberMe: z.boolean(),
 });
+
+export const forgotPasswordSchema = z.object({
+  email: z.string().email("Invalid email address"),
+});
+
+export const setNewPasswordSchema = z
+  .object({
+    newPassword : z
+      .string()
+      .min(8, "Password must be at least 8 characters long")
+      .regex(/\d/, "Password must contain at least one number")
+      .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+      .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+      .regex(
+        /[!@#$%^&*(),.?":{}|<>]/,
+        "Password must contain at least one special character"
+      ),
+
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"], // This path will point to the confirmPassword field
+  });
