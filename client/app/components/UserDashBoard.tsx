@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useReducer } from "react";
+import { useState, useEffect, useReducer } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
@@ -27,6 +27,7 @@ import {
   BellOutlined,
   InfoCircleOutlined,
 } from "@ant-design/icons";
+import apiClient from "../lib/axiosConfig";
 
 const { Header, Sider, Content } = Layout;
 
@@ -69,16 +70,12 @@ const Dashboard = () => {
     isChangePasswordModalVisible,
   } = state;
   const router = useRouter();
+  const [isTokenRefreshing, setIsTokenRefreshing] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:3001/auth/user-profile",
-          {
-            withCredentials: true,
-          }
-        );
+        const response = await apiClient.get("/auth/user-profile");
         dispatch({
           type: "SET_USER",
           payload: {
@@ -89,10 +86,16 @@ const Dashboard = () => {
           },
         });
       } catch (err) {
-        toast.error(
-          "An error occurred while fetching user data. Please try again."
-        );
-        setTimeout(() => router.push("/login"), 2000);
+        // Check if the error is due to an expired token
+        if (err.response?.status === 401 && !isTokenRefreshing) {
+          setIsTokenRefreshing(true);
+          await refreshTokenAndRetry(fetchUserData);
+        } else {
+          toast.error(
+            "An error occurred while fetching user data. Please try again."
+          );
+          setTimeout(() => router.push("/login"), 2000);
+        }
       } finally {
         dispatch({ type: "SET_LOADING", payload: false });
       }
@@ -100,6 +103,28 @@ const Dashboard = () => {
 
     fetchUserData();
   }, []);
+
+  const refreshTokenAndRetry = async (callback) => {
+    try {
+      // Assuming apiClient will handle token refresh automatically
+      await apiClient.get("/auth/refresh"); // Trigger the token refresh
+      await callback(); // Retry the original request
+    } catch (error) {
+      console.error("Error refreshing token:", error);
+      toast.error("Could not refresh access token. Please login again.");
+      router.push("/login");
+    } finally {
+      setIsTokenRefreshing(false);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center w-full h-screen">
+        <Spin size="large" />
+      </div>
+    );
+  }
 
   const handleChangePassword = async (values) => {
     const { pid } = state.user;
@@ -111,15 +136,11 @@ const Dashboard = () => {
         return;
       }
 
-      const response = await axios.patch(
-        "http://localhost:3001/password/updateUser",
-        {
-          pid,
-          currentPassword,
-          newPassword,
-        },
-        { withCredentials: true }
-      );
+      const response = await apiClient.patch("/password/updateUser", {
+        pid,
+        currentPassword,
+        newPassword,
+      });
 
       if (response.status === 200) {
         toast.success("Password changed successfully!");
@@ -136,11 +157,7 @@ const Dashboard = () => {
 
   const handleLogout = async () => {
     try {
-      const response = await axios.post(
-        "http://localhost:3001/auth/logout",
-        {},
-        { withCredentials: true }
-      );
+      const response = await apiClient.post("/auth/logout");
       if (response.status === 200) {
         toast.success("Logout successful!");
         setTimeout(() => router.push("/login"), 2000);

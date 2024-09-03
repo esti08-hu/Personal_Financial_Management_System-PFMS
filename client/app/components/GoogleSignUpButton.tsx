@@ -1,6 +1,6 @@
 import React from "react";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
-import useGoogleAuthentication from "../useGoogleAuthentication";
+import useGoogleAuthentication from "./useGoogleAuthentication";
 import "dotenv/config";
 
 function GoogleSignUpButton() {

@@ -69,7 +69,6 @@ const SetNewPasswordForm = () => {
 
     try {
       const parsedData = setNewPasswordSchema.parse(formData);
-      console.log(parsedData)
 
       const urlParams = new URLSearchParams(window.location.search);
       const token = urlParams.get('token');
