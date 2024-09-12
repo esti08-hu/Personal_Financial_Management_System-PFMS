@@ -1,0 +1,108 @@
+.custom-spin .ant-spin-dot i {
+    background-color: #00ABCD;
+}
+
+.custom-button {
+    background-color: transparent;
+    color: white;
+}
+
+.ant-menu-dark .ant-menu-item-selected {
+    background-color: #00ABCD; 
+  }
+
+
+.custom-switch.ant-switch-checked {
+    background-color: #00ABCD !important;
+  }
+  
+
+  /* Hide the default checkbox */
+.custom-checkbox {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+}
+
+/* Style for unchecked state */
+.custom-checkbox:checked {
+  background-color: #00ABCD; 
+  border-color: #00ABCD;
+}
+
+/* Optional: Add a check mark icon */
+.custom-checkbox:checked::before {
+  content: url('/images/checked.png');
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
+}
+
+
+/* style.css */
+
+.dark-mode {
+  background-color: #2e3440;
+  color: #ffffff;
+}
+
+.light-mode {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+.dark-sidebar {
+  background-color: #141414;
+}
+
+.light-sidebar {
+  background-color: #ffffff;
+}
+
+/* Adjust other styles as needed */
+
+
+
+/* Light theme */
+.modal-light {
+  background-color: #ffffff;
+}
+
+.form-light {
+  background-color: #f9f9f9;
+}
+
+.input-light {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+.button-light {
+  background-color: #00abcd;
+  color: #ffffff;
+}
+
+/* Dark theme */
+.modal-dark {
+  background-color: #2e3440;
+}
+
+.form-dark {
+  background-color: #2f2f2f;
+}
+
+.input-dark {
+  background-color: #333333;
+  color: #ffffff;
+}
+
+.button-dark {
+  background-color: #2dc6e5;
+  color: #ffffff;
+}

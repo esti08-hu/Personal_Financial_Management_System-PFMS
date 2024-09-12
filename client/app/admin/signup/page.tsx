@@ -1,12 +1,12 @@
+import SignupForm from "@/app/components/SignUpForm";
 import React from "react";
-import Dashboard from "../components/UserDashBoard";
 
-const UserDashboard = () => {
+const SignUp = () => {
   return (
     <div className="h-screen relative flex justify-center items-center bg-[#E5E5E5]">
-      <Dashboard />
+      <SignupForm />
     </div>
   );
 };
 
-export default UserDashboard;
+export default SignUp;

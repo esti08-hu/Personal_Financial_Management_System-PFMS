@@ -149,7 +149,7 @@ const SetNewPasswordForm = () => {
         visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
       }}
       exit={{ opacity: 0 }}
-      className="container max-w-fit h-auto flex justify-center items-center p-4 pl-8 pr-8 border-2 bg-white rounded-lg shadow-lg m-8"
+      className="container max-w-fit h-auto flex justify-center items-center p-8 border-2 bg-white rounded-lg shadow-lg m-8"
     >
       <AnimatePresence>
         {isLoading && (
@@ -171,8 +171,8 @@ const SetNewPasswordForm = () => {
             <Link href="/">
               <Image
                 src="/moneymaster.png"
-                width={90}
-                height={90}
+                width={150}
+                height={150}
                 alt="Money Master Logo"
               />
             </Link>
@@ -180,12 +180,11 @@ const SetNewPasswordForm = () => {
           <h1 className="text-2xl font-black text-[#22577A] mb-6">
             Set New Password
           </h1>
-          <p className="w-5/6 mb-10 text-[#6C7278]">
-            Fill your information below or register using your social account.
-          </p>
+          <p className="max-w-[450px] mb-10 text-[#6C7278]">
+          Please enter your new password and confirm it below to complete the update.          </p>
         </div>
         <form onSubmit={handleSubmit} className="w-full">
-          <div className="">
+          <div className="mb-6">
             <label
               htmlFor="password"
               className="block mb-2 text-md font-medium text-gray-900"
@@ -199,7 +198,7 @@ const SetNewPasswordForm = () => {
                 id="newPassword"
                 value={formData.newPassword}
                 onChange={handleChange}
-                placeholder="Enter password"
+                placeholder="Enter New password"
                 className={`shadow-sm bg-gray-50 text-gray-900 text-sm rounded-lg border-2 block w-full p-2.5 ${
                   formData.newPassword.length === 0
                     ? "border-gray-200"
@@ -214,7 +213,11 @@ const SetNewPasswordForm = () => {
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 focus:outline-none"
                 onClick={handleNewPasswordToggle}
               >
-                <Icon icon={newPasswordIcon} size={20} />
+                <Icon
+                  className={newPasswordIcon === eye ? "text-[#00ABCD]" : ""}
+                  icon={newPasswordIcon}
+                  size={20}
+                />
               </button>
             </div>
 
@@ -232,7 +235,7 @@ const SetNewPasswordForm = () => {
             </div>
           </div>
 
-          <div className="">
+          <div className="mb-6">
             <label
               htmlFor="confirmPassword"
               className="block mb-2 text-md font-medium text-gray-900"
@@ -261,7 +264,11 @@ const SetNewPasswordForm = () => {
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 focus:outline-none"
                 onClick={handleConfirmPasswordToggle}
               >
-                <Icon icon={confirmPasswordIcon} size={20} />
+                 <Icon
+                  className={confirmPasswordIcon === eye ? "text-[#00ABCD]" : ""}
+                  icon={confirmPasswordIcon}
+                  size={20}
+                />
               </button>
             </div>
             <div className="min-h-[24px] mt-1">
@@ -277,7 +284,7 @@ const SetNewPasswordForm = () => {
             whileHover="hover"
             type="submit"
             disabled={isLoading}
-            className="w-full flex justify-center text-white bg-[#00ABCD] hover:bg-[#37a5bb] focus:ring-4 focus:outline-none focus:ring-blue-300 font-bold text-md px-5 py-2.5 text-center rounded-full transition-all duration-300 mb-10"
+            className="w-full flex justify-center text-white bg-[#00ABCD] hover:bg-[#37a5bb] focus:ring-4 focus:outline-none focus:ring-blue-300 font-bold text-md px-5 py-2.5 text-center rounded-full transition-all duration-300 mb-6"
           >
             {isLoading ? (
               <svg
@@ -310,9 +317,9 @@ const SetNewPasswordForm = () => {
         <Image
           width={500}
           height={500}
-          src="/images/login.png"
+          src="/images/resetpassword-illustration.png"
           alt="Login illustration"
-          className="object-cover rounded-lg shadow-md"
+          className="object-cover rounded-[20px] shadow-md"
         />
       </div>
       <ToastContainer

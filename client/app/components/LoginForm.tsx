@@ -15,6 +15,7 @@ import { z } from "zod";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import "../styles/style.css";
 
 const LoginForm = () => {
   const router = useRouter();
@@ -24,6 +25,7 @@ const LoginForm = () => {
     email: "",
     password: "",
     rememberMe: false,
+    isAdmin: false
   });
   const [type, setType] = useState("password");
   const [icon, setIcon] = useState(eyeOff);
@@ -78,8 +80,8 @@ const LoginForm = () => {
 
       const response = await axios.post(
         "http://localhost:3001/email-confirmation/resend-confirmation-link",
-        { email: email }, // Wrap the email in an object
-
+        { email: email },
+        
         {
           withCredentials: true,
         }
@@ -111,12 +113,11 @@ const LoginForm = () => {
         alert("Remember me is checked");
       }
 
-        setTimeout(() => {
-          if (response.status === 201) {
-            router.push("/user");
-          }
-        }, 1000);
-    
+      setTimeout(() => {
+        if (response.status === 201) {
+          router.push("/pages/user");
+        }
+      }, 1000);
     } catch (err) {
       if (err instanceof z.ZodError) {
         const fieldErrors: Record<string, string> = {};
@@ -207,15 +208,15 @@ const LoginForm = () => {
             <Link href="/">
               <Image
                 src="/moneymaster.png"
-                width={90}
-                height={90}
+                width={150}
+                height={150}
                 alt="Money Master Logo"
               />
             </Link>
           </div>
           <h1 className="text-2xl font-black text-[#22577A] mb-6">Sign In</h1>
-          <p className="w-5/6 mb-10 text-[#6C7278]">
-            Fill your information below or register using your social account.
+          <p className="max-w-[450px] mb-10 text-[#6C7278]">
+            Fill your information below or signin using your social account.
           </p>
         </div>
         <form onSubmit={handleSubmit} className="w-full">
@@ -247,7 +248,7 @@ const LoginForm = () => {
             </div>
           </div>
 
-          <div className="mb-5">
+          <div className="mb-6">
             <label
               htmlFor="password"
               className="block mb-2 text-md font-medium text-gray-900"
@@ -274,7 +275,11 @@ const LoginForm = () => {
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 focus:outline-none"
                 onClick={handleToggle}
               >
-                <Icon icon={icon} size={20} />
+                <Icon
+                  className={icon === eye ? "text-[#00ABCD]" : ""}
+                  icon={icon}
+                  size={20}
+                />{" "}
               </button>
             </div>
 
@@ -291,7 +296,7 @@ const LoginForm = () => {
                 id="rememberMe"
                 name="rememberMe"
                 type="checkbox"
-                className="h-4 w-4 text-[#37a5bb] focus:ring-[#37a5bb] border-gray-300 rounded"
+                className="custom-checkbox h-4 w-4 text-[#37a5bb] focus:ring-[#37a5bb] border-gray-300 rounded"
                 checked={formData.rememberMe}
                 onChange={handleRememberMe}
               />
@@ -305,8 +310,8 @@ const LoginForm = () => {
 
             <div className="text-sm">
               <a
-                href="/forgotpassword"
-                className="font-medium text-[#37a5bb] hover:text-[#37a5bb]"
+                href="/pages/forgotpassword"
+                className="font-medium text-[#37a5bb] hover:text-[#37a5bb] hover:underline"
               >
                 Forgot your password?
               </a>
@@ -318,7 +323,7 @@ const LoginForm = () => {
             whileHover="hover"
             type="submit"
             disabled={isLoading}
-            className="w-full flex justify-center text-white bg-[#00ABCD] hover:bg-[#37a5bb] focus:ring-4 focus:outline-none focus:ring-blue-300 font-bold text-md px-5 py-2.5 text-center rounded-full transition-all duration-300 mb-10"
+            className="w-full flex justify-center text-white bg-[#00ABCD] hover:bg-[#37a5bb] focus:ring-4 focus:outline-none focus:ring-blue-300 font-bold text-md px-5 py-2.5 text-center rounded-full transition-all duration-300 mb-6"
           >
             {isLoading ? (
               <svg
@@ -346,11 +351,11 @@ const LoginForm = () => {
             )}
           </motion.button>
 
-          <div className="w-full flex justify-around items-center mt-5 mb-5">
+          <div className="w-full flex justify-around items-center mt-6 mb-6">
             <div className="w-1/3 h-0.5 bg-[#D9D9D9]"></div>
             <div className="">
-              <p className="text-center w-fit text-[#b7b7b7] text-sn">
-                CONTINUE WITH
+              <p className="text-center w-fit text-[#b7b7b7] text-md">
+                or Sign In with
               </p>
             </div>
             <div className="w-1/3 h-0.5 bg-[#D9D9D9]"></div>
@@ -361,10 +366,10 @@ const LoginForm = () => {
           </div>
 
           <label className="text-center">
-            <p className="mt-10">
+            <p className="mt-6">
               Don’t have an account?{" "}
-              <span className="text-[#00ABCD] font-black underline">
-                <Link href={"/signup"}>Sign Up</Link>
+              <span className="text-[#00ABCD] font-black hover:underline">
+                <Link href={"/pages/signup"}>Sign Up</Link>
               </span>
             </p>
           </label>
@@ -376,7 +381,7 @@ const LoginForm = () => {
           height={500}
           src="/images/login.png"
           alt="Login illustration"
-          className="object-cover rounded-lg shadow-md"
+          className="object-cover rounded-[20px] shadow-md"
         />
       </div>
       <ToastContainer

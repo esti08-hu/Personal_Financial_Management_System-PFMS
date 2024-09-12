@@ -16,12 +16,14 @@ import { OrbitProgress } from "react-loading-indicators";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import apiClient from "../lib/axiosConfig";
+import "../styles/style.css";
+import { Privacy, Terms } from "../common/terma&privacy";
 
 const SignupForm = () => {
   const router = useRouter();
   const [formData, setFormData] = useState({
-    name: "",
+    firstName: "",
+    lastName: "",
     email: "",
     password: "",
     phone: "",
@@ -32,9 +34,11 @@ const SignupForm = () => {
   const [errors, setErrors] = useState({});
   const [type, setType] = useState("password");
   const [icon, setIcon] = useState(eyeOff);
-
   // State for loading indicator
   const [isLoading, setIsLoading] = useState(false);
+  const [privacyVisible, setPrivacyVisible] = useState(false);
+  const [termsVisible, setTermsVisible] = useState(false); 
+
 
   const handleToggle = () => {
     if (type === "password") {
@@ -61,16 +65,17 @@ const SignupForm = () => {
 
     try {
       const parsedData = signupSchema.parse(formData);
-
-      const response = await apiClient.post("/auth/register", parsedData);
+      const response = await axios.post(
+        "http://localhost:3001/auth/register",
+        parsedData
+      );
 
       toast.success(response.data.message);
 
       setShowConfetti(true);
-
       setTimeout(() => {
         setShowConfetti(false);
-        router.push("/pages/login");
+        router.push("/login");
       }, 4000);
     } catch (err) {
       if (err instanceof z.ZodError) {
@@ -99,19 +104,14 @@ const SignupForm = () => {
 
     if (password.length < minLength) {
       setPasswordError("Password must be at least 8 characters long.");
-      setIsPasswordValid(false);
     } else if (!hasNumber.test(password)) {
       setPasswordError("Password must contain at least one number.");
-      setIsPasswordValid(false);
     } else if (!hasSpecialChar.test(password)) {
       setPasswordError("Password must contain at least one special character.");
-      setIsPasswordValid(false);
     } else if (!hasLowerCase.test(password)) {
       setPasswordError("Password must contain at least one lowercase letter.");
-      setIsPasswordValid(false);
     } else if (!hasUpperCase.test(password)) {
       setPasswordError("Password must contain at least one uppercase letter.");
-      setIsPasswordValid(false);
     } else {
       setPasswordError("");
       setIsPasswordValid(true);
@@ -127,7 +127,7 @@ const SignupForm = () => {
         visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
       }}
       exit={{ opacity: 0 }}
-      className="container max-w-fit h-auto flex justify-center items-center p-4 pl-8 pr-8 border-2 bg-white rounded-lg shadow-lg m-8"
+      className="container max-w-fit h-auto flex justify-center items-center p-8 pl-8 pr-8 border-2 bg-white rounded-lg shadow-lg m-8"
     >
       <AnimatePresence>
         {showConfetti && (
@@ -167,35 +167,68 @@ const SignupForm = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="w-full">
-          <div>
-            <label
-              htmlFor="name"
-              className="block mb-2 text-md font-medium text-gray-900"
-            >
-              Name <span className="text-red-500">*</span>
-            </label>
-            <div className="relative">
-              <input
-                type="text"
-                id="name"
-                name="name"
-                placeholder="Enter your name"
-                value={formData.name}
-                onChange={handleChange}
-                className={`shadow-sm bg-gray-50 text-gray-900 text-sm rounded-lg block w-full p-2.5 pr-10 transition-all duration-300 focus:ring-2 focus:ring-[#37a5bb] ${
-                  errors.name
-                    ? "border-2 border-red-500"
-                    : "border border-gray-300"
-                }`}
-                required
-              />
+          <div className="flex gap-4">
+            <div>
+              <label
+                htmlFor="name"
+                className="block mb-2 text-md font-medium text-gray-900"
+              >
+                First Name <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  id="firstName"
+                  name="firstName"
+                  placeholder="Enter your first name"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  className={`shadow-sm bg-gray-50 text-gray-900 text-sm rounded-lg block w-full p-2.5 pr-10 transition-all duration-300 focus:ring-2 focus:ring-[#37a5bb] ${
+                    errors.firstName
+                      ? "border-2 border-red-500"
+                      : "border border-gray-300"
+                  }`}
+                  required
+                />
+              </div>
+              <div className="min-h-[24px] mt-1">
+                {errors.firstName && (
+                  <p className="text-red-500 text-sm">{errors.firstName}</p>
+                )}
+              </div>
             </div>
-            <div className="min-h-[24px] mt-1">
-              {errors.name && (
-                <p className="text-red-500 text-sm">{errors.name}</p>
-              )}
+
+            <div>
+              <label
+                htmlFor="name"
+                className="block mb-2 text-md font-medium text-gray-900"
+              >
+                Last Name <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  id="lastName"
+                  name="lastName"
+                  placeholder="Enter your last name"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  className={`shadow-sm bg-gray-50 text-gray-900 text-sm rounded-lg block w-full p-2.5 pr-10 transition-all duration-300 focus:ring-2 focus:ring-[#37a5bb] ${
+                    errors.lastName
+                      ? "border-2 border-red-500"
+                      : "border border-gray-300"
+                  }`}
+                  required
+                />
+              </div>
+              <div className="min-h-[24px] mt-1">
+                {errors.lastName && (
+                  <p className="text-red-500 text-sm">{errors.lastName}</p>
+                )}
+              </div>
             </div>
           </div>
+
           <div>
             <label
               htmlFor="email"
@@ -222,36 +255,6 @@ const SignupForm = () => {
             <div className="min-h-[24px] mt-1">
               {errors.email && (
                 <p className="text-red-500 text-sm">{errors.email}</p>
-              )}
-            </div>
-          </div>
-
-          <div className="">
-            <label
-              htmlFor="phone"
-              className="block mb-2 text-md font-medium text-gray-900"
-            >
-              Phone <span className="text-red-500">*</span>
-            </label>
-            <div className="relative">
-              <input
-                type="tel"
-                id="phone"
-                name="phone"
-                placeholder="Enter your phone number"
-                value={formData.phone}
-                onChange={handleChange}
-                className={`shadow-sm bg-gray-50 text-gray-900 text-sm rounded-lg block w-full p-2.5 pr-10 transition-all duration-300 focus:ring-2 focus:ring-[#37a5bb] ${
-                  errors.phone
-                    ? "border-2 border-red-500"
-                    : "border border-gray-300"
-                }`}
-                required
-              />
-            </div>
-            <div className="min-h-[24px] mt-1">
-              {errors.phone && (
-                <p className="text-red-500 text-sm">{errors.phone}</p>
               )}
             </div>
           </div>
@@ -306,21 +309,44 @@ const SignupForm = () => {
               )}
             </div>
           </div>
+          <div className="w-full flex items-center gap-2 mb-6">
+            <input type="checkbox" className="custom-checkbox" required />
+            <p className="text-gray-400">
+              Agree with{" "}
+              <a
+                className="text-[#00ABCD] hover:underline"
+                href="#"
+                onClick={() => setTermsVisible(true)}
+              >
+                Terms & Conditions
+              </a>{" "}
+              and{" "}
+              <a
+                className="text-[#00ABCD] hover:underline"
+                href="#"
+                onClick={() => setPrivacyVisible(true)}
+              >
+                Privacy Policy
+              </a>
+            </p>
+          </div>
 
           <motion.button
             whileTap="tap"
             whileHover="hover"
             type="submit"
             disabled={isLoading}
-            className="w-full flex justify-center text-white bg-[#00ABCD] hover:bg-[#37a5bb] focus:ring-4 focus:outline-none focus:ring-blue-300 font-bold text-md px-5 py-2.5 text-center rounded-full transition-all duration-300 mt-5"
+            className="w-full flex justify-center text-white bg-[#00ABCD] hover:bg-[#37a5bb] focus:ring-4 focus:outline-none focus:ring-blue-300 font-bold text-md px-5 py-2.5 text-center rounded-full transition-all duration-300 mb-6"
           >
             Sign Up
           </motion.button>
 
-          <div className="w-full flex justify-around items-center mt-5 mb-5">
+          <div className="w-full flex justify-around items-center mt-6 mb-6">
             <div className="w-1/3 h-0.5 bg-[#D9D9D9]"></div>
             <div className="">
-              <p className="text-center w-fit text-[#b7b7b7]">or Sign Up with</p>
+              <p className="text-center w-fit text-[#b7b7b7] text-md">
+                or Sign Up with
+              </p>
             </div>
             <div className="w-1/3 h-0.5 bg-[#D9D9D9]"></div>
           </div>
@@ -329,13 +355,23 @@ const SignupForm = () => {
             <GoogleSignUpButton />
           </div>
           <label className="text-center">
-            <p className="mt-2">
+            <p className="mt-6">
               Already have an account?{" "}
-              <span className="text-[#00ABCD] font-black underline">
+              <span className="text-[#00ABCD] font-black hover:underline">
                 <Link href="/pages/login">Sign In</Link>
               </span>
             </p>
           </label>
+
+          <Terms 
+          termsVisible={termsVisible}
+          setTermsVisible={setTermsVisible}
+          />
+          <Privacy
+            privacyVisible={privacyVisible}
+            setPrivacyVisible={setPrivacyVisible}
+          />
+
         </form>
       </div>
       <div className="welcome-img hidden lg:block ml-10">

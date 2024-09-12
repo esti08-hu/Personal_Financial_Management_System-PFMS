@@ -1,0 +1,40 @@
+/* AdminDashboardContent.css */
+
+/* Apply some basic padding */
+.dashboard-content-container {
+    padding: 20px;
+  }
+  
+  /* Small screens (up to 600px wide) */
+  @media (max-width: 600px) {
+    .dashboard-content-container {
+      padding: 10px;
+    }
+  
+    h1 {
+      font-size: 1.5rem;
+    }
+  }
+  
+  /* Medium screens (600px to 1024px wide) */
+  @media (min-width: 600px) and (max-width: 1024px) {
+    .dashboard-content-container {
+      padding: 15px;
+    }
+  
+    h1 {
+      font-size: 2rem;
+    }
+  }
+  
+  /* Large screens (1024px and above) */
+  @media (min-width: 1024px) {
+    .dashboard-content-container {
+      padding: 20px;
+    }
+  
+    h1 {
+      font-size: 2.5rem;
+    }
+  }
+  
