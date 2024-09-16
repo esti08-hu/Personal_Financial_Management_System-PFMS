@@ -37,7 +37,7 @@ export class EmailConfirmationService {
       to: email,
       subject: 'Email confirmation',
       text,
-      html: `<p>Welcome to the application. To confirm the email address, <a href="${url}">CLICK HERE:</a></p>`,
+      html: `<p>Welcome to the application. To confirm the email address, <a href="${url}">CLICK HERE</a>.</p>`,
     })
   }
 
@@ -75,7 +75,7 @@ export class EmailConfirmationService {
       where: eq(databaseSchema.user.email, email),
     })
 
-    if (!user) throw new BadRequestException('User not found as')
+    if (!user) throw new BadRequestException('User not found')
 
     if (user.isEmailConfirmed) {
       throw new BadRequestException('Email address has already been confirmed')

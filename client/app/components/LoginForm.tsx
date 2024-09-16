@@ -10,12 +10,12 @@ import Link from "next/link";
 import Image from "next/image";
 import GoogleLoginButton from "../components/GoogleLoginButton";
 import { signinSchema } from "../common/validationSchema";
-import { OrbitProgress } from "react-loading-indicators";
 import { z } from "zod";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../styles/style.css";
+import Loader from "../pages/admin/components/common/Loader";
 
 const LoginForm = () => {
   const router = useRouter();
@@ -25,7 +25,7 @@ const LoginForm = () => {
     email: "",
     password: "",
     rememberMe: false,
-    isAdmin: false
+    isAdmin: false,
   });
   const [type, setType] = useState("password");
   const [icon, setIcon] = useState(eyeOff);
@@ -81,7 +81,7 @@ const LoginForm = () => {
       const response = await axios.post(
         "http://localhost:3001/email-confirmation/resend-confirmation-link",
         { email: email },
-        
+
         {
           withCredentials: true,
         }
@@ -152,7 +152,7 @@ const LoginForm = () => {
         visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
       }}
       exit={{ opacity: 0 }}
-      className="container max-w-fit h-auto flex justify-center items-center p-8 border-2 bg-white rounded-lg shadow-lg m-10"
+      className="container border-none max-w-fit h-auto flex justify-center items-center p-8 border-2 bg-white rounded-lg shadow-lg m-10"
     >
       <AnimatePresence>
         {isLoading && (
@@ -163,7 +163,7 @@ const LoginForm = () => {
             className="absolute w-full h-full flex justify-center items-center z-50"
             style={{ backgroundColor: "rgba(0, 0, 0, 0.25)" }}
           >
-            <OrbitProgress color="#37a5bb" size="medium" />
+            <Loader />
           </motion.div>
         )}
       </AnimatePresence>
@@ -225,7 +225,7 @@ const LoginForm = () => {
               htmlFor="email"
               className="block mb-2 text-md font-medium text-gray-900"
             >
-              Email <span className="text-red-500">*</span>
+              Email <span className="text-red">*</span>
             </label>
             <input
               type="email"
@@ -234,16 +234,14 @@ const LoginForm = () => {
               value={formData.email}
               onChange={handleChange}
               className={`shadow-sm bg-gray-50 text-gray-900 text-sm rounded-lg block w-full p-2.5 pr-10 transition-all duration-300 focus:ring-2 focus:ring-[#37a5bb] ${
-                errors.email
-                  ? "border-2 border-red-500"
-                  : "border border-gray-300"
+                errors.email ? "border-2 border-red" : "border border-gray"
               }`}
               placeholder="Enter email"
               required
             />
             <div className="min-h-[24px] mt-1">
               {errors.email && (
-                <p className="text-red-500 text-sm">{errors.email}</p>
+                <p className="text-red text-sm">{errors.email}</p>
               )}
             </div>
           </div>
@@ -251,9 +249,9 @@ const LoginForm = () => {
           <div className="mb-6">
             <label
               htmlFor="password"
-              className="block mb-2 text-md font-medium text-gray-900"
+              className="block mb-2 text-md font-medium"
             >
-              Password <span className="text-red-500">*</span>
+              Password <span className="text-red">*</span>
             </label>
             <div className="relative">
               <input
@@ -264,22 +262,20 @@ const LoginForm = () => {
                 onChange={handleChange}
                 placeholder="Enter password"
                 className={`shadow-sm bg-gray-50 text-gray-900 text-sm rounded-lg block w-full p-2.5 pr-10 transition-all duration-300 focus:ring-2 focus:ring-[#37a5bb] ${
-                  errors.password
-                    ? "border-2 border-red-500"
-                    : "border border-gray-300"
+                  errors.password ? "border-2 border-red" : "border border-gray"
                 }`}
                 required
               />
               <button
                 type="button"
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 focus:outline-none"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray focus:outline-none"
                 onClick={handleToggle}
               >
                 <Icon
                   className={icon === eye ? "text-[#00ABCD]" : ""}
                   icon={icon}
                   size={20}
-                />{" "}
+                />
               </button>
             </div>
 

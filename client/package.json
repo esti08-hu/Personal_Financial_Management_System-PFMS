@@ -9,9 +9,15 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@faker-js/faker": "^9.0.0",
+    "@headlessui/react": "^2.1.8",
     "@hookform/resolvers": "^3.9.0",
+    "@mui/x-charts": "^7.17.0",
     "@react-oauth/google": "^0.12.1",
     "@types/passport-google-oauth20": "^2.0.16",
+    "PieChart": "link:@mui/x-charts/PieChart",
     "antd": "^5.20.3",
     "axios": "^1.7.4",
     "dotenv": "^16.4.5",
@@ -26,6 +32,7 @@
     "passport-google-oauth20": "^2.0.0",
     "react": "^18",
     "react-apexcharts": "^1.4.1",
+    "react-chartjs-2": "^5.2.0",
     "react-confetti": "^6.1.0",
     "react-dom": "^18",
     "react-hook-form": "^7.53.0",
@@ -37,7 +44,8 @@
     "react-router-dom": "^6.26.1",
     "react-toastify": "^10.0.5",
     "redux": "^5.0.1",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "zustand": "^4.5.5"
   },
   "devDependencies": {
     "@types/node": "^20",

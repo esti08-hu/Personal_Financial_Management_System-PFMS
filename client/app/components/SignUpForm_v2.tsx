@@ -12,12 +12,12 @@ import GoogleSignUpButton from "./GoogleSignUpButton";
 import { signupSchema } from "../common/validationSchema";
 import { z } from "zod";
 import Confetti from "react-confetti";
-import { OrbitProgress } from "react-loading-indicators";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../styles/style.css";
 import { Privacy, Terms } from "../common/terma&privacy";
+import Loader from "../pages/admin/components/common/Loader";
 
 const SignupForm = () => {
   const router = useRouter();
@@ -37,8 +37,7 @@ const SignupForm = () => {
   // State for loading indicator
   const [isLoading, setIsLoading] = useState(false);
   const [privacyVisible, setPrivacyVisible] = useState(false);
-  const [termsVisible, setTermsVisible] = useState(false); 
-
+  const [termsVisible, setTermsVisible] = useState(false);
 
   const handleToggle = () => {
     if (type === "password") {
@@ -127,7 +126,7 @@ const SignupForm = () => {
         visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
       }}
       exit={{ opacity: 0 }}
-      className="container max-w-fit h-auto flex justify-center items-center p-8 pl-8 pr-8 border-2 bg-white rounded-lg shadow-lg m-8"
+      className="container border-none max-w-fit h-auto flex justify-center items-center p-8 pl-8 pr-8 border-2 bg-white rounded-lg shadow-lg m-8"
     >
       <AnimatePresence>
         {showConfetti && (
@@ -143,7 +142,7 @@ const SignupForm = () => {
             className="absolute w-full h-full flex justify-center items-center z-50"
             style={{ backgroundColor: "rgba(0, 0, 0, 0.25)" }}
           >
-            <OrbitProgress color="#37a5bb" size="medium" />
+            <Loader />
           </motion.div>
         )}
       </AnimatePresence>
@@ -173,7 +172,7 @@ const SignupForm = () => {
                 htmlFor="name"
                 className="block mb-2 text-md font-medium text-gray-900"
               >
-                First Name <span className="text-red-500">*</span>
+                First Name <span className="text-red">*</span>
               </label>
               <div className="relative">
                 <input
@@ -185,15 +184,15 @@ const SignupForm = () => {
                   onChange={handleChange}
                   className={`shadow-sm bg-gray-50 text-gray-900 text-sm rounded-lg block w-full p-2.5 pr-10 transition-all duration-300 focus:ring-2 focus:ring-[#37a5bb] ${
                     errors.firstName
-                      ? "border-2 border-red-500"
-                      : "border border-gray-300"
+                      ? "border-2 border-red"
+                      : "border border-gray"
                   }`}
                   required
                 />
               </div>
               <div className="min-h-[24px] mt-1">
                 {errors.firstName && (
-                  <p className="text-red-500 text-sm">{errors.firstName}</p>
+                  <p className="text-red text-sm">{errors.firstName}</p>
                 )}
               </div>
             </div>
@@ -203,7 +202,7 @@ const SignupForm = () => {
                 htmlFor="name"
                 className="block mb-2 text-md font-medium text-gray-900"
               >
-                Last Name <span className="text-red-500">*</span>
+                Last Name <span className="text-red">*</span>
               </label>
               <div className="relative">
                 <input
@@ -215,15 +214,15 @@ const SignupForm = () => {
                   onChange={handleChange}
                   className={`shadow-sm bg-gray-50 text-gray-900 text-sm rounded-lg block w-full p-2.5 pr-10 transition-all duration-300 focus:ring-2 focus:ring-[#37a5bb] ${
                     errors.lastName
-                      ? "border-2 border-red-500"
-                      : "border border-gray-300"
+                      ? "border-2 border-red"
+                      : "border border-gray"
                   }`}
                   required
                 />
               </div>
               <div className="min-h-[24px] mt-1">
                 {errors.lastName && (
-                  <p className="text-red-500 text-sm">{errors.lastName}</p>
+                  <p className="text-red text-sm">{errors.lastName}</p>
                 )}
               </div>
             </div>
@@ -234,7 +233,7 @@ const SignupForm = () => {
               htmlFor="email"
               className="block mb-2 text-md font-medium text-gray-900"
             >
-              Email <span className="text-red-500">*</span>
+              Email <span className="text-red">*</span>
             </label>
             <div className="relative">
               <input
@@ -245,16 +244,14 @@ const SignupForm = () => {
                 value={formData.email}
                 onChange={handleChange}
                 className={`shadow-sm bg-gray-50 text-gray-900 text-sm rounded-lg block w-full p-2.5 pr-10 transition-all duration-300 focus:ring-2 focus:ring-[#37a5bb] ${
-                  errors.email
-                    ? "border-2 border-red-500"
-                    : "border border-gray-300"
+                  errors.email ? "border-2 border-red" : "border border-gray"
                 }`}
                 required
               />
             </div>
             <div className="min-h-[24px] mt-1">
               {errors.email && (
-                <p className="text-red-500 text-sm">{errors.email}</p>
+                <p className="text-red text-sm">{errors.email}</p>
               )}
             </div>
           </div>
@@ -264,7 +261,7 @@ const SignupForm = () => {
               htmlFor="password"
               className="block mb-2 text-md font-medium text-gray-900"
             >
-              Password <span className="text-red-500">*</span>
+              Password <span className="text-red">*</span>
             </label>
             <div className="relative">
               <input
@@ -276,16 +273,16 @@ const SignupForm = () => {
                 placeholder="Enter password"
                 className={`shadow-sm bg-gray-50 text-gray-900 text-sm rounded-lg border-2 block w-full p-2.5 ${
                   formData.password.length === 0
-                    ? "border-gray-200"
+                    ? "border-gray"
                     : isPasswordValid
                     ? "border-green-400"
-                    : "border-red-400"
+                    : "border-red"
                 }`}
                 required
               />
               <button
                 type="button"
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 focus:outline-none"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray focus:outline-none"
                 onClick={handleToggle}
               >
                 <Icon
@@ -300,7 +297,7 @@ const SignupForm = () => {
               {formData.password.length > 0 && (
                 <>
                   {passwordError && (
-                    <p className="text-red-500 text-sm">{passwordError}</p>
+                    <p className="text-red text-sm">{passwordError}</p>
                   )}
                   {isPasswordValid && !passwordError && (
                     <p className="text-green-500 text-sm">Password is valid</p>
@@ -363,15 +360,14 @@ const SignupForm = () => {
             </p>
           </label>
 
-          <Terms 
-          termsVisible={termsVisible}
-          setTermsVisible={setTermsVisible}
+          <Terms
+            termsVisible={termsVisible}
+            setTermsVisible={setTermsVisible}
           />
           <Privacy
             privacyVisible={privacyVisible}
             setPrivacyVisible={setPrivacyVisible}
           />
-
         </form>
       </div>
       <div className="welcome-img hidden lg:block ml-10">

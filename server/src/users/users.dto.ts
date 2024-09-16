@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { IsString } from 'class-validator'
+import { Type } from 'class-transformer'
+import { IsNumber, IsOptional, IsString, Min } from 'class-validator'
 import { databaseSchema } from 'src/database/database-schema'
 
 export type User = typeof databaseSchema.user.$inferSelect
@@ -28,10 +29,24 @@ export class RegisterUserDto {
     example: '123',
   })
   password: string
+}
 
-  // @IsString()
-  // @ApiProperty({
-  //   example: '123',
-  // })
-  // passwordInit: string
+export class PaginationParamsDto {
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  offset: number;
+ 
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(1)
+  limit: number | null = null;
+ 
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  idsToSkip: number;
 }

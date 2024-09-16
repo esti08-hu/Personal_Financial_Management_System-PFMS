@@ -37,6 +37,6 @@ export class EmailConfirmationController {
     await this.emailConfirmationService.confirmEmail(email)
 
     // Redirect to the login page after successful confirmation
-    return res.redirect('http://localhost:3000/login?emailConfirmed=true')
+    return res.redirect('http://localhost:3000/pages/login?emailConfirmed=true')
   }
 }

@@ -9,12 +9,12 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { setNewPasswordSchema } from "../common/validationSchema";
-import { OrbitProgress } from "react-loading-indicators";
 import { z } from "zod";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Password from "antd/es/input/Password";
+import Loader from "../pages/admin/components/common/Loader";
 
 const SetNewPasswordForm = () => {
   const router = useRouter();
@@ -54,7 +54,7 @@ const SetNewPasswordForm = () => {
   const [isPasswordValid, setIsPasswordValid] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -71,13 +71,13 @@ const SetNewPasswordForm = () => {
       const parsedData = setNewPasswordSchema.parse(formData);
 
       const urlParams = new URLSearchParams(window.location.search);
-      const token = urlParams.get('token');
-  
+      const token = urlParams.get("token");
+
       // Ensure the token is present
       if (!token) {
         throw new Error("Token is missing from the URL.");
       }
-      
+
       const response = await axios.post(
         `http://localhost:3001/auth/reset-password?token=${token}`,
         { newPassword: parsedData.newPassword },
@@ -149,7 +149,7 @@ const SetNewPasswordForm = () => {
         visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
       }}
       exit={{ opacity: 0 }}
-      className="container max-w-fit h-auto flex justify-center items-center p-8 border-2 bg-white rounded-lg shadow-lg m-8"
+      className="container border-none max-w-fit h-auto flex justify-center items-center p-8 border-2 bg-white rounded-lg shadow-lg m-8"
     >
       <AnimatePresence>
         {isLoading && (
@@ -160,7 +160,7 @@ const SetNewPasswordForm = () => {
             className="absolute w-full h-full flex justify-center items-center z-50"
             style={{ backgroundColor: "rgba(0, 0, 0, 0.25)" }}
           >
-            <OrbitProgress color="#37a5bb" size="medium" />
+            <Loader />
           </motion.div>
         )}
       </AnimatePresence>
@@ -181,15 +181,17 @@ const SetNewPasswordForm = () => {
             Set New Password
           </h1>
           <p className="max-w-[450px] mb-10 text-[#6C7278]">
-          Please enter your new password and confirm it below to complete the update.          </p>
+            Please enter your new password and confirm it below to complete the
+            update.{" "}
+          </p>
         </div>
         <form onSubmit={handleSubmit} className="w-full">
           <div className="mb-6">
             <label
               htmlFor="password"
-              className="block mb-2 text-md font-medium text-gray-900"
+              className="block mb-2 text-md font-medium"
             >
-              New Password <span className="text-red-500">*</span>
+              New Password <span className="text-red">*</span>
             </label>
             <div className="relative">
               <input
@@ -199,18 +201,18 @@ const SetNewPasswordForm = () => {
                 value={formData.newPassword}
                 onChange={handleChange}
                 placeholder="Enter New password"
-                className={`shadow-sm bg-gray-50 text-gray-900 text-sm rounded-lg border-2 block w-full p-2.5 ${
+                className={`shadow-sm bg-gray-50 text-sm rounded-lg border-2 block w-full p-2.5 ${
                   formData.newPassword.length === 0
-                    ? "border-gray-200"
+                    ? "border-gray"
                     : isPasswordValid
                     ? "border-green-400"
-                    : "border-red-400"
+                    : "border-red"
                 }`}
                 required
               />
               <button
                 type="button"
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 focus:outline-none"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray focus:outline-none"
                 onClick={handleNewPasswordToggle}
               >
                 <Icon
@@ -238,9 +240,9 @@ const SetNewPasswordForm = () => {
           <div className="mb-6">
             <label
               htmlFor="confirmPassword"
-              className="block mb-2 text-md font-medium text-gray-900"
+              className="block mb-2 text-md font-medium"
             >
-              Confirm Password <span className="text-red-500">*</span>
+              Confirm Password <span className="text-red">*</span>
             </label>
             <div className="relative">
               <input
@@ -250,22 +252,24 @@ const SetNewPasswordForm = () => {
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 placeholder="Confirm password"
-                className={`shadow-sm bg-gray-50 text-gray-900 text-sm rounded-lg border-2 block w-full p-2.5 ${
+                className={`shadow-sm bg-gray-50 text-sm rounded-lg border-2 block w-full p-2.5 ${
                   formData.confirmPassword.length === 0
-                    ? "border-gray-200"
+                    ? "border-gray"
                     : formData.newPassword === formData.confirmPassword
                     ? "border-green-400"
-                    : "border-red-400"
+                    : "border-red"
                 }`}
                 required
               />
               <button
                 type="button"
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 focus:outline-none"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray focus:outline-none"
                 onClick={handleConfirmPasswordToggle}
               >
-                 <Icon
-                  className={confirmPasswordIcon === eye ? "text-[#00ABCD]" : ""}
+                <Icon
+                  className={
+                    confirmPasswordIcon === eye ? "text-[#00ABCD]" : ""
+                  }
                   icon={confirmPasswordIcon}
                   size={20}
                 />
@@ -274,7 +278,7 @@ const SetNewPasswordForm = () => {
             <div className="min-h-[24px] mt-1">
               {formData.confirmPassword.length > 0 &&
                 formData.newPassword !== formData.confirmPassword && (
-                  <p className="text-red-500 text-sm">Passwords do not match</p>
+                  <p className="text-red text-sm">Passwords do not match</p>
                 )}
             </div>
           </div>

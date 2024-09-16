@@ -13,7 +13,6 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
-import { query } from "express";
 import { EmailConfirmationService } from "src/emailConfirmation/emailConfirmation.service";
 import { Permissions, Roles } from "src/permissions/permissions.decorators";
 import { Permission, Role } from "src/permissions/role.emum";
@@ -73,21 +72,21 @@ export class AuthController {
   @Post("register")
   @Public()
   async register(@Body() registerBody: RegisterUserDto): Promise<any> {
-    const user = await this.authService.register(registerBody);
+    const { success } =
+      await this.emailConfirmationService.sendVerificationLink(
+        registerBody.email
+      );
 
-    await this.emailConfirmationService.sendVerificationLink(
-      registerBody.email
-    );
+    if (success) await this.authService.register(registerBody);
 
     return {
       message:
-        "Verification link sent to your email. If you could not find it check in you spam foler.",
+        "Verification link sent to your email. If you could not find it check in you spam folder.",
     };
   }
 
   @Get("refresh")
   @Public()
-  // @UseGuards(JwtRefreshTokenGuard)
   async refreshAccessToken(
     @Request() req,
     @Response({ passthrough: true }) res
@@ -99,7 +98,7 @@ export class AuthController {
         await this.authService.updateAccessToken(refreshToken);
 
       res.cookie("access_token", accessToken, {
-        maxAge: 1000 * 15, // 15 seconds
+        maxAge: 1000 * 60 * 3, // 3 minutes
         httpOnly: true,
         path: "/",
       });
@@ -149,8 +148,9 @@ export class AuthController {
 
   @Get("admin-profile")
   @Roles(Role.ADMIN)
-  getAdminProfile(@Request() req) {
-    return req.user;
+  async getAdminProfile(@Request() req) {
+    const admin = await this.usersService.getAdminByPid(req.user.pid);
+    return admin;
   }
 
   @Get("user-profile")

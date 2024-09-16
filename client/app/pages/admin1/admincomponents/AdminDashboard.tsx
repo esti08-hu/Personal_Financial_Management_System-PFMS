@@ -20,6 +20,7 @@ import AdminDashboardContent from "./AdminDashboardContent"; // Replace with you
 import { ConfigProvider, theme } from "antd";
 import SettingsContent from "./SettingsContent";
 import "./styles/styles.css";
+import Loader from "../../admin/components/common/Loader";
 
 const { Header, Sider, Content } = Layout;
 
@@ -111,7 +112,7 @@ const AdminDashboard = () => {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center w-full h-screen">
-        <Spin size="large" />
+        <Loader/>
       </div>
     );
   }

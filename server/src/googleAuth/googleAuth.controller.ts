@@ -49,7 +49,7 @@ export class GoogleAuthenticationController {
 
     console.log('login with google')
 
-    const redirectUrl = '/user'
+    const redirectUrl = '/pages/user'
 
     return { accessToken, refreshToken, redirectUrl }
   }
@@ -67,7 +67,6 @@ export class GoogleAuthenticationController {
         tokenData.token,
         isSignup,
       )
-
     res.cookie('refresh_token', refreshToken, {
       maxAge: 1000 * 60 * 60 * 7, // 7 days
       httpOnly: true,
@@ -82,7 +81,7 @@ export class GoogleAuthenticationController {
 
     console.log('Signup with google ')
 
-    const redirectUrl = '/user'
+    const redirectUrl = '/pages/user'
     return { accessToken, refreshToken, redirectUrl }
   }
 }

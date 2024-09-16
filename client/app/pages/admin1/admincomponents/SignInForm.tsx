@@ -7,12 +7,12 @@ import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { OrbitProgress } from "react-loading-indicators";
 import { z } from "zod";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { adminSigninSchema } from "@/app/common/validationSchema"; // Admin sign-in schema
+import Loader from "../../admin/components/common/Loader";
 
 const AdminSignInForm = () => {
   const router = useRouter();
@@ -55,12 +55,13 @@ const AdminSignInForm = () => {
           withCredentials: true,
         }
       );
-      
-      if (response.status === 201) { // Status should be 200
-        console.log("first")
+
+      if (response.status === 201) {
+        // Status should be 200
+        console.log("first");
         toast.success("Logged in successfully!");
         setTimeout(() => {
-          router.push("/pages/admin"); // Redirect to admin dashboard
+          router.push("/pages/admin/app"); // Redirect to admin dashboard
         }, 1000);
       }
     } catch (err) {
@@ -89,7 +90,7 @@ const AdminSignInForm = () => {
         visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
       }}
       exit={{ opacity: 0 }}
-      className="container max-w-fit h-auto flex justify-center items-center p-8 border-2 bg-white rounded-lg shadow-lg m-10"
+      className="container border-none max-w-fit h-auto flex justify-center items-center p-8 border-2 bg-white rounded-lg shadow-lg m-10"
     >
       <AnimatePresence>
         {isLoading && (
@@ -100,7 +101,7 @@ const AdminSignInForm = () => {
             className="absolute w-full h-full flex justify-center items-center z-50"
             style={{ backgroundColor: "rgba(0, 0, 0, 0.25)" }}
           >
-            <OrbitProgress color="#37a5bb" size="medium" />
+            <Loader />
           </motion.div>
         )}
       </AnimatePresence>
@@ -114,19 +115,20 @@ const AdminSignInForm = () => {
             alt="Money Master Logo"
           />
         </div>
-        <h1 className="text-2xl font-black text-[#22577A] mb-6">Admin Sign In</h1>
+        <h1 className="text-2xl font-black text-[#22577A] mb-6">
+          Admin Sign In
+        </h1>
         <p className="w-[450px] mb-10 text-[#6C7278]">
           Enter your admin credentials to sign in.
         </p>
 
         <form onSubmit={handleSubmit} className="w-full">
-          {/* Email */}
           <div className="mb-6">
             <label
               htmlFor="email"
-              className="block mb-2 text-md font-medium text-gray-900"
+              className="block mb-2 text-md font-medium text-black"
             >
-              Email <span className="text-red-500">*</span>
+              Email <span className="text-red">*</span>
             </label>
             <input
               type="email"
@@ -134,10 +136,8 @@ const AdminSignInForm = () => {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className={`shadow-sm bg-gray-50 text-gray-900 text-sm rounded-lg block w-full p-2.5 pr-10 transition-all duration-300 focus:ring-2 focus:ring-[#37a5bb] ${
-                errors.email
-                  ? "border-2 border-red-500"
-                  : "border border-gray-300"
+              className={`shadow-sm bg-gray-50 text-black text-sm rounded-lg block w-full p-2.5 pr-10 transition-all duration-300 focus:ring-2 focus:ring-[#37a5bb] ${
+                errors.email ? "border-2 border-red" : "border border-gray"
               }`}
               placeholder="Enter admin email"
               required
@@ -153,9 +153,9 @@ const AdminSignInForm = () => {
           <div className="mb-6">
             <label
               htmlFor="password"
-              className="block mb-2 text-md font-medium text-gray-900"
+              className="block mb-2 text-md font-medium text-black"
             >
-              Password <span className="text-red-500">*</span>
+              Password <span className="text-red">*</span>
             </label>
             <div className="relative">
               <input
@@ -165,19 +165,21 @@ const AdminSignInForm = () => {
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="Enter password"
-                className={`shadow-sm bg-gray-50 text-gray-900 text-sm rounded-lg block w-full p-2.5 pr-10 transition-all duration-300 focus:ring-2 focus:ring-[#37a5bb] ${
-                  errors.password
-                    ? "border-2 border-red-500"
-                    : "border border-gray-300"
+                className={`shadow-sm bg-gray-50 text-sm text-black rounded-lg block w-full p-2.5 pr-10 transition-all duration-300 focus:ring-2 focus:ring-[#37a5bb] ${
+                  errors.password ? "border-2 border-red" : "border border-gray"
                 }`}
                 required
               />
               <button
                 type="button"
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 focus:outline-none"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray focus:outline-none"
                 onClick={handleToggle}
               >
-                <Icon icon={icon} size={20} />
+                <Icon
+                  className={icon === eye ? "text-[#00ABCD]" : ""}
+                  icon={icon}
+                  size={20}
+                />
               </button>
             </div>
 

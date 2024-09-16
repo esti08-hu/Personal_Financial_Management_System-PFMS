@@ -45,20 +45,21 @@ export class PasswordService {
     currentPassword: string,
     newPassword: string,
   ) {
-    const user1 = await this.drizzle.db.query.user.findFirst({
+    const user = await this.drizzle.db.query.user.findFirst({
       where: eq(schema.user.pid, pid),
     })
-    if (!user1) {
+    if (!user) {
       throw new NotFoundException('user not found')
     }
     const isTheRightPassword = await this.isTheRightPassword(
       currentPassword,
-      user1.password,
+      user.password,
     )
 
     if (!isTheRightPassword) {
-      throw new UnauthorizedException('wrong password')
+      throw new UnauthorizedException('Current password is not the right.')
     }
+
     const newHashedPassword = await this.hashPassword(newPassword)
 
     await this.drizzle.db.execute(sql`

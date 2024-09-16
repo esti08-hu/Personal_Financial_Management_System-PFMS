@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Table, Tag, Spin, notification, Modal, Descriptions } from "antd";
 import axios from "axios";
 import "./styles/styles.css" // Optional: You can define custom styles for media queries here
+import Loader from "../../admin/components/common/Loader";
 
 const AdminDashboardContent = () => {
   const [users, setUsers] = useState([]);
@@ -106,7 +107,7 @@ return (
   <div style={{ padding: "20px" }}>
     <h1>User Management</h1>
     {loading ? (
-      <Spin />
+      <Loader />
     ) : (
       <Table
         columns={columns}

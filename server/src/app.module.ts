@@ -10,6 +10,7 @@ import * as Joi from '@hapi/joi'
 import { EmailConfirmationModule } from './emailConfirmation/emailConfirmation.module'
 import { GoogleAuthenticationModule } from './googleAuth/googleAuth.module'
 import { PermissionsModule } from './permissions/permissions.module'
+import { TransactionModule } from './transaction/transaction.module'
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { PermissionsModule } from './permissions/permissions.module'
     EmailConfirmationModule,
     GoogleAuthenticationModule,
     PermissionsModule,
+    TransactionModule,
     DatabaseModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

@@ -57,6 +57,34 @@
       "when": 1725301883159,
       "tag": "0007_wise_hercules",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1726219512168,
+      "tag": "0008_big_zemo",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1726241311364,
+      "tag": "0009_spooky_bloodscream",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1726299520355,
+      "tag": "0010_burly_scarlet_spider",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1726299693414,
+      "tag": "0011_damp_felicia_hardy",
+      "breakpoints": true
     }
   ]
 }

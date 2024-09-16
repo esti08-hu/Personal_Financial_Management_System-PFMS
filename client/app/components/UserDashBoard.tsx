@@ -20,6 +20,7 @@ import apiClient from "../lib/axiosConfig";
 import "../styles/style.css";
 import ChangePasswordModal from "./ChangePassword";
 import { ConfigProvider, theme } from "antd";
+import Loader from "../pages/admin/components/common/Loader";
 
 const { Header, Sider, Content } = Layout;
 
@@ -163,13 +164,13 @@ const Dashboard = () => {
   };
 
   const toggleChangePasswordModal = () => {
-    dispatch({ type: "TOGGLE_CHANGE_PASSWORD_MODAL"});
+    dispatch({ type: "TOGGLE_CHANGE_PASSWORD_MODAL" });
   };
 
   if (isLoading) {
     return (
       <div className="flex justify-center items-center w-full h-screen">
-        <Spin className="custom-spin" size="large" />
+        <Loader />
       </div>
     );
   }

@@ -1,5 +1,5 @@
 export enum Role {
-  ADMIN = 'superadmin',
+  ADMIN = 'admin',
   SALES = 'sales',
   TEMP_USER = 'tempuser',
   USER = 'user',
@@ -12,7 +12,7 @@ export enum Permission {
 
 export const ROLE_PERMISSION_ASSOCIATION = [
   {
-    label: 'Super Admin',
+    label: 'Admin',
     role: Role.ADMIN,
     permissions: [
       Permission.CREATE_USER,

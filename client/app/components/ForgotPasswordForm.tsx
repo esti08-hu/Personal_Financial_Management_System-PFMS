@@ -6,11 +6,11 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { forgotPasswordSchema } from "../common/validationSchema";
-import { OrbitProgress } from "react-loading-indicators";
 import { z } from "zod";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Loader from "../pages/admin/components/common/Loader";
 
 const ForgotPasswordForm = () => {
   const router = useRouter();
@@ -77,7 +77,7 @@ const ForgotPasswordForm = () => {
         visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
       }}
       exit={{ opacity: 0 }}
-      className="container max-w-fit h-auto flex justify-center items-center p-8 border-2 bg-white rounded-lg shadow-lg m-8"
+      className="container border-none max-w-fit h-auto flex justify-center items-center p-8 border-2 bg-white rounded-lg shadow-lg m-8"
     >
       <AnimatePresence>
         {isLoading && (
@@ -88,7 +88,7 @@ const ForgotPasswordForm = () => {
             className="absolute w-full h-full flex justify-center items-center z-50"
             style={{ backgroundColor: "rgba(0, 0, 0, 0.25)" }}
           >
-            <OrbitProgress color="#37a5bb" size="medium" />
+            <Loader />
           </motion.div>
         )}
       </AnimatePresence>
@@ -109,15 +109,14 @@ const ForgotPasswordForm = () => {
             Forgot Password
           </h1>
           <p className="mb-10 max-w-[450px] text-[#6C7278]">
-          Enter your email address below to receive instructions to reset your password.          </p>
+            Enter your email address below to receive instructions to reset your
+            password.{" "}
+          </p>
         </div>
         <form onSubmit={handleSubmit} className="w-full">
           <div className="mb-6">
-            <label
-              htmlFor="email"
-              className="block mb-2 text-md font-medium text-gray-900"
-            >
-              Email <span className="text-red-500">*</span>
+            <label htmlFor="email" className="block mb-2 text-md font-medium">
+              Email <span className="text-red">*</span>
             </label>
             <input
               type="email"
@@ -125,17 +124,15 @@ const ForgotPasswordForm = () => {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className={`shadow-sm bg-gray-50 text-gray-900 text-sm rounded-lg block w-full p-2.5 pr-10 transition-all duration-300 focus:ring-2 focus:ring-[#37a5bb] ${
-                errors.email
-                  ? "border-2 border-red-500"
-                  : "border border-gray-300"
+              className={`shadow-sm bg-gray-50 text-sm rounded-lg block w-full p-2.5 pr-10 transition-all duration-300 focus:ring-2 focus:ring-[#37a5bb] ${
+                errors.email ? "border-2 border-red" : "border border-gray"
               }`}
               placeholder="Enter email"
               required
             />
             <div className="min-h-[24px] mt-1">
               {errors.email && (
-                <p className="text-red-500 text-sm">{errors.email}</p>
+                <p className="text-red text-sm">{errors.email}</p>
               )}
             </div>
           </div>
