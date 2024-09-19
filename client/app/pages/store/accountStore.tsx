@@ -1,5 +1,8 @@
 import { create } from "zustand";
 import axios from "axios";
+import apiClient from "@/app/lib/axiosConfig";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 type Account = {
     id: string;
@@ -23,47 +26,43 @@ export const useAccountStore = create<AccountState>((set) => ({
 
   addAccount: async (account) => {
     try {
-      const userId = localStorage.getItem("userId"); // Get userId from localStorage
-      if (!userId) {
-        throw new Error("userId is not defined");
-      }
+      const userIdResponse = await apiClient.get("/user/userId");
+      
+      const userId = userIdResponse.data;
 
       const accountWithUserId = { ...account, userId };
-      // console.log("Sending Account data:", accountWithUserId);
 
-      const response = await axios.post(
-        "http://localhost:4000/api/accounts/add-account",
+      const response = await apiClient.post(
+        "/account/add-account",
         accountWithUserId
       );
-      // console.log("Account response:", response.data);
 
-      alert("Account added successfully");
+      toast.success("Account added successfully");
 
       set((state) => ({
         accounts: [...state.accounts, response.data],
       }));
     } catch (error) {
       console.error("Failed to add Account", error);
+      toast.error("Failed to add Account");
     }
   },
 
   editAccount: async (account) => {
-    // console.log("Edit account data:", account)
     try {
-      const response = await axios.put(
-        `http://localhost:4000/api/accounts/${account.id}`,
+      const response = await apiClient.put(
+        `/account/${account.id}`,
         account
       );
-      // console.log("Edit account response:", response.data);
-
       set((state) => ({
         accounts: state.accounts.map((a) =>
           a.id === account.id ? response.data : a
         ),
       }));
-      alert("Account edited successfully");
+      toast.success("Account edited successfully");
     } catch (error) {
       console.error("Failed to edit account", error);
+      toast.error("Failed to edit account");
     }
   },
 
@@ -73,40 +72,31 @@ export const useAccountStore = create<AccountState>((set) => ({
         "Are you sure you want to delete this Account?"
       );
       if (confirmDelete) {
-        await axios.delete(`http://localhost:4000/api/accounts/${id}`);
+        await apiClient.delete(`/account/${id}`);
         set((state) => ({
           accounts: state.accounts.filter((a) => a.id !== id),
         }));
-        alert("Account deleted successfully");
+        toast.success("Account deleted successfully");
       }
     } catch (error) {
       console.error("Failed to delete account", error);
+      toast.error("Failed to delete account");
     }
   },
 
   fetchAccounts: async () => {
     try {
-      const userId = localStorage.getItem("userId"); // Get userId from localStorage
-      const token = localStorage.getItem("token");
-
-      if (!userId || !token) {
-        throw new Error("User not authenticated");
-      }
-
-      // console.log(userId, token)
-
-      const response = await axios.get<{ accounts: Account[] }>(
-        `http://localhost:4000/api/user/${userId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const userIdResponse = await apiClient.get("/user/userId");
+      const userId = userIdResponse.data;
+      
+      const response = await apiClient.get(
+        `/account/${userId}`
       );
-      set({ accounts: response.data.accounts });
-      // console.log("Accounts fetched successfully", response.data.accounts);
+      set({ accounts: response.data });
     } catch (error) {
       console.error("Failed to fetch Accounts", error);
+      toast.error("Failed to fetch accounts");
+
     }
   },
 }));

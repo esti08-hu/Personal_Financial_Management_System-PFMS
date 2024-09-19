@@ -147,7 +147,7 @@ export class AuthService {
 
         await this.drizzle.db.execute(sql`
           UPDATE "Users" 
-          SET "failedLoginAttempts" = ${failedAttempts}, "accountLockedUntil" = ${lockUntil} 
+          SET "failedLoginAttempts" = ${failedAttempts}, "accountLockedUntil" = ${lockUntil}
           WHERE pid = ${user.pid}
         `)
 

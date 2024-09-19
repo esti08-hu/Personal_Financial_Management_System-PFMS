@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 
 const SetBudget = () => {
   const setBudget = useBudgetStore((state) => state.setBudget);
-  const [type, setType] = useState("Expense");
+  const [type, setType] = useState("");
   const [amount, setAmount] = useState("");
   const [date, setDate] = useState("");
   const [title, setTitle] = useState("");
@@ -19,7 +19,7 @@ const SetBudget = () => {
     await setBudget({ type, amount, date, title });
 
     // Clear form fields after successful submission
-    setType("Expense");
+    setType("Deposit");
     setAmount("");
     setDate("");
     setTitle("");
@@ -30,8 +30,7 @@ const SetBudget = () => {
     <div className="min-h-fit flex items-center justify-center px-4 sm:px-2 lg:px-4">
       <div className="container max-w-2xl mx-auto bg-white py-10 px-8 border-sm border-stroke border">
         <div className="flex flex-col gap-4 mb-5">
-          <h1 className="text-2xl font-bold text-[#22577A]">
-            Budget Form</h1>
+          <h1 className="text-2xl font-bold text-[#22577A]">Budget Form</h1>
           <p className="text-gray-600 mt-2">
             Required fields are marked <span className="text-red">*</span>
           </p>
@@ -69,10 +68,9 @@ const SetBudget = () => {
               onChange={(e) => setType(e.target.value)}
               className="border border-gray text-graydark text-md rounded-lg w-full p-2.5"
             >
-              <option>Expense</option>
-              <option>Income</option>
-              <option>Saving</option>
-              <option>Debt</option>
+              <option>Deposit</option>
+              <option>Transfer</option>
+              <option>Withdrawal</option>
             </select>
           </div>
 

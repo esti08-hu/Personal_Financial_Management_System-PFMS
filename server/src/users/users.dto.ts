@@ -6,6 +6,17 @@ import { databaseSchema } from 'src/database/database-schema'
 export type User = typeof databaseSchema.user.$inferSelect
 export type Admin = typeof databaseSchema.admin.$inferSelect
 
+export class UpdateAdminDto {
+  @IsString()
+  @ApiProperty()
+  name: string
+
+  @IsString()
+  @ApiProperty()
+  email: string
+
+}
+
 export class RegisterUserDto {
   @IsString()
   @ApiProperty({
@@ -29,6 +40,18 @@ export class RegisterUserDto {
     example: '123',
   })
   password: string
+}
+
+export class UpdateUserDto {
+  @ApiProperty()
+  name: string
+  @IsString()
+  @ApiProperty()
+  email: string
+
+  @IsString()
+  @ApiProperty()
+  phone: string
 }
 
 export class PaginationParamsDto {

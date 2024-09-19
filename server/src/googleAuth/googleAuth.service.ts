@@ -114,6 +114,27 @@ export class GoogleAuthenticationService {
     const email = decodedToken.email;
 
     const user = await this.usersService.findUserByEmail(email);
+
+    if (user.accountLockedUntil && new Date() < user.accountLockedUntil) {
+      const now = new Date()
+      const timeDifference = user.accountLockedUntil.getTime() - now.getTime() // Difference in milliseconds
+
+      const minutes = Math.floor(timeDifference / 1000 / 60)
+
+      throw new UnauthorizedException(
+        `Account is locked. Try again after ${minutes} minutes.`,
+      )
+    } if (user.accountLockedUntil && new Date() < user.accountLockedUntil) {
+      const now = new Date()
+      const timeDifference = user.accountLockedUntil.getTime() - now.getTime() // Difference in milliseconds
+
+      const minutes = Math.floor(timeDifference / 1000 / 60)
+
+      throw new UnauthorizedException(
+        `Account is locked. Try again after ${minutes} minutes.`,
+      )
+    }
+    
     if (user && isSignup === "signin") return this.handleRegisteredUser(user);
     if (!user && isSignup === "signup")
       return this.googleRegister(decodedToken);

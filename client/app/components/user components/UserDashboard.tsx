@@ -18,7 +18,8 @@ import {
   Legend,
 } from "chart.js";
 import { FaWallet, FaExchangeAlt, FaChartLine } from "react-icons/fa";
-import Loader from "@/app/pages/admin/components/common/Loader";
+import Loader from "@/app/components/admin components/common/Loader";
+import { Tag } from "antd";
 
 ChartJS.register(
   CategoryScale,
@@ -60,54 +61,41 @@ const UserDashboard: React.FC = () => {
   const [budgets, setBudgets] = useState<Budget[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
+  const [transactionCount, setTransactionCount] = useState<number>(0);
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         const userResponse = await apiClient.get("/auth/user-profile");
         const transactionResponse = await apiClient.get(
-          `/transaction/${userResponse.data.id}`
+          `/transaction/recent${userResponse.data.id}`
         );
-
+        const incomeResponse = await apiClient.get(
+          `/transaction/income${userResponse.data.id}`
+        );
+        const expenceResponse = await apiClient.get(
+          `/transaction/expense${userResponse.data.id}`
+        );
+        const transactionCountResponse = await apiClient.get(
+          `/transaction/count${userResponse.data.id}`
+        );
+        const budgetResponse = await apiClient.get(
+          `/budget/${userResponse.data.id}`
+        );
+        setTransactionCount(transactionCountResponse.data);
+        setBudgets(budgetResponse.data);
         setUser(userResponse.data);
         setTransactions(transactionResponse.data);
-        // setBudgets(budgetResponse.data);
-        // setBalance(calculateBalance(transactionResponse.data));
+        setBalance(incomeResponse.data - expenceResponse.data);
         setIsLoading(false);
       } catch (error) {
         toast.error("Error fetching user data");
-        router.push("/login");
+        // router.push("/pages/login");
       }
     };
 
     fetchUserData();
   }, [router]);
-
-  const calculateBalance = (transactions: Transaction[]): number => {
-    return transactions.reduce((acc, transaction) => {
-      return transaction.type === "income"
-        ? acc + transaction.amount
-        : acc - transaction.amount;
-    }, 0);
-  };
-
-  const recentTransactions = transactions
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-    .slice(0, 5);
-
-  const chartData = {
-    labels: transactions.map((t) => new Date(t.date).toLocaleDateString()),
-    datasets: [
-      {
-        label: "Balance",
-        data: transactions.map((_, index) =>
-          calculateBalance(transactions.slice(0, index + 1))
-        ),
-        borderColor: "rgb(75, 192, 192)",
-        tension: 0.1,
-      },
-    ],
-  };
 
   if (isLoading) {
     return (
@@ -143,7 +131,7 @@ const UserDashboard: React.FC = () => {
           <DashboardCard
             icon={<FaExchangeAlt className="text-2xl text-green-500" />}
             title="Total Transactions"
-            value={transactions.length.toString()}
+            value={transactionCount.toString()}
           />
           <DashboardCard
             icon={<FaChartLine className="text-2xl text-purple-500" />}
@@ -166,29 +154,39 @@ const UserDashboard: React.FC = () => {
               </thead>
               <tbody>
                 <AnimatePresence>
-                  {recentTransactions.map((transaction) => (
+                  {transactions.map((transaction) => (
                     <motion.tr
                       key={transaction.id}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -20 }}
-                      className="border-b"
+                      className="border-b border-gray"
                     >
-                      <td className="p-3">
+                      <td className="p-3 sm:text-sm lg:!text-lg">
                         {new Date(transaction.date).toLocaleDateString()}
                       </td>
-                      <td className="p-3">{transaction.type}</td>
-                      <td
-                        className={`p-3 ${
-                          transaction.type === "income"
-                            ? "text-green-500"
-                            : "text-red-500"
-                        }`}
-                      >
-                        {transaction.type === "income" ? "+" : "-"}
-                        {transaction.amount} ETB
+                      <td className="p-3 text-sm sm:text-xs md:text-sm lg:!text-lg">
+                        <Tag
+                          className="lg:!text-[16px]"
+                          color={
+                            transaction.type === "Deposit"
+                              ? "success"
+                              : transaction.type === "Withdrawal"
+                              ? "red"
+                              : "yellow"
+                          }
+                        >
+                          {transaction.type}
+                        </Tag>
                       </td>
-                      <td className="p-3">{transaction.description}</td>
+
+                      <td className="p-3 text-sm sm:text-xs md:text-sm">
+                      {transaction.type === "Deposit" ? "+" : "-"}
+                      {transaction.amount} ETB
+                    </td>
+                      <td className="p-3 sm:text-xs !text-sm lg:!text-lg">
+                        {transaction.description}
+                      </td>
                     </motion.tr>
                   ))}
                 </AnimatePresence>
@@ -211,9 +209,7 @@ const DashboardCard: React.FC<{
   title: string;
   value: string;
 }> = ({ icon, title, value }) => (
-  <motion.div
-    className="p-6 flex items-center justify-center rounded-sm border border-stroke bg-white px-7.5 py-6 shadow-default"
-  >
+  <motion.div className="p-6 flex items-center justify-center rounded-sm border border-stroke bg-white px-7.5 py-6 shadow-default">
     <div className="mr-4 md:text-sm">{icon}</div>
     <div>
       <h3 className="text-sm font-semibold text-gray-600">{title}</h3>

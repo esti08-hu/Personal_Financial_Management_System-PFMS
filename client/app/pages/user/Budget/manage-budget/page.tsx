@@ -2,11 +2,13 @@
 
 import { useEffect, useState } from "react";
 import "flowbite";
-import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Model from "./Model";
 import { useBudgetStore } from "@/app/pages/store/budgetStore";
-import Loader from "@/app/pages/admin/components/common/Loader";
+import Loader from "@/app/components/admin components/common/Loader";
+import { Tag } from "antd";
+import { HiOutlinePencilAlt, HiOutlineTrash } from "react-icons/hi";
 
 type Budget = {
   id: string;
@@ -28,7 +30,6 @@ const BudgetPage = () => {
     title: "",
   });
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const router = useRouter();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -52,6 +53,7 @@ const BudgetPage = () => {
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     await editBudget(editBudgetData as Budget);
+    await fetchBudget();
     setIsEditing(false);
     setEditBudgetData({
       id: "",
@@ -82,13 +84,15 @@ const BudgetPage = () => {
     );
   }
 
-  if (!budget?.length) {
+  if (!budget || budget.length === 0) {
     return (
       <div className="flex justify-center items-center h-96">
-        <div className="text-2xl font-semibold text-gray-600 text-center">
-          You have no Budgets. Please{" "}
+        <div className=" font-semibold text-gray-600 text-center">
+          You currently have no budgets set. Please{" "}
           <Link href="/pages/user/Budget/set-budget">
-            <span className="text-[#00ABCD]">set your Budget here.</span>
+            <span className="text-[#00ABCD] hover:underline">
+              create a budget here.
+            </span>
           </Link>
         </div>
       </div>
@@ -96,69 +100,92 @@ const BudgetPage = () => {
   }
 
   return (
-    <div className="min-h-fit flex items-center justify-center px-4 sm:px-2 lg:px-4">
-      <div className="container max-w-2xl mx-auto bg-white py-10 px-8 border-sm border-stroke border">
-        <div className="flex flex-col gap-4 mb-5">
-          <h1 className="text-2xl font-bold text-[#22577A]">Budget List</h1>
-          <hr className="h-1 bg-gray-400 w-full" />
+    <div className="relative h-full flex justify-center items-center bg-white border border-stroke rounded-sm px-6 py-8">
+      <div className="container">
+        <div className="flex flex-col gap-2 mb-5">
+          <h1 className="text-xl font-bold text-[#22577A]">Budget List</h1>
         </div>
 
-        <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-          <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-            <thead className="text-lg text-gray-700 bg-gray-100 dark:bg-gray-700 dark:text-gray-400">
+        <div className="">
+          <table className="w-full bg-white text-sm text-left py-2 px-4">
+            <thead className="text-md text-graydark uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
               <tr>
-                <th scope="col" className="px-6 py-3">
+                <th scope="col" className="p-3">
                   Title
                 </th>
-                <th scope="col" className="px-6 py-3">
+                <th scope="col" className="p-3">
                   Type
                 </th>
-                <th scope="col" className="px-6 py-3">
+                <th scope="col" className="p-3">
                   Amount
                 </th>
-                <th scope="col" className="px-6 py-3">
-                  Budget Date
+                <th scope="col" className="p-3">
+                  Date
                 </th>
-                <th scope="col" className="px-6 py-3 text-center">
-                  Actions
+                <th scope="col" className="p-3 text-center">
+                  Action
                 </th>
               </tr>
             </thead>
             <tbody className="text-lg">
-              {budget.map((item) => (
-                <tr
-                  key={item.id}
-                  className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
-                >
-                  <td className="px-6 py-4">{item.title}</td>
-                  <td className="px-6 py-4">{item.type}</td>
-                  <td className="px-6 py-4">{item.amount}</td>
-                  <td className="px-6 py-4">{item.date}</td>
-                  <td className="px-6 py-4 text-center">
-                    <div className="flex justify-center space-x-4">
+              <AnimatePresence>
+                {budget.map((item) => (
+                  <motion.tr
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    key={item.id}
+                    className="bg-white border-b border-gray hover:bg-gray-3 "
+                  >
+                    <td className="p-3 text-sm sm:text-sm md:text-sm">
+                      {item.title}
+                    </td>
+                    <td className="p-3 text-sm sm:text-xs md:text-sm">
+                      <Tag
+                        className=""
+                        color={
+                          item.type === "Deposit"
+                            ? "green"
+                            : item.type === "Withdrawal"
+                            ? "red"
+                            : "yellow"
+                        }
+                      >
+                        {item.type}
+                      </Tag>
+                    </td>{" "}
+                    <td className="p-3 text-sm sm:text-xs md:text-sm">
+                      {item.type === "Deposit" ? "+" : "-"}
+                      {item.amount} ETB
+                    </td>
+                    <td className="p-3 text-sm sm:text-sm md:text-sm whitespace-nowrap">
+                      {new Date(item.date).toLocaleDateString()}
+                    </td>
+                    <td className="p-3 text-center flex gap-2 justify-center">
                       <button
                         type="button"
                         onClick={() => handleEdit(item)}
-                        className="text-blue-600 hover:underline"
+                        className="font-bold text-lg hover:underline mr-2"
                       >
-                        Edit
+                        <HiOutlinePencilAlt className="text-2xl hover:text-[#00ABCD] text-gray" />
                       </button>
+                      |
                       <button
                         type="button"
                         onClick={() => handleDelete(item.id)}
-                        className="text-red-600 hover:underline"
+                        className="font-bold text-lg text-red-600 dark:text-red-500 hover:underline"
                       >
-                        Delete
+                        <HiOutlineTrash className="text-2xl hover:text-danger text-gray" />
                       </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                    </td>
+                  </motion.tr>
+                ))}
+              </AnimatePresence>
             </tbody>
           </table>
         </div>
 
-        {isEditing && (
+        {true && (
           <Model
             isEditing={isEditing}
             setIsEditing={setIsEditing}

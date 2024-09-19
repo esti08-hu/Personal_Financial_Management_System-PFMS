@@ -15,7 +15,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../styles/style.css";
-import Loader from "../pages/admin/components/common/Loader";
+import Loader from "./admin components/common/Loader";
 
 const LoginForm = () => {
   const router = useRouter();

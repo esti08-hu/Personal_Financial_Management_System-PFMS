@@ -1,5 +1,8 @@
 import { create } from "zustand";
 import axios from "axios";
+import apiClient from "@/app/lib/axiosConfig";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 type Budget = {
   id: string;
@@ -23,46 +26,42 @@ export const useBudgetStore = create<budgetState>((set) => ({
 
   setBudget: async (budget) => {
     try {
-      const userId = localStorage.getItem("userId"); // Get userId from localStorage
-      if (!userId) {
-        throw new Error("userId is not defined");
-      }
+      const userIdResponse = await apiClient.get("user/userId");
+
+      const userId = userIdResponse.data;
 
       const budgetWithUserId = { ...budget, userId };
-      // console.log("Sending budget data:", budgetWithUserId);
 
-      const response = await axios.post(
-        "http://localhost:4000/api/budgets/set-budget",
+      const response = await apiClient.post(
+        "/budget/set-budget",
         budgetWithUserId
       );
-      // console.log("Budget response:", response.data);
 
-      alert("Budget added successfully");
+      toast.success("Budget added successfully");
 
       set((state) => ({
         budget: [...state.budget, response.data],
       }));
     } catch (error) {
       console.error("Failed to add budget", error);
+      toast.error("Failed to add budget");
     }
   },
 
   editBudget: async (budget) => {
     try {
-      const response = await axios.put(
-        `http://localhost:4000/api/budgets/${budget.id}`,
-        budget
-      );
-      // console.log("Edit budget response:", response.data);
+      const response = await apiClient.put(`/budget/${budget.id}`, budget);
 
       set((state) => ({
         budget: state.budget.map((t) =>
           t.id === budget.id ? response.data : t
         ),
       }));
-      alert("budget edited successfully");
+
+      toast.success("Budget edited successfully");
     } catch (error) {
       console.error("Failed to edit budget", error);
+      toast.error("Failed to edit budget");
     }
   },
 
@@ -72,38 +71,28 @@ export const useBudgetStore = create<budgetState>((set) => ({
         "Are you sure you want to delete this budget?"
       );
       if (confirmDelete) {
-        await axios.delete(`http://localhost:4000/api/budgets/${id}`);
+        await apiClient.delete(`/budget/${id}`);
         set((state) => ({
           budget: state.budget.filter((t) => t.id !== id),
         }));
-        alert("Budget deleted successfully");
+        toast.success("Budget deleted successfully");
       }
     } catch (error) {
       console.error("Failed to delete budget", error);
+      toast.error("Failed to delete budget");
     }
   },
 
   fetchBudget: async () => {
     try {
-      const userId = localStorage.getItem("userId"); // Get userId from localStorage
-      const token = localStorage.getItem("token");
+      const userIdResponse = await apiClient.get("/user/userId");
+      const userId = userIdResponse.data;
 
-      if (!userId || !token) {
-        throw new Error("User not authenticated");
-      }
-
-      const response = await axios.get<{ budgets: Budget[] }>(
-        `http://localhost:4000/api/user/${userId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      set({ budget: response.data.budgets });
-      // console.log("Budget data:", response.data);
+      const response = await apiClient.get(`/budget/${userId}`);
+      set({ budget: response.data });
     } catch (error) {
       console.error("Failed to fetch budget", error);
+      toast.error("Failed to fetch budgets");
     }
   },
 }));

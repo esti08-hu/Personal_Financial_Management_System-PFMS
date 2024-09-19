@@ -16,7 +16,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import apiClient from "../lib/axiosConfig";
-import Loader from "../pages/admin/components/common/Loader";
+import Loader from "./admin components/common/Loader";
 
 const SignupForm = () => {
   const router = useRouter();
@@ -325,7 +325,7 @@ const SignupForm = () => {
           <label className="text-center">
             <p className="mt-2">
               Already have an account?{" "}
-              <span className="text-[#00ABCD] font-black underline">
+              <span className="text-[#00ABCD] font-black hover:underline">
                 <Link href="/pages/login">Sign In</Link>
               </span>
             </p>

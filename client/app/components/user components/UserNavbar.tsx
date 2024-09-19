@@ -38,7 +38,7 @@ const UserNavbar = () => {
           {/* Menu button for mobile */}
           <button
             type="button"
-            className="inline-flex absolute left-16 items-center p-2 text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200"
+            className="flex absolute left-16 items-center p-2 text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200"
             aria-controls="navbar-dropdown"
             aria-expanded={isMenuOpen}
             onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -53,7 +53,7 @@ const UserNavbar = () => {
           <div
             className={`${
               isMenuOpen
-                ? "block bg-[#1C2434] fixed text-white !w-56 h-1.2 top-0 left-0 p-5 rounded-br-[10px] md:bg-transparent md:h-auto md:p-0 md:relative transition-all duration-300 ease-in-out"
+                ? "block bg-[#1C2434] fixed z-999 text-white !w-56 h-1.2 top-0 left-0 p-5 rounded-br-[10px] md:bg-transparent md:h-auto md:p-0 md:relative transition-all duration-300 ease-in-out"
                 : "hidden"
             } w-full md:flex md:items-center md:w-auto`}
             id="navbar-dropdown"

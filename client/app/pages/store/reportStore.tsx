@@ -1,5 +1,7 @@
 import create from "zustand";
 import axios from "axios";
+import apiClient from "@/app/lib/axiosConfig";
+import { toast } from "react-toastify";
 
 type Transaction = {
   id: string;
@@ -16,79 +18,55 @@ interface ReportData {
   income: number;
   expense: number;
   saved: number;
+  savingRate: number;
 }
 
 interface ReportStore {
   loading: boolean;
   data: ReportData | null;
   error: string | null;
-  transactions: Transaction[];
   fetchData: () => Promise<void>;
-  fetchTransactions: () => Promise<void>;
 }
 
 export const useReportStore = create<ReportStore>((set) => ({
   data: null,
   loading: true,
   error: null,
-  transactions: [],
+
   fetchData: async () => {
-    set({ loading: true, error: null });
     try {
-      const response = await axios.get("http://localhost:4000/api/report");
-      set({ data: response.data, loading: false });
-    } catch (error) {
-      set({ error: "Error fetching report data", loading: false });
-    }
-  },
-  fetchTransactions: async () => {
-    try {
-      const userId = localStorage.getItem("userId");
-      const token = localStorage.getItem("token");
+      set({ loading: true, error: null });
+      const userIdResponse = await apiClient.get("/user/userId");
+      const userId = userIdResponse.data;
 
-      if (!userId || !token) {
-        throw new Error("User not authenticated");
-      }
-
-      const response = await axios.get<{ transactions: Transaction[] }>(
-        `http://localhost:4000/api/user/${userId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const expenceResponse = await apiClient.get(
+        `/transaction/expense${userId}`
+      );
+      const incomeResponse = await apiClient.get(
+        `/transaction/income${userId}`
       );
 
-      const transactions = response.data.transactions;
-      set({ transactions });
-
       // Calculate the report data from transactions
-      const income = transactions
-        .filter((transaction) => transaction.type === "Income")
-        .reduce((sum, transaction) => sum + transaction.amount, 0);
+      const income = incomeResponse.data;
 
-      const expense = transactions
-        .filter((transaction) => transaction.type === "Expense")
-        .reduce((sum, transaction) => sum + transaction.amount, 0);
+      const expense = expenceResponse.data;
 
-      // const saved = transactions
-      //   .filter((transaction) => transaction.type === "Saved")
-      //   .reduce((sum, transaction) => sum + transaction.amount, 0);
       const saved = income - expense;
+      const savingRate = (saved / income) * 100;
 
       set({
-        transactions,
         data: {
           income,
           expense,
           saved,
+          savingRate,
         },
         loading: false,
       });
-      // console.log(income, expense, saved);
     } catch (error) {
-      console.error("Failed to fetch transactions", error);
-      set({ error: "Error fetching transactions" });
+      console.error("Failed to fetch History", error);
+      set({ error: "Error fetching History" });
+      toast.error("Failed to fetch History");
     }
   },
 }));

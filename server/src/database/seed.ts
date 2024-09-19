@@ -53,26 +53,47 @@ const main = async () => {
 
   const users = await db.select().from(databaseSchema.user);
 
-  const transactionData = [];
+  const budgetData = [];
 
-  // Seed transactions
-  console.log("Seeding transactions...");
-  for (let i = 0; i < 100; i++) {
+  // Seed budget
+  console.log("Seeding budgets...");
+  for (let i = 0; i < 200; i++) {
     const randomUser = faker.helpers.arrayElement(users);
 
-    transactionData.push({
+    budgetData.push({
       userId: randomUser.id,
-      type: faker.helpers.arrayElement(["DEPOSIT", "WITHDRAWAL", "TRANSFER"]),
+      title: faker.lorem.word(),
+      type: faker.helpers.arrayElement(["Deposit", "Withdrawal", "Transfer"]),
       amount: faker.number.int({ min: 1, max: 1000 }),
-      date: faker.date.recent().toISOString(),
-      description: faker.lorem.sentence(),
+      date: new Date(faker.date.recent()).toISOString(),
     });
   }
 
   await db
-    .insert(databaseSchema.transactions)
-    .values(transactionData)
+    .insert(databaseSchema.budget)
+    .values(budgetData)
     .returning();
+
+
+    const accountData = [];
+
+    // Seed budget
+    console.log("Seeding account...");
+    for (let i = 0; i < 300; i++) {
+      const randomUser = faker.helpers.arrayElement(users);
+  
+      accountData.push({
+        userId: randomUser.id,
+        title: faker.lorem.word(),
+        type: faker.helpers.arrayElement(["Saving", "Business", "Checking"]),
+        balance: faker.number.int({ min: 2000, max: 10000 }),
+      });
+    }
+  
+    await db
+      .insert(databaseSchema.account)
+      .values(accountData)
+      .returning();
 
   // Seed admins
   // console.log('Seeding admins...')

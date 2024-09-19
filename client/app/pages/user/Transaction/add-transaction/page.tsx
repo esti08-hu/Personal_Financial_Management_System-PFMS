@@ -3,22 +3,28 @@
 import { useTransactionStore } from "@/app/pages/store/transactionStore";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const AddTransaction = () => {
   const addTransaction = useTransactionStore((state) => state.addTransaction);
-  const [type, setType] = useState("Expense");
+  const [type, setType] = useState("Deposit");
   const [amount, setAmount] = useState("");
   const [date, setDate] = useState("");
   const [description, setDescription] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>,
+    userId: number
+  ) => {
     e.preventDefault();
     setIsLoading(true);
 
-    await addTransaction({ type, amount, date, description });
+    await addTransaction({ type, amount, date, description }, userId);
+    setIsLoading(false);
 
-    setType("Expense");
+    setType("Deposit");
     setAmount("");
     setDate("");
     setDescription("");
@@ -51,10 +57,9 @@ const AddTransaction = () => {
               onChange={(e) => setType(e.target.value)}
               className="bg-gray-50 border border-gray text-graydark text-md rounded-lg block w-full p-2.5"
             >
-              <option>Expense</option>
-              <option>Income</option>
-              <option>Saving</option>
-              <option>Debt</option>
+              <option>Deposit</option>
+              <option>Transfer</option>
+              <option>Withdrawal</option>
             </select>
           </div>
 
@@ -70,7 +75,7 @@ const AddTransaction = () => {
               id="amount"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              className="border border-gray text-gray text-md rounded-lg block w-full p-2.5"
+              className="border border-gray text-graydark text-md rounded-lg block w-full p-2.5"
               placeholder="Enter amount"
               required
             />
@@ -116,7 +121,7 @@ const AddTransaction = () => {
               whileHover="hover"
               type="submit"
               disabled={isLoading}
-              className="w-full sm:w-64 text-white bg-[#00ABCD] hover:bg-[#37a5bb] focus:ring-4 focus:outline-none focus:ring-blue-300 font-bold text-md px-16 py-2.5 text-center rounded-lg transition-all duration-300 mb-6"
+              className="w-full flex justify-center sm:w-64 text-white bg-[#00ABCD] hover:bg-[#37a5bb] focus:ring-4 focus:outline-none focus:ring-blue-300 font-bold text-md px-16 py-2.5 text-center rounded-lg transition-all duration-300 mb-6"
             >
               {isLoading ? (
                 <svg
@@ -146,6 +151,11 @@ const AddTransaction = () => {
           </div>
         </form>
       </div>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+      />
     </div>
   );
 };

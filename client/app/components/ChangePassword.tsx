@@ -8,7 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 const ChangePasswordModal = ({
   isVisible,
   toggleModal,
-  handleChangePassword, // Pass this function from parent for actual password change logic
+  handleChangePassword,
 }) => {
   const [form] = Form.useForm();
   const [isPasswordValid, setIsPasswordValid] = useState(false);
@@ -18,27 +18,26 @@ const ChangePasswordModal = ({
   // Validate password using the schema or custom logic
   const validatePassword = (password) => {
     try {
-      changePasswordSchema.parse({ newPassword: password }); // Validate against Zod schema
-      setErrors({})
-      setIsPasswordValid(true); // Set to true when validation passes
+      changePasswordSchema.parse({ newPassword: password });
+      setErrors({});
+      setIsPasswordValid(true);
     } catch (err) {
-      setIsPasswordValid(false); // Set to false when validation fails
+      setIsPasswordValid(false);
       if (err instanceof z.ZodError) {
         const fieldErrors = {};
         err.errors.forEach((error) => {
           fieldErrors[error.path[0]] = error.message;
         });
-        setErrors(fieldErrors); // Display error messages
+        setErrors(fieldErrors);
       } else {
         toast.error("An unexpected error occurred. Please try again.");
       }
     }
   };
-  
 
   // Handle form submission
   const onFinish = (values) => {
-    handleChangePassword(values); // Pass the form values to parent
+    handleChangePassword(values);
   };
 
   return (
@@ -67,17 +66,28 @@ const ChangePasswordModal = ({
         </Form.Item>
 
         {/* New Password with Validation */}
-        <Form.Item label="New Password" name="newPassword">
+        <Form.Item
+          label="New Password"
+          name="newPassword"
+          rules={[
+            {
+              required: true,
+            },
+          ]}
+        >
           <Input.Password
+            placeholder="Enter your current password"
             className={`hover:!border-[#00ABCD] focus:!border-[#00ABCD] ${
               errors.newPassword
                 ? "border-2 border-red-500"
                 : "border border-gray-300"
             }`}
-            value={newPassword}
+            // value={newPassword}
             onChange={(e) => {
+              const password = e.target.value;
               setNewPassword(e.target.value);
-              validatePassword(e.target.value); // Validate password on input change
+              form.setFieldsValue({ newPassword: password });
+              validatePassword(e.target.value); 
             }}
           />
 
@@ -85,7 +95,7 @@ const ChangePasswordModal = ({
             {newPassword.length > 0 && (
               <>
                 {errors?.newPassword && (
-                  <p className="text-red-500 text-sm">{errors.newPassword}</p>
+                  <p className="text-red text-sm">{errors.newPassword}</p>
                 )}
                 {isPasswordValid && !errors?.newPassword && (
                   <p className="text-green-500 text-sm">Password is valid</p>
@@ -113,11 +123,6 @@ const ChangePasswordModal = ({
           </Button>
         </Form.Item>
       </Form>
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-      />
     </Modal>
   );
 };

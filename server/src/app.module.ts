@@ -11,6 +11,8 @@ import { EmailConfirmationModule } from './emailConfirmation/emailConfirmation.m
 import { GoogleAuthenticationModule } from './googleAuth/googleAuth.module'
 import { PermissionsModule } from './permissions/permissions.module'
 import { TransactionModule } from './transaction/transaction.module'
+import { AccountModule } from './account/account.module'
+import { BudgetModule } from './budget/budget.module'
 
 @Module({
   imports: [
@@ -28,6 +30,8 @@ import { TransactionModule } from './transaction/transaction.module'
     GoogleAuthenticationModule,
     PermissionsModule,
     TransactionModule,
+    AccountModule,
+    BudgetModule,
     DatabaseModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

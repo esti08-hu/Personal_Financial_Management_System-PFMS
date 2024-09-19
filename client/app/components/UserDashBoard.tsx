@@ -20,7 +20,7 @@ import apiClient from "../lib/axiosConfig";
 import "../styles/style.css";
 import ChangePasswordModal from "./ChangePassword";
 import { ConfigProvider, theme } from "antd";
-import Loader from "../pages/admin/components/common/Loader";
+import Loader from "./admin components/common/Loader";
 
 const { Header, Sider, Content } = Layout;
 

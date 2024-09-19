@@ -64,10 +64,9 @@ const AddAccount = () => {
               onChange={(e) => setType(e.target.value)}
               className="border border-gray text-graydark text-md rounded-lg w-full p-2.5"
             >
-              <option>Checking Account</option>
-              <option>Savings Account</option>
-              <option>Trust Account</option>
-              <option>Business Account</option>
+              <option>Checking</option>
+              <option>Saving</option>
+              <option>Business</option>
             </select>
           </div>
 

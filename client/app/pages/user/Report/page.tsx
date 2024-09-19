@@ -3,22 +3,22 @@ import * as React from "react";
 import { useEffect } from "react";
 import { PieChart } from "@mui/x-charts/PieChart";
 import { useReportStore } from "../../store/reportStore";
-import Loader from "../../admin/components/common/Loader";
+import Loader from "../../../components/admin components/common/Loader";
 
 const Report = () => {
-  const { data, loading, error, fetchTransactions } = useReportStore();
+  const { data, loading, error, fetchData } = useReportStore();
 
   useEffect(() => {
-    fetchTransactions();
-  }, [fetchTransactions]);
+    fetchData();
+  }, [fetchData]);
 
-  // if (loading) {
-  //   return (
-  //     <div className="flex justify-center items-center h-40 w-4/5">
-  //       <Loader />
-  //     </div>
-  //   );
-  // }
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-40 w-4/5">
+        <Loader />
+      </div>
+    );
+  }
 
   if (error) {
     return (
