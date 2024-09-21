@@ -1,12 +1,22 @@
-import React from 'react'
-import LoginForm from './components/LoginForm'
+import Hero from "./components/Hero";
+import Navbar from "./components/Navbar";
+import Services from "./components/Services";
+import Testimonial from "./components/Testimonial";
+import Footer from "./components/Footer";
+import Content from "./components/Content";
 
-const HomePage = () => {
+
+export default function Home() {
   return (
-    <div className="h-screen relative flex justify-center items-center bg-[#E5E5E5]">
-        <LoginForm/>
+    <div>
+      <main className="flex flex-col items-center w-full">
+        <Navbar />
+        <Hero />
+        <Content />
+        <Services />
+        <Testimonial />
+        <Footer />
+      </main>
     </div>
-  )
+  );
 }
-
-export default HomePage

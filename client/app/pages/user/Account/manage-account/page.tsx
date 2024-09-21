@@ -127,13 +127,13 @@ const Account = () => {
                     key={account.id}
                     className="bg-white border-b text-lg border-gray hover:bg-gray-3"
                   >
-                    <td className="p-3 text-sm sm:text-sm md:text-sm">
+                    <td className="p-3 text-md sm:text-sm md:text-sm">
                       {account.title}
                     </td>
-                    <td className="p-3 text-sm sm:text-sm md:text-sm">
+                    <td className="p-3 !text-md sm:text-sm md:text-sm">
                       {account.type}
                     </td>
-                    <td className="p-3 text-sm sm:text-sm md:text-sm">
+                    <td className="p-3 text-md sm:text-sm md:text-sm">
                       {account.balance} ETB
                     </td>
                     <td className="px-6 py-4 flex justify-center gap-2">

@@ -23,8 +23,8 @@ const UserNavbar = () => {
 
   return (
     <div className="navbar-container bg-[#00ABCD]">
-      <nav className="bg-[#00ABCD] border-gray-200">
-        <div className="w-full flex justify-between items-center px-4 h-20 md:px-0 md:w-3/4 mx-auto">
+      <nav className="bg-[#00ABCD] border-gray">
+        <div className="w-full flex justify-between items-center px-4 md:px-0 md:w-3/4 mx-auto">
           {/* Logo */}
           <Link className="block flex-shrink-0 md:mr-10" href="/pages/user">
             <Image
@@ -33,6 +33,8 @@ const UserNavbar = () => {
               src={"/images/logo/logo.png"}
               alt="Logo"
             />
+
+
           </Link>
 
           {/* Menu button for mobile */}
@@ -65,10 +67,7 @@ const UserNavbar = () => {
               aria-expanded={isMenuOpen}
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
-              {isMenuOpen && (
-                // "X" Icon when the menu is open
-                <HiX className="text-xl text-gray" />
-              )}
+             
             </button>
             <div className="flex-10 lg:w-203 py-4">
               <ul className="flex flex-col justify-between gap-y-6 gap-x-4 mt-4 md:flex-row md:space-x-2 md:mt-0 text-sm font-medium ">

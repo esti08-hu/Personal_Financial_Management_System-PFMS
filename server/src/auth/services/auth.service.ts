@@ -109,6 +109,7 @@ export class AuthService {
     const user = await this.usersService.getUserByEmail(email, [Role.USER])
 
     if (!user) throw new NotFoundException('User not found')
+      console.log(user.accountLockedUntil)
 
     if (user.accountLockedUntil && new Date() < user.accountLockedUntil) {
       const now = new Date()
