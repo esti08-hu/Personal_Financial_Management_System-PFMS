@@ -7,113 +7,107 @@ import {
   Post,
   Put,
   Request,
-} from "@nestjs/common";
-import { UsersService } from "./users.service";
-import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
-import { Public } from "src/auth/guards/auth.decorators";
-import { Permissions } from "src/permissions/permissions.decorators";
-import { UpdateAdminDto, UpdateUserDto } from "./users.dto";
+} from '@nestjs/common'
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
+import { Public } from 'src/auth/guards/auth.decorators'
+import { Permissions } from 'src/permissions/permissions.decorators'
+import { UpdateAdminDto, UpdateUserDto } from './users.dto'
+import { UsersService } from './users.service'
 
-@Controller("user")
-@ApiTags("user")
+@Controller('user')
+@ApiTags('user')
 @ApiBearerAuth()
 export class UsersController {
   constructor(private usersService: UsersService) {}
-  @Put("update-user:pid")
+  @Put('update-user:pid')
   @Public()
-  async updateUser(
-    @Param("pid") pid: string,
-    @Body() req: UpdateUserDto
-  ) {
-    const result = await this.usersService.updateUser(pid, req);
+  async updateUser(@Param('pid') pid: string, @Body() req: UpdateUserDto) {
+    const result = await this.usersService.updateUser(pid, req)
     return result
   }
 
-  @Put("update-admin:pid")
+  @Put('update-admin:pid')
   @Public()
-  async updateAdmin(
-    @Param("pid") pid: string,
-    @Body() req: UpdateAdminDto
-  ) {
-    const result = await this.usersService.updateAdminUser(pid, req);
+  async updateAdmin(@Param('pid') pid: string, @Body() req: UpdateAdminDto) {
+    const result = await this.usersService.updateAdminUser(pid, req)
     return result
   }
-  @Get("deleted-accounts")
+  @Get('deleted-accounts')
   @Public()
   async deletedAccounts() {
-    return await this.usersService.deletedAccounts();
+    return await this.usersService.deletedAccounts()
   }
 
-  @Delete("deleteUser:pid")
+  @Delete('deleteUser:pid')
   @Public()
-  async deleteUser(@Param("pid") pid: string) {
-    return await this.usersService.deleteUser(pid);
+  async deleteUser(@Param('pid') pid: string) {
+    return await this.usersService.deleteUser(pid)
   }
-  @Post("restore:pid")
+  @Post('restore:pid')
   @Public()
-  async restoreUser(@Param("pid") pid: string) {
-    return await this.usersService.restoreUser(pid);
+  async restoreUser(@Param('pid') pid: string) {
+    return await this.usersService.restoreUser(pid)
   }
-  @Put("update-role:pid")
-  @Permissions("approve-user")
-  async updateRole(@Param("pid") pid: string) {
-    return await this.usersService.adminFromUser(pid);
+  @Put('update-role:pid')
+  @Permissions('approve-user')
+  async updateRole(@Param('pid') pid: string) {
+    return await this.usersService.adminFromUser(pid)
   }
-  @Get("users")
+  @Get('users')
   @Public()
   async getUsers() {
-    return await this.usersService.getAllUsers();
+    return await this.usersService.getAllUsers()
   }
 
-  @Get("unverified")
+  @Get('unverified')
   @Public()
   async getUnverifiedUsers() {
-    return await this.usersService.getUnverifiedAccounts();
+    return await this.usersService.getUnverifiedAccounts()
   }
 
-  @Get("locked")
+  @Get('locked')
   @Public()
   async getLockedAccounts() {
-    return await this.usersService.getLockedAccounts();
+    return await this.usersService.getLockedAccounts()
   }
-  @Get("new-users")
+  @Get('new-users')
   @Public()
   async getNewUsers() {
-    return await this.usersService.getNewUsers();
+    return await this.usersService.getNewUsers()
   }
 
-  @Get("count/active-accounts")
+  @Get('count/active-accounts')
   @Public()
   async getActiveAccounts() {
-    return await this.usersService.getActiveAccountsCount();
+    return await this.usersService.getActiveAccountsCount()
   }
 
-  @Get("count/inactive-accounts")
+  @Get('count/inactive-accounts')
   @Public()
   async getInActiveAccounts() {
-    return await this.usersService.getInActiveAccountsCount();
+    return await this.usersService.getInActiveAccountsCount()
   }
 
-  @Get("count/locked-accounts")
+  @Get('count/locked-accounts')
   @Public()
   async getLockedUsers() {
-    return await this.usersService.getLockedUsersCount();
+    return await this.usersService.getLockedUsersCount()
   }
 
-  @Get("count/unverified-accounts")
+  @Get('count/unverified-accounts')
   @Public()
   async getUnverifiedAccounts() {
-    return await this.usersService.getUnverifiedAccountsCount();
+    return await this.usersService.getUnverifiedAccountsCount()
   }
 
-  @Get("count/total-accounts")
+  @Get('count/total-accounts')
   @Public()
   async totalAccounts() {
-    return await this.usersService.totalAccountsCount();
+    return await this.usersService.totalAccountsCount()
   }
 
-  @Get("userId")
+  @Get('userId')
   async getUser(@Request() req) {
-    return await this.usersService.getUserId(req.user.pid);
+    return await this.usersService.getUserId(req.user.pid)
   }
 }

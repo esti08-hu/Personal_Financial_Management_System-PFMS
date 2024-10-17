@@ -1,21 +1,23 @@
-import { IsNumber, IsString } from "class-validator";
+import { IsNumber, IsString } from 'class-validator'
 
 export class CreateAccountDto {
   @IsNumber()
-  userId: number;
+  userId: number
   @IsString()
-  title: string;
+  title: string
   @IsString()
-  type: string;
+  type: string
   @IsNumber()
-  balance: number;
+  balance: number
 }
 
 export class UpdateAccountDto {
   @IsString()
-  type: string;
+  type: string
   @IsString()
-  title: string;
+  title: string
   @IsNumber()
-  balance: number;
+  balance: number
+  @IsString()
+  date: string
 }

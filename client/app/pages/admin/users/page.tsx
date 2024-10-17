@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Breadcrumb from "../../../components/admin components/Breadcrumbs/Breadcrumb";
+import Breadcrumb from "../../../common/Breadcrumbs/Breadcrumb";
 import TableThree from "../../../components/admin components/Tables/TableThree";
 import DefaultLayout from "../../../components/admin components/Layouts/DefaultLayout";
 import apiClient from "@/app/lib/axiosConfig";
@@ -13,7 +13,7 @@ const TablesPage = () => {
 
   const [filter, setFilter] = useState("all");
 
-  const fetchUsers = async (endpoint) => {
+  const fetchUsers = async (endpoint: string) => {
     try {
       const response = await apiClient.get(endpoint);
       setUsers(response.data.data);
@@ -38,7 +38,7 @@ const TablesPage = () => {
     }
   }, [filter]);
 
-  const handleFilterChange = (value) => {
+  const handleFilterChange = (value: string) => {
     setFilter(value);
   };
 

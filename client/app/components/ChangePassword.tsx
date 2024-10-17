@@ -5,7 +5,18 @@ import { z } from "zod";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const ChangePasswordModal = ({
+interface ChangePasswordModalProps {
+  isVisible: boolean;
+  toggleModal: () => void;
+  handleChangePassword: (values: ChangePasswordValues) => void;
+}
+interface ChangePasswordValues {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
+const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
   isVisible,
   toggleModal,
   handleChangePassword,
@@ -13,10 +24,10 @@ const ChangePasswordModal = ({
   const [form] = Form.useForm();
   const [isPasswordValid, setIsPasswordValid] = useState(false);
   const [newPassword, setNewPassword] = useState("");
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   // Validate password using the schema or custom logic
-  const validatePassword = (password) => {
+  const validatePassword = (password: string) => {
     try {
       changePasswordSchema.parse({ newPassword: password });
       setErrors({});
@@ -24,9 +35,9 @@ const ChangePasswordModal = ({
     } catch (err) {
       setIsPasswordValid(false);
       if (err instanceof z.ZodError) {
-        const fieldErrors = {};
+        const fieldErrors: { [key: string]: string } = {};
         err.errors.forEach((error) => {
-          fieldErrors[error.path[0]] = error.message;
+          fieldErrors[error.path[0] as string] = error.message;
         });
         setErrors(fieldErrors);
       } else {
@@ -36,7 +47,7 @@ const ChangePasswordModal = ({
   };
 
   // Handle form submission
-  const onFinish = (values) => {
+  const onFinish = (values: ChangePasswordValues) => {
     handleChangePassword(values);
   };
 
@@ -87,7 +98,7 @@ const ChangePasswordModal = ({
               const password = e.target.value;
               setNewPassword(e.target.value);
               form.setFieldsValue({ newPassword: password });
-              validatePassword(e.target.value); 
+              validatePassword(e.target.value);
             }}
           />
 

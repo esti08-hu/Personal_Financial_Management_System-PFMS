@@ -1,0 +1,64 @@
+services:
+ # PostgreSQL database service
+  db:
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: full_stack_auth_db
+    container_name: postgres
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"  # Expose PostgreSQL
+    networks:
+      - app-network
+    profiles: ['dev']
+
+  # Backend service (Nest.js)
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: pfms-api
+    ports:
+      - "3001:3001"  # Expose port 3001 for the Nest.js server
+    depends_on:
+      - db
+    networks:
+      - app-network
+    environment:
+      - PORT=${PORT}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - JWT_ACCESS_TOKEN_SECRET=${JWT_ACCESS_TOKEN_SECRET}
+    profiles: ['dev']
+
+  # Frontend service (Next.js)
+  client:
+    build:
+      context: ./client 
+      dockerfile: Dockerfile
+    container_name: pfms-client
+    ports:
+      - "3000:3000"  # Expose port 3000 for Next.js
+    depends_on:
+      - server
+    networks:
+      - app-network
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:3001
+    profiles: ['dev']
+
+# Volumes for data persistence
+volumes:
+  postgres-data:
+
+# Network for inter-service communication
+networks:
+  app-network:
+    driver: bridge

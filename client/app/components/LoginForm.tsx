@@ -4,7 +4,7 @@ import { Icon } from "react-icons-kit";
 import { eyeOff } from "react-icons-kit/feather/eyeOff";
 import { eye } from "react-icons-kit/feather/eye";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -12,15 +12,15 @@ import GoogleLoginButton from "../components/GoogleLoginButton";
 import { signinSchema } from "../common/validationSchema";
 import { z } from "zod";
 import { motion, AnimatePresence } from "framer-motion";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../styles/style.css";
-import Loader from "./admin components/common/Loader";
+import Loader from "../common/Loader";
 
 const LoginForm = () => {
   const router = useRouter();
 
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -89,7 +89,9 @@ const LoginForm = () => {
 
       toast.success("Confirmation link resent!");
     } catch (error) {
-      toast.error(error.response?.data?.message || "An error occurred");
+      if(error instanceof AxiosError){
+        toast.error(error.response?.data.message || "An error occurred");
+      }
     }
     setConfirmedMessage(false);
   };
@@ -120,7 +122,7 @@ const LoginForm = () => {
       }, 1000);
     } catch (err) {
       if (err instanceof z.ZodError) {
-        const fieldErrors: Record<string, string> = {};
+        const fieldErrors: { [key: string]: string } = {};
         err.errors.forEach((error) => {
           fieldErrors[error.path[0]] = error.message;
         });
@@ -154,19 +156,20 @@ const LoginForm = () => {
       exit={{ opacity: 0 }}
       className="container border-none max-w-fit h-auto flex justify-center items-center p-8 border-2 bg-white rounded-lg shadow-lg m-10"
     >
-      <AnimatePresence>
+       <AnimatePresence>
         {isLoading && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="absolute w-full h-full flex justify-center items-center z-50"
-            style={{ backgroundColor: "rgba(0, 0, 0, 0.25)" }}
+            style={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
           >
             <Loader />
           </motion.div>
         )}
       </AnimatePresence>
+
       <AnimatePresence>
         {confirmedMessage && (
           <div
@@ -380,11 +383,7 @@ const LoginForm = () => {
           className="object-cover rounded-[20px] shadow-md"
         />
       </div>
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-      />
+ 
     </motion.div>
   );
 };

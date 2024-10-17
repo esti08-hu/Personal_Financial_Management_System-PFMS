@@ -6,11 +6,11 @@ const Hero = () => {
     <div
       id="hero"
       style={{ backgroundColor: "rgba(0, 172, 205, 0.25)" }}
-      className="hero-container flex items-center mt-20 w-full justify-center relative"
+      className="hero-container flex items-center md:mt-20 lg:mt-20 w-full justify-center relative"
     >
       <div className="hero flex flex-col md:flex-row h-full w-2/3 justify-around items-center p-10">
         <div className="flex flex-col items-start justify-center max-w-fit h-96 gap-5 text-center md:text-left md:w-2/3">
-          <h1 className="!text-4xl md:text-2xl font-black text-[#22577A] mb-6 w-full md:w-96">
+          <h1 className="lg:!text-4xl md:text-2xl font-black text-[#22577A] mb-6 w-full md:w-96">
             Plan your future with confidence.
           </h1>
           <p className="text-xl md:text-xl font-bold text-[#00ABCD] w-full md:w-72">

@@ -14,7 +14,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Password from "antd/es/input/Password";
-import Loader from "./admin components/common/Loader";
+import Loader from "../common/Loader";
 
 const SetNewPasswordForm = () => {
   const router = useRouter();
@@ -24,7 +24,7 @@ const SetNewPasswordForm = () => {
     confirmPassword: "",
   });
 
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [newPasswordType, setNewPasswordType] = useState("password");
   const [confirmPasswordType, setConfirmPasswordType] = useState("password");
   const [newPasswordIcon, setNewPasswordIcon] = useState(eyeOff);
@@ -151,14 +151,14 @@ const SetNewPasswordForm = () => {
       exit={{ opacity: 0 }}
       className="container border-none max-w-fit h-auto flex justify-center items-center p-8 border-2 bg-white rounded-lg shadow-lg m-8"
     >
-      <AnimatePresence>
+       <AnimatePresence>
         {isLoading && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="absolute w-full h-full flex justify-center items-center z-50"
-            style={{ backgroundColor: "rgba(0, 0, 0, 0.25)" }}
+            style={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
           >
             <Loader />
           </motion.div>
@@ -326,11 +326,6 @@ const SetNewPasswordForm = () => {
           className="object-cover rounded-[20px] shadow-md"
         />
       </div>
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-      />
     </motion.div>
   );
 };

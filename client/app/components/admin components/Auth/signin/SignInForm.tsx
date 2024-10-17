@@ -12,12 +12,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { adminSigninSchema } from "@/app/common/validationSchema";
-import Loader from "../../common/Loader";
+import Loader from "../../../../common/Loader";
 
 const AdminSignInForm = () => {
   const router = useRouter();
 
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -65,7 +65,7 @@ const AdminSignInForm = () => {
       }
     } catch (err) {
       if (err instanceof z.ZodError) {
-        const fieldErrors: Record<string, string> = {};
+        const fieldErrors: { [key: string]: string } = {};
         err.errors.forEach((error) => {
           fieldErrors[error.path[0]] = error.message;
         });
@@ -98,7 +98,7 @@ const AdminSignInForm = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="absolute w-full h-full flex justify-center items-center z-50"
-            style={{ backgroundColor: "rgba(0, 0, 0, 0.25)" }}
+            style={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
           >
             <Loader />
           </motion.div>
@@ -223,12 +223,6 @@ const AdminSignInForm = () => {
           </motion.button>
         </form>
       </div>
-
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-      />
     </motion.div>
   );
 };

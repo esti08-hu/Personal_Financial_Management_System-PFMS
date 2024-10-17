@@ -32,7 +32,7 @@
       },
       "suspicious": {
         "noExplicitAny": "off",
-        "noExtraNonNullAssertion": "error",
+        "noExtraNonNullAssertion": "error",{ create } from 'zustand
         "noMisleadingInstantiator": "error",
         "noUnsafeDeclarationMerging": "error"
       }
@@ -76,6 +76,11 @@
             "useConst": "error"
           },
           "suspicious": {
+            "noExplicitAny": "off",
+            "noExtraNonNullAssertion": "error",
+            "noMisleadingInstantiator": "error",
+            "noUnsafeDeclarationMerging": "error",
+            
             "noDuplicateClassMembers": "off",
             "noDuplicateObjectKeys": "off",
             "noDuplicateParameters": "off",

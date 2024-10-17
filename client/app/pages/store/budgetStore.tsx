@@ -1,23 +1,25 @@
 import { create } from "zustand";
-import axios from "axios";
 import apiClient from "@/app/lib/axiosConfig";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { message, Modal } from "antd";
+import type { EditBudget, NewBudget } from "@/app/types/acc";
 
 type Budget = {
-  id: string;
-  userId: string;
+  id: number;
+  userId: number;
   title: string;
   type: string;
-  amount: string;
   date: string;
+  amount: number;
+  createdAt: string;
 };
 
 interface budgetState {
   budget: Budget[];
-  setBudget: (budget: Budget) => Promise<void>;
-  editBudget: (budget: Budget) => Promise<void>;
-  deleteBudget: (id: string) => Promise<void>;
+  setBudget: (budget: NewBudget) => Promise<void>;
+  editBudget: (budget: EditBudget) => Promise<void>;
+  deleteBudget: (id: number) => Promise<void>;
   fetchBudget: () => Promise<void>;
 }
 
@@ -65,22 +67,26 @@ export const useBudgetStore = create<budgetState>((set) => ({
     }
   },
 
-  deleteBudget: async (id: string) => {
-    try {
-      const confirmDelete = window.confirm(
-        "Are you sure you want to delete this budget?"
-      );
-      if (confirmDelete) {
-        await apiClient.delete(`/budget/${id}`);
-        set((state) => ({
-          budget: state.budget.filter((t) => t.id !== id),
-        }));
-        toast.success("Budget deleted successfully");
-      }
-    } catch (error) {
-      console.error("Failed to delete budget", error);
-      toast.error("Failed to delete budget");
-    }
+  deleteBudget: async (id: number) => {
+    Modal.confirm({
+      title: "Are you sure you want to delete this budget?",
+      content: "This action cannot be undone.",
+      okText: "Yes, delete",
+      okType: "danger",
+      cancelText: "No, cancel",
+      async onOk() {
+        try {
+          await apiClient.delete(`/budget/${id}`);
+          set((state) => ({
+            budget: state.budget.filter((t) => t.id !== id),
+          }));
+          toast.success("Budget deleted successfully");
+        } catch (error) {
+          console.error("Failed to delete budget", error);
+          message.error("Failed to delete budget");
+        }
+      },
+    });
   },
 
   fetchBudget: async () => {

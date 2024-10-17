@@ -5,7 +5,13 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import ClickOutside from "../ClickOutside";
-import { HiOutlineCog, HiOutlineLogout, HiOutlineUserCircle, HiOutlineUserGroup, HiOutlineChartPie, HiOutlineViewGrid } from "react-icons/hi";
+import {
+  HiOutlineCog,
+  HiOutlineLogout,
+  HiOutlineUserCircle,
+  HiOutlineUserGroup,
+  HiOutlineViewGrid,
+} from "react-icons/hi";
 import { useRouter } from "next/navigation";
 import apiClient from "@/app/lib/axiosConfig";
 import { toast, ToastContainer } from "react-toastify";
@@ -16,7 +22,6 @@ interface SidebarProps {
   sidebarOpen: boolean;
   setSidebarOpen: (arg: boolean) => void;
 }
-
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const pathname = usePathname();
@@ -33,47 +38,62 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
       toast.error("An error occurred during logout.");
     }
   };
-const menuGroups = [
-  {
-    name: "MENU",
-    menuItems: [
-      {
-        icon: (
-          <HiOutlineViewGrid className="text-2xl" />
-        ),
-        label: "Dashboard",
-        route: "/pages/admin/dashboard",
-      },
-      {
-        icon: <HiOutlineUserCircle className="text-2xl" />,
-        label: "Profile",
-        route: "/pages/admin/profile",
-      },
-      {
-        icon: <HiOutlineUserGroup className="text-2xl" />,
-        label: "Users",
-        route: "/pages/admin/users",
-      },
-      {
-        icon: <HiOutlineCog className="text-2xl" />,
-        label: "Settings",
-        route: "/pages/admin/settings",
-      }
-    ],
-  },
-  {
-    menuItems: [
-      {
-        icon: (
-          <HiOutlineLogout className="text-2xl" />
-        ),
-        label: "Log Out",
-        route: "#",
-        onClick: handleLogout, 
-      },
-    ],
-  },
-];
+
+  interface MenuItem {
+    id: string;
+    icon: JSX.Element;
+    label: string;
+    route: string;
+    onClick?: () => Promise<void>; 
+  }
+  
+  interface MenuGroup {
+    name?: string;
+    menuItems: MenuItem[];
+  }
+  
+  const menuGroups: MenuGroup[] = [
+    {
+      name: "MENU",
+      menuItems: [
+        {
+          id: "dashboard",
+          icon: <HiOutlineViewGrid className="text-2xl" />,
+          label: "Dashboard",
+          route: "/pages/admin/dashboard",
+        },
+        {
+          id: "profile",
+          icon: <HiOutlineUserCircle className="text-2xl" />,
+          label: "Profile",
+          route: "/pages/admin/profile",
+        },
+        {
+          id: "users",
+          icon: <HiOutlineUserGroup className="text-2xl" />,
+          label: "Users",
+          route: "/pages/admin/users",
+        },
+        {
+          id: "settings",
+          icon: <HiOutlineCog className="text-2xl" />,
+          label: "Settings",
+          route: "/pages/admin/settings",
+        },
+      ],
+    },
+    {
+      menuItems: [
+        {
+          id: "logout",
+          icon: <HiOutlineLogout className="text-2xl" />,
+          label: "Log Out",
+          route: "#",
+          onClick: handleLogout,
+        },
+      ],
+    },
+  ];
 
   return (
     <ClickOutside onClick={() => setSidebarOpen(false)}>
@@ -95,12 +115,12 @@ const menuGroups = [
           </Link>
 
           <button
+            type="button"
             onClick={() => setSidebarOpen(!sidebarOpen)}
             aria-controls="sidebar"
             className="block lg:hidden"
           >
             <HiArrowLeft className="text-gray text-2xl" />
-
           </button>
         </div>
         {/* <!-- SIDEBAR HEADER --> */}
@@ -115,14 +135,14 @@ const menuGroups = [
                 </h3>
 
                 <ul className="mb-6 flex flex-col gap-1.5">
-                  {group.menuItems.map((menuItem, menuIndex) => (
-                    <li key={menuIndex} className="flex items-center">
+                  {group.menuItems.map((menuItem) => (
+                    <li key={menuItem.id} className="flex items-center">
                       <a
                         href={menuItem.route}
                         onClick={(e) => {
                           if (menuItem.onClick) {
-                            e.preventDefault();  // Prevent navigation if there's an onClick handler
-                            menuItem.onClick();  // Call the onClick handler
+                            e.preventDefault();
+                            menuItem.onClick(); 
                           }
                         }}
                         className="flex items-center gap-2 px-4 py-2 text-white hover:bg-gray-700 rounded"
@@ -139,15 +159,6 @@ const menuGroups = [
           {/* <!-- Sidebar Menu --> */}
         </div>
       </aside>
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        closeOnClick
-        pauseOnHover
-        draggable
-        pauseOnFocusLoss
-      />
     </ClickOutside>
   );
 };

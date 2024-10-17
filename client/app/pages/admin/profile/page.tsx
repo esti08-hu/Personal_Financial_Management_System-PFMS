@@ -6,12 +6,13 @@ import apiClient from "@/app/lib/axiosConfig";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/navigation";
-import Loader from "@/app/components/admin components/common/Loader";
-import Breadcrumb from "@/app/components/admin components/Breadcrumbs/Breadcrumb";
+import Loader from "@/app/common/Loader";
+import Breadcrumb from "@/app/common/Breadcrumbs/Breadcrumb";
 import DefaultLayout from "@/app/components/admin components/Layouts/DefaultLayout";
+import type { Admin } from "@/app/types/user";
 
 const Profile = () => {
-  const [admin, setAdmin] = useState(null);
+  const [admin, setAdmin] = useState<Admin | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -108,7 +109,7 @@ const Profile = () => {
         </div>
       </div>
       <ToastContainer
-        position="top-right"
+        position="top-center"
         autoClose={5000}
         hideProgressBar={false}
         closeOnClick

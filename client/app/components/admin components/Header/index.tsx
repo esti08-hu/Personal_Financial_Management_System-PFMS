@@ -1,7 +1,5 @@
 import Link from "next/link";
 import DarkModeSwitcher from "./DarkModeSwitcher";
-import DropdownMessage from "./DropdownMessage";
-import DropdownNotification from "./DropdownNotification";
 import DropdownUser from "./DropdownUser";
 import Image from "next/image";
 
@@ -15,6 +13,7 @@ const Header = (props: {
         <div className="flex items-center gap-2 sm:gap-4 lg:hidden">
           {/* <!-- Hamburger Toggle BTN --> */}
           <button
+          type="button"
             aria-controls="sidebar"
             onClick={(e) => {
               e.stopPropagation();

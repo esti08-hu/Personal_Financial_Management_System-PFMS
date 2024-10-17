@@ -5,10 +5,11 @@ import "dotenv/config";
 
 function GoogleLoginButton() {
   const { handleSuccess } = useGoogleAuthentication();
+  const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? "";
 
   return (
     <div className="flex justify-center">
-      <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}>
+      <GoogleOAuthProvider clientId={clientId}>
         {/* Login Button */}
         <GoogleLogin
           onSuccess={(response) => handleSuccess(response, false)} // Pass false to indicate login

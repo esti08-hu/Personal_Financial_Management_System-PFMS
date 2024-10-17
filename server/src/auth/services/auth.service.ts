@@ -109,7 +109,7 @@ export class AuthService {
     const user = await this.usersService.getUserByEmail(email, [Role.USER])
 
     if (!user) throw new NotFoundException('User not found')
-      console.log(user.accountLockedUntil)
+    console.log(user.accountLockedUntil)
 
     if (user.accountLockedUntil && new Date() < user.accountLockedUntil) {
       const now = new Date()
@@ -121,7 +121,7 @@ export class AuthService {
         `Account is locked. Try again after ${minutes} minutes.`,
       )
     }
-
+    
     if (!user.isEmailConfirmed)
       throw new UnauthorizedException('Please confirm your email to Login')
 
@@ -313,7 +313,10 @@ export class AuthService {
   public async sendResetLink(email: string) {
     const user = await this.usersService.findUserByEmail(email)
     if (!user) throw new NotFoundException('User not found')
-    if (user.accountLockedUntil) throw new UnauthorizedException('Your account is locked. Please try again later.')
+    if (user.accountLockedUntil)
+      throw new UnauthorizedException(
+        'Your account is locked. Please try again later.',
+      )
     const now = new Date()
 
     const resetSentAt = new Date(user.passwordResetTokenExpires)

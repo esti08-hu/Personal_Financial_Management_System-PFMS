@@ -1,15 +1,15 @@
+import { randomUUID } from 'crypto'
 import {
   BadRequestException,
   Injectable,
   NotFoundException,
-} from "@nestjs/common";
-import * as bcrypt from "bcrypt";
-import { and, asc, eq, sql, count, or, isNotNull, isNull } from "drizzle-orm";
-import { databaseSchema } from "src/database/database-schema";
-import { DrizzleService } from "src/database/drizzle.service";
-import { Role } from "src/permissions/role.emum";
-import { UpdateAdminDto, UpdateUserDto } from "./users.dto";
-import { randomUUID } from "crypto";
+} from '@nestjs/common'
+import * as bcrypt from 'bcrypt'
+import { and, asc, count, eq, isNotNull, isNull, or, sql } from 'drizzle-orm'
+import { databaseSchema } from 'src/database/database-schema'
+import { DrizzleService } from 'src/database/drizzle.service'
+import { Role } from 'src/permissions/role.emum'
+import { UpdateAdminDto, UpdateUserDto } from './users.dto'
 
 @Injectable()
 export class UsersService {
@@ -24,14 +24,14 @@ export class UsersService {
       UPDATE "Admins"
       SET "name" = ${user.fullName}, "email" = ${user.emailAddress}
       WHERE "pid" = ${pid}  
-  `);
+  `)
   }
 
   async deletedAccounts(): Promise<any> {
     const result = await this.drizzle.db
       .select()
       .from(databaseSchema.user)
-      .where(isNotNull(databaseSchema.user.deletedAt));
+      .where(isNotNull(databaseSchema.user.deletedAt))
     const sanitizedUsers = result.map((allUsers) => {
       const {
         id,
@@ -40,21 +40,21 @@ export class UsersService {
         passwordResetToken,
         refreshToken,
         ...userdata
-      } = allUsers;
-      return userdata;
-    });
-    const data = sanitizedUsers;
-    return { data };
+      } = allUsers
+      return userdata
+    })
+    const data = sanitizedUsers
+    return { data }
   }
 
   async adminFromUser(pid): Promise<any> {
-    const userData = await this.getUserByPid(pid);
+    const userData = await this.getUserByPid(pid)
     if (!userData) {
-      throw new NotFoundException("User not found");
+      throw new NotFoundException('User not found')
     }
 
     await this.drizzle.db.transaction(async (tx) => {
-      const userPid = randomUUID().toString();
+      const userPid = randomUUID().toString()
       const [user] = await this.drizzle.db
         .insert(databaseSchema.admin)
         .values({
@@ -63,31 +63,31 @@ export class UsersService {
           email: userData.email,
           password: userData.password,
         })
-        .returning();
+        .returning()
 
       if (!user) {
-        await tx.rollback();
-        throw new Error("Failed to migrate user to admin");
+        await tx.rollback()
+        throw new Error('Failed to migrate user to admin')
       }
 
       const deletedUser = await this.drizzle.db.execute(sql`
             UPDATE "Users"
             SET "deletedAt" = ${new Date()}
             WHERE "pid" = ${userData.pid} AND "deletedAt" IS NULL
-        `);
+        `)
 
       if (!deletedUser) {
-        await tx.rollback();
-        throw new Error("Failed to soft delete the user");
+        await tx.rollback()
+        throw new Error('Failed to soft delete the user')
       }
-    });
-    return "User migrated to admin successfully";
+    })
+    return 'User migrated to admin successfully'
   }
 
   async updateUser(pid: string, data: UpdateUserDto) {
     const isPhoneExist = await this.getUserByPhone(data.phone)
-    if(isPhoneExist){
-      throw new BadRequestException("Phone already exists")
+    if (isPhoneExist) {
+      throw new BadRequestException('Phone already exists')
     }
     const updateUser = await this.drizzle.db
       .update(databaseSchema.user)
@@ -95,55 +95,55 @@ export class UsersService {
       .where(
         and(
           eq(databaseSchema.user.pid, pid),
-          isNull(databaseSchema.user.deletedAt)
-        )
+          isNull(databaseSchema.user.deletedAt),
+        ),
       )
-      .returning();
+      .returning()
 
     if (updateUser.length === 0) {
-      throw new NotFoundException("");
+      throw new NotFoundException('')
     }
-    return updateUser.pop();
+    return updateUser.pop()
   }
 
   async restoreUser(pid: string) {
-    const user = await this.getUserByPid(pid);
+    const user = await this.getUserByPid(pid)
     if (!user) {
-      throw new NotFoundException("User not found");
+      throw new NotFoundException('User not found')
     }
-    const isAdmin = await this.getAdminByEmail(user.email);
-    if (isAdmin) throw new BadRequestException();
+    const isAdmin = await this.getAdminByEmail(user.email)
+    if (isAdmin) throw new BadRequestException()
 
     if (user.deletedAt) {
       const restoreUser = await this.drizzle.db.execute(sql`
         UPDATE "Users"
         SET "deletedAt" = NULL
         WHERE "pid" = ${pid} AND "deletedAt" IS NOT NULL
-        `);
-      return "user restored successfully";
+        `)
+      return 'user restored successfully'
     }
-    return "user already restored";
+    return 'user already restored'
   }
 
   async deleteUser(pid: string) {
-    const user = await this.getUserByPid(pid);
+    const user = await this.getUserByPid(pid)
     if (!user) {
-      throw new NotFoundException("User not found");
+      throw new NotFoundException('User not found')
     }
     if (user.deletedAt === null) {
       await this.drizzle.db.execute(sql`
         UPDATE "Users"
         SET "deletedAt" = ${new Date()}
         WHERE "pid" = ${pid} AND "deletedAt" IS NULL
-        `);
-      return "soft delete successfully";
+        `)
+      return 'soft delete successfully'
     }
-    return "user deleted already";
+    return 'user deleted already'
   }
 
   async getUserId(pid: string) {
-    const user = await this.getUserByPid(pid);
-    return user.id;
+    const user = await this.getUserByPid(pid)
+    return user.id
   }
 
   public async updatePasswordResetToken(pid: string, token: string) {
@@ -151,49 +151,49 @@ export class UsersService {
       UPDATE "Users"
       SET "passwordResetToken" = ${token}, "passwordResetTokenExpires"=${new Date(Date.now() + 3600 * 1000)}
       WHERE "pid" = ${pid};
-    `);
+    `)
   }
 
   async findUserByEmail(email: string): Promise<any> {
     return this.drizzle.db.query.user.findFirst({
       where: eq(databaseSchema.user.email, email),
-    });
+    })
   }
 
   async getUserByEmail(email: string, roles: Role[]): Promise<any> {
     if (roles.includes(Role.ADMIN)) {
       return this.drizzle.db.query.admin.findFirst({
         where: eq(databaseSchema.admin.email, email),
-      });
+      })
     } else if (roles.includes(Role.USER)) {
       return this.drizzle.db.query.user.findFirst({
         where: eq(databaseSchema.user.email, email),
-      });
+      })
     }
   }
 
   async getUserByPhone(phone: string): Promise<any> {
     return this.drizzle.db.query.user.findFirst({
       where: eq(databaseSchema.user.phone, phone),
-    });
+    })
   }
 
   async getUserByPid(pid: string): Promise<any> {
     return this.drizzle.db.query.user.findFirst({
       where: eq(databaseSchema.user.pid, pid),
-    });
+    })
   }
 
   async getAdminByPid(pid: string): Promise<any> {
     return this.drizzle.db.query.admin.findFirst({
       where: eq(databaseSchema.admin.pid, pid),
-    });
+    })
   }
 
   async getAdminByEmail(email: string): Promise<any> {
     return this.drizzle.db.query.admin.findFirst({
       where: eq(databaseSchema.admin.email, email),
-    });
+    })
   }
 
   async markEmailAsConfirmed(email: string) {
@@ -201,17 +201,17 @@ export class UsersService {
       UPDATE "Users"
       SET "isEmailConfirmed" = true
       WHERE "email" = ${email};
-    `);
+    `)
   }
 
   async setRefreshToken(
     pid: string,
     refreshToken: string | null,
-    roles: Role[]
+    roles: Role[],
   ) {
-    let hashedRefreshToken: string | null = null;
+    let hashedRefreshToken: string | null = null
     if (refreshToken) {
-      hashedRefreshToken = await bcrypt.hash(refreshToken, 8);
+      hashedRefreshToken = await bcrypt.hash(refreshToken, 8)
     }
 
     if (roles.includes(Role.ADMIN)) {
@@ -219,30 +219,30 @@ export class UsersService {
         UPDATE "Admins"
         SET "refreshToken" = ${hashedRefreshToken}
         WHERE "pid" = ${pid};
-      `);
+      `)
 
       const admin = await this.drizzle.db.query.admin.findFirst({
         where: eq(databaseSchema.admin.pid, pid),
-      });
+      })
 
-      if (!admin) throw new NotFoundException("Admin not found");
-      return admin;
+      if (!admin) throw new NotFoundException('Admin not found')
+      return admin
     }
 
     const query = sql`
     UPDATE "Users"
     SET "refreshToken" = ${hashedRefreshToken}
     WHERE "pid" = ${pid};
-  `;
+  `
 
-    await this.drizzle.db.execute(query);
+    await this.drizzle.db.execute(query)
 
     const user = await this.drizzle.db.query.user.findFirst({
       where: eq(databaseSchema.user.pid, pid),
-    });
+    })
 
-    if (!user) throw new NotFoundException("User not found");
-    return user;
+    if (!user) throw new NotFoundException('User not found')
+    return user
   }
 
   async getAllUsers(): Promise<any> {
@@ -250,7 +250,7 @@ export class UsersService {
       .select()
       .from(databaseSchema.user)
       .where(isNull(databaseSchema.user.deletedAt))
-      .orderBy(asc(databaseSchema.user.id));
+      .orderBy(asc(databaseSchema.user.id))
 
     const sanitizedUsers = allUsers.map((allUsers) => {
       const {
@@ -262,11 +262,11 @@ export class UsersService {
         refreshToken,
         deletedAt,
         ...userdata
-      } = allUsers;
-      return userdata;
-    });
-    const data = sanitizedUsers;
-    return { data };
+      } = allUsers
+      return userdata
+    })
+    const data = sanitizedUsers
+    return { data }
   }
 
   async getUnverifiedAccounts(): Promise<any> {
@@ -276,9 +276,9 @@ export class UsersService {
       .where(
         and(
           eq(databaseSchema.user.isEmailConfirmed, false),
-          isNull(databaseSchema.user.deletedAt)
-        )
-      );
+          isNull(databaseSchema.user.deletedAt),
+        ),
+      )
     const sanitizedUsers = unverifiedUsers.map((user) => {
       const {
         id,
@@ -289,11 +289,11 @@ export class UsersService {
         refreshToken,
         deletedAt,
         ...userdata
-      } = user;
-      return userdata;
-    });
-    const data = sanitizedUsers;
-    return { data };
+      } = user
+      return userdata
+    })
+    const data = sanitizedUsers
+    return { data }
   }
 
   async getLockedAccounts(): Promise<any> {
@@ -303,9 +303,9 @@ export class UsersService {
       .where(
         and(
           isNotNull(databaseSchema.user.accountLockedUntil),
-          isNull(databaseSchema.user.deletedAt)
-        )
-      );
+          isNull(databaseSchema.user.deletedAt),
+        ),
+      )
     const sanitizedUsers = unverifiedUsers.map((user) => {
       const {
         id,
@@ -316,11 +316,11 @@ export class UsersService {
         refreshToken,
         // deletedAt,
         ...userdata
-      } = user;
-      return userdata;
-    });
-    const data = sanitizedUsers;
-    return { data };
+      } = user
+      return userdata
+    })
+    const data = sanitizedUsers
+    return { data }
   }
 
   async getNewUsers(): Promise<any> {
@@ -328,7 +328,7 @@ export class UsersService {
       .select()
       .from(databaseSchema.user)
       .orderBy(asc(databaseSchema.user.createdAt))
-      .limit(5);
+      .limit(5)
     const sanitizedUsers = newUsers.map((user) => {
       const {
         id,
@@ -338,11 +338,11 @@ export class UsersService {
         profilePicture,
         refreshToken,
         ...userdata
-      } = user;
-      return userdata;
-    });
-    const data = sanitizedUsers;
-    return { data };
+      } = user
+      return userdata
+    })
+    const data = sanitizedUsers
+    return { data }
   }
 
   async getActiveAccountsCount(): Promise<any> {
@@ -353,11 +353,11 @@ export class UsersService {
         and(
           eq(databaseSchema.user.isEmailConfirmed, true),
           isNull(databaseSchema.user.accountLockedUntil),
-          isNull(databaseSchema.user.deletedAt)
-        )
-      );
+          isNull(databaseSchema.user.deletedAt),
+        ),
+      )
 
-    return result[0]?.count || 0;
+    return result[0]?.count || 0
   }
 
   async getInActiveAccountsCount(): Promise<any> {
@@ -368,37 +368,37 @@ export class UsersService {
         and(
           or(
             eq(databaseSchema.user.isEmailConfirmed, false),
-            isNotNull(databaseSchema.user.accountLockedUntil)
+            isNotNull(databaseSchema.user.accountLockedUntil),
           ),
-          isNull(databaseSchema.user.deletedAt)
-        )
-      );
+          isNull(databaseSchema.user.deletedAt),
+        ),
+      )
 
-    return result[0]?.count || 0;
+    return result[0]?.count || 0
   }
 
   async getUnverifiedAccountsCount(): Promise<any> {
     const result = await this.drizzle.db
       .select({ count: count() })
       .from(databaseSchema.user)
-      .where(or(eq(databaseSchema.user.isEmailConfirmed, false)));
+      .where(or(eq(databaseSchema.user.isEmailConfirmed, false)))
 
-    return result[0]?.count || 0;
+    return result[0]?.count || 0
   }
 
   async getLockedUsersCount(): Promise<any> {
     const result = await this.drizzle.db
       .select({ count: count() })
       .from(databaseSchema.user)
-      .where(isNotNull(databaseSchema.user.accountLockedUntil));
+      .where(isNotNull(databaseSchema.user.accountLockedUntil))
 
-    return result[0]?.count || 0;
+    return result[0]?.count || 0
   }
 
   async totalAccountsCount(): Promise<any> {
     const result = await this.drizzle.db
       .select({ count: count() })
-      .from(databaseSchema.user);
-    return result[0]?.count || 0;
+      .from(databaseSchema.user)
+    return result[0]?.count || 0
   }
 }

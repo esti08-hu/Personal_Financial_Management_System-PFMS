@@ -5,7 +5,6 @@ import ClickOutside from "./ClickOutside";
 import {
   HiChevronDown,
   HiOutlineUserCircle,
-  HiOutlinePhone,
   HiOutlineCog,
   HiOutlineLogout,
 } from "react-icons/hi";
@@ -13,11 +12,13 @@ import apiClient from "@/app/lib/axiosConfig";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/navigation";
+import type { User } from "@/app/types/user";
+
 
 const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const router = useRouter();
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     const fetchAdminData = async () => {
@@ -46,7 +47,7 @@ const DropdownUser = () => {
   };
 
   return (
-    <ClickOutside onClick={() => setDropdownOpen(false)} className="relative">
+    <ClickOutside onClick={() => setDropdownOpen(false)} className="relative z-999">
       <Link
         onClick={() => setDropdownOpen(!dropdownOpen)}
         className="flex items-center gap-4"
@@ -78,7 +79,7 @@ const DropdownUser = () => {
       {/* <!-- Dropdown Start --> */}
       {dropdownOpen && (
         <div
-          className={`absolute right-0 mt-4 flex w-62.5 flex-col rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark`}
+          className={"absolute right-0 mt-4 flex w-62.5 flex-col rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark"}
         >
           <ul className="flex flex-col text-graydark gap-5 border-b border-stroke px-6 py-7.5 dark:border-strokedark">
             <li>
@@ -101,6 +102,7 @@ const DropdownUser = () => {
             </li>
           </ul>
           <button
+          type="button"
             onClick={handleLogout}
             className="flex text-graydark items-center gap-3.5 px-6 py-4 text-sm font-medium duration-300 ease-in-out hover:text-[#00ABCD] lg:text-base"
           >
@@ -109,15 +111,7 @@ const DropdownUser = () => {
           </button>
         </div>
       )}
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        closeOnClick
-        pauseOnHover
-        draggable
-        pauseOnFocusLoss
-      />
+     
     </ClickOutside>
   );
 };

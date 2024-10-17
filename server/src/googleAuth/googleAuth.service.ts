@@ -7,7 +7,6 @@ import {
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { sql } from "drizzle-orm";
-import { Response } from "express";
 import { Auth, google } from "googleapis";
 import * as jwt from "jsonwebtoken";
 import { JwtPayload } from "jsonwebtoken";
@@ -115,27 +114,20 @@ export class GoogleAuthenticationService {
 
     const user = await this.usersService.findUserByEmail(email);
 
-    if (user.accountLockedUntil && new Date() < user.accountLockedUntil) {
-      const now = new Date()
-      const timeDifference = user.accountLockedUntil.getTime() - now.getTime() // Difference in milliseconds
+    if (user) {
+      if (user.accountLockedUntil && new Date() < user.accountLockedUntil) {
+        const now = new Date();
+        const timeDefference =
+          user.accountLockedUntil.getTime() - now.getTime();
 
-      const minutes = Math.floor(timeDifference / 1000 / 60)
+        const minutes = Math.floor(timeDefference / 1000 / 60);
+        throw new UnauthorizedException(
+          `Account locked. Try again in ${minutes} minutes.`
+        );
+      }
+      if (user && isSignup === "signin") return this.handleRegisteredUser(user);
+  }
 
-      throw new UnauthorizedException(
-        `Account is locked. Try again after ${minutes} minutes.`,
-      )
-    } if (user.accountLockedUntil && new Date() < user.accountLockedUntil) {
-      const now = new Date()
-      const timeDifference = user.accountLockedUntil.getTime() - now.getTime() // Difference in milliseconds
-
-      const minutes = Math.floor(timeDifference / 1000 / 60)
-
-      throw new UnauthorizedException(
-        `Account is locked. Try again after ${minutes} minutes.`,
-      )
-    }
-    
-    if (user && isSignup === "signin") return this.handleRegisteredUser(user);
     if (!user && isSignup === "signup")
       return this.googleRegister(decodedToken);
     if (user) throw new BadRequestException("Email is already registered");

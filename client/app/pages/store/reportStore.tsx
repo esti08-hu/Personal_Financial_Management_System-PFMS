@@ -1,18 +1,6 @@
-import create from "zustand";
-import axios from "axios";
+import { create } from "zustand";
 import apiClient from "@/app/lib/axiosConfig";
 import { toast } from "react-toastify";
-
-type Transaction = {
-  id: string;
-  data: ReportData | null;
-  loading: boolean;
-  userId: string;
-  type: string;
-  amount: number; // Change to number type
-  date: string;
-  description: string;
-};
 
 interface ReportData {
   income: number;
@@ -40,10 +28,10 @@ export const useReportStore = create<ReportStore>((set) => ({
       const userId = userIdResponse.data;
 
       const expenceResponse = await apiClient.get(
-        `/transaction/expense${userId}`
+        `/transaction/expense/${userId}`
       );
       const incomeResponse = await apiClient.get(
-        `/transaction/income${userId}`
+        `/transaction/income/${userId}`
       );
 
       // Calculate the report data from transactions

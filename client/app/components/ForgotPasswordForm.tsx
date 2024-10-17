@@ -10,12 +10,10 @@ import { z } from "zod";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Loader from "./admin components/common/Loader";
+import Loader from "../common/Loader";
 
 const ForgotPasswordForm = () => {
-  const router = useRouter();
-
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [formData, setFormData] = useState({
     email: "",
   });
@@ -39,23 +37,17 @@ const ForgotPasswordForm = () => {
           withCredentials: true,
         }
       );
-
       const { message } = response.data;
-
       toast.success(message);
     } catch (err) {
       if (err instanceof z.ZodError) {
-        const fieldErrors: Record<string, string> = {};
+        const fieldErrors: { [key: string]: string } = {};
         err.errors.forEach((error) => {
           fieldErrors[error.path[0]] = error.message;
         });
         setErrors(fieldErrors);
       } else if (axios.isAxiosError(err)) {
-        if (
-          err.response?.data.message === "Please confirm your email to Login"
-        ) {
-          setConfirmedMessage(true);
-        } else {
+        {
           toast.error(
             err.response?.data.message || "An unexpected error occurred."
           );
@@ -86,7 +78,7 @@ const ForgotPasswordForm = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="absolute w-full h-full flex justify-center items-center z-50"
-            style={{ backgroundColor: "rgba(0, 0, 0, 0.25)" }}
+            style={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
           >
             <Loader />
           </motion.div>
@@ -189,11 +181,6 @@ const ForgotPasswordForm = () => {
           className="object-cover rounded-[20px] shadow-md"
         />
       </div>
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-      />
     </motion.div>
   );
 };

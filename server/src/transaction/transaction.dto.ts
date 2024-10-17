@@ -1,26 +1,40 @@
-import { IsNumber, IsString } from "class-validator";
+import { IsNumber, IsString } from 'class-validator'
 
 export class CreateTransactionDto {
   @IsNumber()
-  userId: number;
-  @IsString()
-  type: string;
+  userId: number
   @IsNumber()
-  amount: number;
+  balance: number
+  @IsNumber()
+  accountId: number
   @IsString()
-  date: string;
+  type: string
+  @IsNumber()
+  amount: number
   @IsString()
-  description: string;
+  createdAt: string
+  @IsString()
+  description: string
 }
 
 export class UpdateTransactionDto {
   @IsString()
-  type: string;
+  type: string
   @IsNumber()
-  amount: number;
+  accountId: number
+  @IsNumber()
+  amount: number
   @IsString()
-  date: string;
+  createdAt: string
   @IsString()
-  description: string;
+  description: string
+  @IsNumber()
+  balance: number
 }
 
+export class DeleteTransactionDto {
+  @IsNumber()
+  balance: number
+  @IsNumber()
+  accountId: number
+}

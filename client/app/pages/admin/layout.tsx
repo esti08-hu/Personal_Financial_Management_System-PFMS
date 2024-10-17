@@ -2,7 +2,7 @@
 import "../../css/satoshi.css";
 import "../../css/style.css";
 import React, { useEffect, useState } from "react";
-import Loader from "../../components/admin components/common/Loader";
+import Loader from "../../common/Loader";
 
 export default function RootLayout({
   children,

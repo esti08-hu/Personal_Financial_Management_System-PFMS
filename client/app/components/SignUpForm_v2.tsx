@@ -3,7 +3,7 @@
 import { Icon } from "react-icons-kit";
 import { eyeOff } from "react-icons-kit/feather/eyeOff";
 import { eye } from "react-icons-kit/feather/eye";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -17,7 +17,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../styles/style.css";
 import { Privacy, Terms } from "../common/terma&privacy";
-import Loader from "./admin components/common/Loader";
+import Loader from "../common/Loader";
 
 const SignupForm = () => {
   const router = useRouter();
@@ -31,7 +31,7 @@ const SignupForm = () => {
   const [showConfetti, setShowConfetti] = useState(false);
   const [passwordError, setPasswordError] = useState("");
   const [isPasswordValid, setIsPasswordValid] = useState(false);
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [type, setType] = useState("password");
   const [icon, setIcon] = useState(eyeOff);
   // State for loading indicator
@@ -58,7 +58,7 @@ const SignupForm = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true); // Show loading indicator
 
@@ -78,13 +78,13 @@ const SignupForm = () => {
       }, 4000);
     } catch (err) {
       if (err instanceof z.ZodError) {
-        const fieldErrors = {};
+        const fieldErrors: { [key: string]: string } = {};
         err.errors.forEach((error) => {
-          fieldErrors[error.path[0]] = error.message;
+          fieldErrors[error.path[0] as string] = error.message;
         });
         setErrors(fieldErrors);
-      } else if (axios.isAxiosError(err)) {
-        toast.error(err.response.data.message);
+      } else if (err instanceof AxiosError) {
+        toast.error(err.response?.data.message);
         // Handle specific server responses
       } else {
         toast.error("An unexpected error occurred. Please try again.");
@@ -102,6 +102,7 @@ const SignupForm = () => {
     const hasUpperCase = /[A-Z]/;
 
     if (password.length < minLength) {
+
       setPasswordError("Password must be at least 8 characters long.");
     } else if (!hasNumber.test(password)) {
       setPasswordError("Password must contain at least one number.");
@@ -140,12 +141,13 @@ const SignupForm = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="absolute w-full h-full flex justify-center items-center z-50"
-            style={{ backgroundColor: "rgba(0, 0, 0, 0.25)" }}
+            style={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
           >
             <Loader />
           </motion.div>
         )}
       </AnimatePresence>
+
 
       <div className="">
         <div>
@@ -379,11 +381,6 @@ const SignupForm = () => {
           className="object-cover rounded-[20px] shadow-md"
         />
       </div>
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-      />
     </motion.div>
   );
 };

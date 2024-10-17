@@ -1,23 +1,24 @@
 import { create } from "zustand";
-import axios from "axios";
 import apiClient from "@/app/lib/axiosConfig";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { message, Modal } from "antd";
+import type { EditAccount, NewAccount } from "@/app/types/acc";
 
 type Account = {
-    id: string;
-    userId: string;
-    type: string;
-    balance: string;
-    title: string;
-  };
-  
+  id: number;
+  userId: number;
+  type: string;
+  balance: number;
+  title: string;
+  createdAt: string;
+};
 
 interface AccountState {
   accounts: Account[];
-  addAccount: (account: Account) => Promise<void>;
-  editAccount: (account: Account) => Promise<void>;
-  deleteAccount: (id: string) => Promise<void>;
+  addAccount: (account: NewAccount) => Promise<void>;
+  editAccount: (account: EditAccount) => Promise<void>;
+  deleteAccount: (id: number) => Promise<void>;
   fetchAccounts: () => Promise<void>;
 }
 
@@ -27,7 +28,6 @@ export const useAccountStore = create<AccountState>((set) => ({
   addAccount: async (account) => {
     try {
       const userIdResponse = await apiClient.get("/user/userId");
-      
       const userId = userIdResponse.data;
 
       const accountWithUserId = { ...account, userId };
@@ -50,10 +50,7 @@ export const useAccountStore = create<AccountState>((set) => ({
 
   editAccount: async (account) => {
     try {
-      const response = await apiClient.put(
-        `/account/${account.id}`,
-        account
-      );
+      const response = await apiClient.put(`/account/${account.id}`, account);
       set((state) => ({
         accounts: state.accounts.map((a) =>
           a.id === account.id ? response.data : a
@@ -66,37 +63,41 @@ export const useAccountStore = create<AccountState>((set) => ({
     }
   },
 
-  deleteAccount: async (id: string) => {
-    try {
-      const confirmDelete = window.confirm(
-        "Are you sure you want to delete this Account?"
-      );
-      if (confirmDelete) {
-        await apiClient.delete(`/account/${id}`);
+  deleteAccount: async (id: number) => {
+    Modal.confirm({
+      title: "Are you sure you want to delete this account?",
+      content: "This action cannot be undone.",
+      okText: "Yes, delete",
+      okType: "danger",
+      cancelText: "No, cancel",
+      async onOk() {
+        try {
+          await apiClient.delete(`/account/${id}`);
         set((state) => ({
           accounts: state.accounts.filter((a) => a.id !== id),
         }));
-        toast.success("Account deleted successfully");
-      }
-    } catch (error) {
-      console.error("Failed to delete account", error);
-      toast.error("Failed to delete account");
-    }
+        message.success("Account deleted successfully");
+
+        } catch (error) {
+          console.error("Failed to delete account", error);
+          message.error("Failed to delete account");
+        }
+      },
+    });
+
   },
 
   fetchAccounts: async () => {
     try {
       const userIdResponse = await apiClient.get("/user/userId");
       const userId = userIdResponse.data;
-      
-      const response = await apiClient.get(
-        `/account/${userId}`
-      );
+
+      const response = await apiClient.get(`/account/${userId}`);
+      console.log(response.data);
       set({ accounts: response.data });
     } catch (error) {
       console.error("Failed to fetch Accounts", error);
       toast.error("Failed to fetch accounts");
-
     }
   },
 }));

@@ -14,7 +14,6 @@ export class UpdateAdminDto {
   @IsString()
   @ApiProperty()
   email: string
-
 }
 
 export class RegisterUserDto {
@@ -59,17 +58,17 @@ export class PaginationParamsDto {
   @Type(() => Number)
   @IsNumber()
   @Min(0)
-  offset: number;
- 
+  offset: number
+
   @IsOptional()
   @Type(() => Number)
   @IsNumber()
   @Min(1)
-  limit: number | null = null;
- 
+  limit: number | null = null
+
   @IsOptional()
   @Type(() => Number)
   @IsNumber()
   @Min(0)
-  idsToSkip: number;
+  idsToSkip: number
 }

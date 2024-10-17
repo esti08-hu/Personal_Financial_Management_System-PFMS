@@ -1,12 +1,9 @@
-"use client";
-
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import apiClient from "@/app/lib/axiosConfig";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { motion, AnimatePresence } from "framer-motion";
-import { Line } from "react-chartjs-2";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -17,9 +14,11 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+
 import { FaWallet, FaExchangeAlt, FaChartLine } from "react-icons/fa";
-import Loader from "@/app/components/admin components/common/Loader";
+import Loader from "@/app/common/Loader";
 import { Tag } from "antd";
+import DashboardCard from "./Dashboard/DashboardCard";
 
 ChartJS.register(
   CategoryScale,
@@ -32,14 +31,13 @@ ChartJS.register(
 );
 
 interface User {
-  firstName: string;
-  lastName: string;
+  name: string;
   id: string;
 }
 
 interface Transaction {
   id: string;
-  date: string;
+  createdAt: string;
   type: string;
   amount: number;
   description: string;
@@ -54,7 +52,7 @@ interface Budget {
   date: string;
 }
 
-const UserDashboard: React.FC = () => {
+const UserDashboard = () => {
   const [user, setUser] = useState<User | null>(null);
   const [balance, setBalance] = useState<number>(0);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -62,40 +60,41 @@ const UserDashboard: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
   const [transactionCount, setTransactionCount] = useState<number>(0);
+  const [isClient, setIsClient] = useState(false);
+
+  const fetchUserData = async () => {
+    try {
+      const userResponse = await apiClient.get("/auth/user-profile");
+      const transactionResponse = await apiClient.get(
+        `/transaction/recent/${userResponse.data.id}`
+      );
+      const balanceResponse = await apiClient.get(
+        `account/balance${userResponse.data.id}`
+      );
+      const transactionCountResponse = await apiClient.get(
+        `/transaction/count/${userResponse.data.id}`
+      );
+      const budgetResponse = await apiClient.get(
+        `/budget/${userResponse.data.id}`
+      );
+      setTransactionCount(transactionCountResponse.data);
+      setBudgets(budgetResponse.data);
+      setUser(userResponse.data);
+      setTransactions(transactionResponse.data);
+      setBalance(balanceResponse.data);
+      setIsLoading(false);
+    } catch (error) {
+      toast.error("Error fetching user data");
+      router.push("/pages/login");
+    }
+  };
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const userResponse = await apiClient.get("/auth/user-profile");
-        const transactionResponse = await apiClient.get(
-          `/transaction/recent${userResponse.data.id}`
-        );
-        const incomeResponse = await apiClient.get(
-          `/transaction/income${userResponse.data.id}`
-        );
-        const expenceResponse = await apiClient.get(
-          `/transaction/expense${userResponse.data.id}`
-        );
-        const transactionCountResponse = await apiClient.get(
-          `/transaction/count${userResponse.data.id}`
-        );
-        const budgetResponse = await apiClient.get(
-          `/budget/${userResponse.data.id}`
-        );
-        setTransactionCount(transactionCountResponse.data);
-        setBudgets(budgetResponse.data);
-        setUser(userResponse.data);
-        setTransactions(transactionResponse.data);
-        setBalance(incomeResponse.data - expenceResponse.data);
-        setIsLoading(false);
-      } catch (error) {
-        toast.error("Error fetching user data");
-        // router.push("/pages/login");
-      }
-    };
-
+    setIsClient(true);
     fetchUserData();
   }, [router]);
+
+  if (!isClient) return null;
 
   if (isLoading) {
     return (
@@ -103,7 +102,7 @@ const UserDashboard: React.FC = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="flex justify-center items-center w-full h-screen"
+        className="flex justify-center items-center w-full h-46"
       >
         <Loader />
       </motion.div>
@@ -115,7 +114,7 @@ const UserDashboard: React.FC = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      className="userdashboard-container w-full min-h-screen rounded-md p-4"
+      className="userdashboard-container w-full rounded-md p-4"
     >
       <div className="w-full mx-auto">
         <h3 className="text-xl font-bold text-graydark mb-8">
@@ -163,7 +162,7 @@ const UserDashboard: React.FC = () => {
                       className="border-b border-gray"
                     >
                       <td className="p-3 sm:text-sm lg:!text-lg">
-                        {new Date(transaction.date).toLocaleDateString()}
+                        {new Date(transaction.createdAt).toLocaleDateString()}
                       </td>
                       <td className="p-3 text-sm sm:text-xs md:text-sm lg:!text-lg">
                         <Tag
@@ -181,9 +180,9 @@ const UserDashboard: React.FC = () => {
                       </td>
 
                       <td className="p-3 text-sm sm:text-xs md:text-sm">
-                      {transaction.type === "Deposit" ? "+" : "-"}
-                      {transaction.amount} ETB
-                    </td>
+                        {transaction.type === "Deposit" ? "+" : "-"}
+                        {transaction.amount} ETB
+                      </td>
                       <td className="p-3 sm:text-xs !text-sm lg:!text-lg">
                         {transaction.description}
                       </td>
@@ -195,27 +194,8 @@ const UserDashboard: React.FC = () => {
           </div>
         </div>
       </div>
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-      />
     </motion.div>
   );
 };
-
-const DashboardCard: React.FC<{
-  icon: React.ReactNode;
-  title: string;
-  value: string;
-}> = ({ icon, title, value }) => (
-  <motion.div className="p-6 flex items-center justify-center rounded-sm border border-stroke bg-white px-7.5 py-6 shadow-default">
-    <div className="mr-4 md:text-sm">{icon}</div>
-    <div>
-      <h3 className="text-sm font-semibold text-gray-600">{title}</h3>
-      <p className="text-lg font-bold text-center">{value}</p>
-    </div>
-  </motion.div>
-);
 
 export default UserDashboard;

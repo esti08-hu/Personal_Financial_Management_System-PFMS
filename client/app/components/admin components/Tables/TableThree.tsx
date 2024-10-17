@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { Form, Input, message, Modal, Pagination, Select } from "antd";
+import { Form, message, Modal, Pagination, Select } from "antd";
 import {
   HiOutlineArrowCircleUp,
   HiOutlinePencilAlt,
   HiOutlineTrash,
 } from "react-icons/hi";
-import { User } from "@/app/types/user";
+import type { User } from "@/app/types/user";
 import apiClient from "@/app/lib/axiosConfig";
 
 const TableThree: React.FC<{ users: User[]; fetchUsers: () => void }> = ({
@@ -28,7 +28,6 @@ const TableThree: React.FC<{ users: User[]; fetchUsers: () => void }> = ({
   const paginatedUsers = users.slice(startIndex, endIndex);
 
   const handleDelete = async (user: User) => {
-    console.log(fetchUsers);
     Modal.confirm({
       title: "Are you sure you want to delete this user?",
       content: "This action cannot be undone.",
@@ -147,8 +146,8 @@ const TableThree: React.FC<{ users: User[]; fetchUsers: () => void }> = ({
             </tr>
           </thead>
           <tbody>
-            {paginatedUsers.map((user, key) => (
-              <tr key={key} className="hover:bg-gray-100 dark:hover:bg-meta-4">
+            {paginatedUsers.map((user) => (
+              <tr key={user.pid} className="hover:bg-gray-100 dark:hover:bg-meta-4">
                 <td className="border-b border-[#eee] px-4 py-5 pl-9 dark:border-strokedark xl:pl-11">
                   <h5 className="font-medium text-black dark:text-white">
                     {user.name}

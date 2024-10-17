@@ -52,17 +52,17 @@ export class PasswordService {
       throw new NotFoundException('user not found')
     }
 
-    if(user.password) {
+    if (user.password) {
       const isTheRightPassword = await this.isTheRightPassword(
         currentPassword,
         user.password,
       )
-      
+
       if (!isTheRightPassword) {
         throw new UnauthorizedException('Current password is not the right.')
       }
     }
-    
+
     const newHashedPassword = await this.hashPassword(newPassword)
 
     await this.drizzle.db.execute(sql`

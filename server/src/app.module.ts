@@ -7,12 +7,12 @@ import { DatabaseModule } from './database/database.module'
 import { UsersModule } from './users/users.module'
 import 'dotenv/config'
 import * as Joi from '@hapi/joi'
+import { AccountModule } from './account/account.module'
+import { BudgetModule } from './budget/budget.module'
 import { EmailConfirmationModule } from './emailConfirmation/emailConfirmation.module'
 import { GoogleAuthenticationModule } from './googleAuth/googleAuth.module'
 import { PermissionsModule } from './permissions/permissions.module'
 import { TransactionModule } from './transaction/transaction.module'
-import { AccountModule } from './account/account.module'
-import { BudgetModule } from './budget/budget.module'
 
 @Module({
   imports: [

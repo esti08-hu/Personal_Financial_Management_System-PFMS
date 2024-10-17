@@ -1,8 +1,7 @@
 import apiClient from "@/app/lib/axiosConfig";
-import { ApexOptions } from "apexcharts";
+import type { ApexOptions } from "apexcharts";
 import React, { useEffect, useState } from "react";
 import ReactApexChart from "react-apexcharts";
-import { HiChevronDown } from "react-icons/hi";
 
 interface ChartThreeState {
   series: number[];

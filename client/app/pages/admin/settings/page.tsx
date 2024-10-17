@@ -1,15 +1,16 @@
 "use client";
 
-import Breadcrumb from "../../../components/admin components/Breadcrumbs/Breadcrumb";
+import Breadcrumb from "../../../common/Breadcrumbs/Breadcrumb";
 import DefaultLayout from "../../../components/admin components/Layouts/DefaultLayout";
 import { HiOutlineUser, HiOutlineMail } from "react-icons/hi";
 import { useEffect, useState } from "react";
 import apiClient from "@/app/lib/axiosConfig";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import type { Admin } from "@/app/types/user";
 
 const Settings = () => {
-  const [admin, setAdmin] = useState(null);
+  const [admin, setAdmin] = useState<Admin | null>(null);
   const [formData, setFormData] = useState({
     fullName: "",
     // phoneNumber: "",
@@ -36,7 +37,7 @@ const Settings = () => {
     fetchAdminData();
   }, []);
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -57,7 +58,7 @@ const Settings = () => {
   const handleEditAdmin = async () => {
     try {
       const response = await apiClient.put(
-        `/user/update-admin${admin.pid}`,
+        `/user/update-admin${admin?.pid}`,
         formData
       );
       if (response.status === 200) {
@@ -122,7 +123,7 @@ const Settings = () => {
                         name="phoneNumber"
                         id="phoneNumber"
                         placeholder="+990 *** ****"
-                        value={formData.phoneNumber}
+                        value={"formData.phoneNumber"}
                         onChange={handleInputChange}
                       />
                     </div>
@@ -172,7 +173,7 @@ const Settings = () => {
         </div>
       </div>
       <ToastContainer
-        position="top-right"
+        position="top-center"
         autoClose={5000}
         hideProgressBar={false}
         closeOnClick

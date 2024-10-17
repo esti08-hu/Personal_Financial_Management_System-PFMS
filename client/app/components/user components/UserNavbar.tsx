@@ -1,28 +1,29 @@
 "use client";
 
-import apiClient from "@/app/lib/axiosConfig";
-import "flowbite";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { HiX, HiOutlineMenu, HiChevronDown } from "react-icons/hi";
+import { HiOutlineMenu, HiChevronDown } from "react-icons/hi";
 import DropdownUser from "./DropdownUser";
 
 const UserNavbar = () => {
-  const router = useRouter();
   const [activeLink, setActiveLink] = useState("");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const currentPath = usePathname();
 
   useEffect(() => {
+    import("flowbite").then(({initFlowbite}) => {
+      initFlowbite();
+    });
+
     setActiveLink(currentPath);
   }, [currentPath]);
 
   return (
-    <div className="navbar-container bg-[#00ABCD]">
+    <div className="navbar-container bg-[#00ABCD] z-99">
       <nav className="bg-[#00ABCD] border-gray">
         <div className="w-full flex justify-between items-center px-4 md:px-0 md:w-3/4 mx-auto">
           {/* Logo */}
@@ -33,7 +34,6 @@ const UserNavbar = () => {
               src={"/images/logo/logo.png"}
               alt="Logo"
             />
-
 
           </Link>
 
@@ -89,8 +89,8 @@ const UserNavbar = () => {
                     data-dropdown-toggle="transactionDropdownHover"
                     data-dropdown-trigger="hover"
                     className={`text-white font-medium text-sm text-center inline-flex items-center py-2 hover:text-[#22577A] ${
-                      currentPath === "/pages/user/Transaction" ||
-                      currentPath === "/pages/user/Transaction/add-transaction"
+                      currentPath === "/pages/user/transaction" ||
+                      currentPath === "/pages/user/tansaction/addTransaction"
                         ? "border-b-4 border-[#22577A]"
                         : ""
                     }`}
@@ -105,7 +105,7 @@ const UserNavbar = () => {
                     <ul className="py-2 text-sm text-gray-700">
                       <li>
                         <Link
-                          href="/pages/user/Transaction/"
+                          href="/pages/user/transaction/transactionList"
                           className="block px-4 py-2 hover:bg-[#cfeaf2] text-[#22577A]"
                         >
                           Transaction List
@@ -113,7 +113,7 @@ const UserNavbar = () => {
                       </li>
                       <li>
                         <Link
-                          href="/pages/user/Transaction/add-transaction"
+                          href="/pages/user/transaction/addTransaction"
                           className="block px-4 py-2 hover:bg-[#cfeaf2] text-[#22577A]"
                         >
                           Add Transaction
@@ -129,8 +129,8 @@ const UserNavbar = () => {
                     data-dropdown-toggle="budgetDropdownHover"
                     data-dropdown-trigger="hover"
                     className={`text-white font-medium text-sm text-center inline-flex items-center py-2 hover:text-[#22577A] ${
-                      currentPath === "/pages/user/Budget/set-budget" ||
-                      currentPath === "/pages/user/Budget/manage-budget"
+                      currentPath === "/pages/user/budget/setBudget" ||
+                      currentPath === "/pages/user/budget/manageBudget"
                         ? "border-b-4 border-[#22577A]"
                         : ""
                     }`}
@@ -149,7 +149,7 @@ const UserNavbar = () => {
                     >
                       <li>
                         <Link
-                          href="/pages/user/Budget/manage-budget"
+                          href="/pages/user/budget/manageBudget"
                           className="block px-4 py-2 hover:bg-[#cfeaf2] text-[#22577A]"
                         >
                           Manage Budget
@@ -157,7 +157,7 @@ const UserNavbar = () => {
                       </li>
                       <li>
                         <Link
-                          href="/pages/user/Budget/set-budget"
+                          href="/pages/user/budget/setBudget"
                           className="block px-4 py-2 hover:bg-[#cfeaf2] text-[#22577A]"
                         >
                           Set Budget
@@ -173,8 +173,8 @@ const UserNavbar = () => {
                     data-dropdown-toggle="accountDropdownHover"
                     data-dropdown-trigger="hover"
                     className={`text-white font-medium text-sm text-center inline-flex items-center py-2 hover:text-[#22577A] ${
-                      currentPath === "/pages/user/Account/add-account" ||
-                      currentPath === "/pages/user/Account/manage-account"
+                      currentPath === "/pages/user/account/addAccount" ||
+                      currentPath === "/pages/user/account/manageAccount"
                         ? "border-b-4 border-[#22577A]"
                         : ""
                     }`}
@@ -193,7 +193,7 @@ const UserNavbar = () => {
                     >
                       <li>
                         <Link
-                          href="/pages/user/Account/manage-account"
+                          href="/pages/user/account/manageAccount"
                           className="block px-4 py-2 hover:bg-[#cfeaf2] text-[#22577A]"
                         >
                           Manage Account
@@ -201,7 +201,7 @@ const UserNavbar = () => {
                       </li>
                       <li>
                         <Link
-                          href="/pages/user/Account/add-account"
+                          href="/pages/user/account/addAccount"
                           className="block px-4 py-2 hover:bg-[#cfeaf2] text-[#22577A]"
                         >
                           Add Account
@@ -214,9 +214,9 @@ const UserNavbar = () => {
                 {/* Add more similar dropdown menus for Budget and Account */}
                 <li className="flex items-center justify-center">
                   <Link
-                    href="/pages/user/Report"
+                    href="/pages/user/report"
                     className={`block py-2  text-white hover:text-[#22577A] ${
-                      currentPath === "/pages/user/Report"
+                      currentPath === "/pages/user/report"
                         ? "border-b-4 border-[#22577A]"
                         : ""
                     }`}
@@ -232,7 +232,7 @@ const UserNavbar = () => {
         </div>
       </nav>
       <ToastContainer
-        position="top-right"
+        position="top-center"
         autoClose={5000}
         hideProgressBar={false}
       />
