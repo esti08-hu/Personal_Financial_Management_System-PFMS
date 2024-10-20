@@ -45,11 +45,11 @@
    ```bash
    # Install server dependencies
    cd server
-   npm install
+   pnpm install
 
    # Install client dependencies
    cd ../client
-   npm install
+   pnpm install
    ```
 
 3. **Set up environment variables:**
