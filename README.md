@@ -43,17 +43,17 @@
 
 2. **Install dependencies:**
    ```bash
-   # Install backend dependencies
-   cd backend
+   # Install server dependencies
+   cd server
    npm install
 
-   # Install frontend dependencies
-   cd ../frontend
+   # Install client dependencies
+   cd ../client
    npm install
    ```
 
 3. **Set up environment variables:**
-   - Create a `.env` file in both `backend` and `frontend` directories.
+   - Create a `.env` file in both `server` and `client` directories.
    - Add necessary environment variables, including database connection details, JWT secret, etc.
 
 4. **Run with Docker:**
