@@ -5,7 +5,6 @@ const nextConfig = {
         domains: ['lh3.googleusercontent.com'], // Add the domain here
     },
     reactStrictMode: true,
-    swcMinify: true,
 };
 
 export default nextConfig;
