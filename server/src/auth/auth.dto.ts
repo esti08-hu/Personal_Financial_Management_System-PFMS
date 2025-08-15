@@ -17,6 +17,10 @@ export class AuthDto {
   @ApiProperty({ required: false })
   @IsBoolean()
   isAdmin: boolean
+
+  @ApiProperty({ required: false })
+  @IsBoolean()
+  rememberMe: boolean 
 }
 
 export class EmailVerificationDto {
