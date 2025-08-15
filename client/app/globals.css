@@ -1,3 +1,239 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-satoshi);
+  /* Enhanced color definitions for Tailwind v4 */
+  --color-background: 0 0% 100%;
+  --color-foreground: 222.2 84% 4.9%;
+  --color-card: 0 0% 100%;
+  --color-card-foreground: 222.2 84% 4.9%;
+  --color-popover: 0 0% 100%;
+  --color-popover-foreground: 222.2 84% 4.9%;
+  --color-primary: 188 100% 40%;
+  --color-primary-foreground: 210 40% 98%;
+  --color-secondary: 210 40% 96%;
+  --color-secondary-foreground: 222.2 84% 4.9%;
+  --color-muted: 210 40% 96%;
+  --color-muted-foreground: 215.4 16.3% 46.9%;
+  --color-accent: 210 40% 96%;
+  --color-accent-foreground: 222.2 84% 4.9%;
+  --color-destructive: 0 84.2% 60.2%;
+  --color-destructive-foreground: 210 40% 98%;
+  --color-border: 214.3 31.8% 91.4%;
+  --color-input: 214.3 31.8% 91.4%;
+  --color-ring: 188 100% 40%;
+  --color-chart-1: 188 100% 40%;
+  --color-chart-2: 197 100% 48%;
+  --color-chart-3: 205 100% 56%;
+  --color-chart-4: 213 100% 64%;
+  --color-chart-5: 221 100% 72%;
+  /* Additional semantic colors */
+  --color-success: 142 76% 36%;
+  --color-success-foreground: 0 0% 100%;
+  --color-warning: 48 96% 53%;
+  --color-warning-foreground: 0 0% 0%;
+  --color-info: 217 91% 60%;
+  --color-info-foreground: 0 0% 100%;
+  --color-background-secondary: 0 0% 98%;
+  /* Dark mode color definitions */
+  --color-dark-background: 222.2 84% 4.9%;
+  --color-dark-foreground: 210 40% 98%;
+  --color-dark-card: 222.2 84% 8%;
+  --color-dark-card-foreground: 210 40% 98%;
+  --color-dark-popover: 222.2 84% 8%;
+  --color-dark-popover-foreground: 210 40% 98%;
+  --color-dark-primary: 188 100% 40%;
+  --color-dark-primary-foreground: 222.2 84% 4.9%;
+  --color-dark-secondary: 217.2 32.6% 17.5%;
+  --color-dark-secondary-foreground: 210 40% 98%;
+  --color-dark-muted: 217.2 32.6% 25%;
+  --color-dark-muted-foreground: 215 20.2% 65.1%;
+  --color-dark-accent: 217.2 32.6% 25%;
+  --color-dark-accent-foreground: 210 40% 98%;
+  --color-dark-destructive: 0 62.8% 30.6%;
+  --color-dark-destructive-foreground: 210 40% 98%;
+  --color-dark-border: 217.2 32.6% 25%;
+  --color-dark-input: 217.2 32.6% 25%;
+  --color-dark-ring: 188 100% 40%;
+  --color-dark-chart-1: 188 100% 40%;
+  --color-dark-chart-2: 197 100% 48%;
+  --color-dark-chart-3: 205 100% 56%;
+  --color-dark-chart-4: 213 100% 64%;
+  --color-dark-chart-5: 221 100% 72%;
+  --color-dark-success: 142 76% 36%;
+  --color-dark-success-foreground: 0 0% 100%;
+  --color-dark-warning: 48 96% 53%;
+  --color-dark-warning-foreground: 0 0% 0%;
+  --color-dark-info: 217 91% 60%;
+  --color-dark-info-foreground: 0 0% 100%;
+  --color-dark-background-secondary: 220 20% 10%;
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 188 100% 40%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 188 100% 40%;
+    --chart-1: 188 100% 40%;
+    --chart-2: 197 100% 48%;
+    --chart-3: 205 100% 56%;
+    --chart-4: 213 100% 64%;
+    --chart-5: 221 100% 72%;
+    --radius: 0.5rem;
+    /* Additional semantic colors */
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
+    --warning: 48 96% 53%;
+    --warning-foreground: 0 0% 0%;
+    --info: 217 91% 60%;
+    --info-foreground: 0 0% 100%;
+    --background-secondary: 0 0% 98%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 188 100% 40%;
+    --primary-foreground: 222.2 84% 4.9%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 188 100% 40%;
+    --chart-1: 188 100% 40%;
+    --chart-2: 197 100% 48%;
+    --chart-3: 205 100% 56%;
+    --chart-4: 213 100% 64%;
+    --chart-5: 221 100% 72%;
+    /* Additional semantic colors for dark mode */
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
+    --warning: 48 96% 53%;
+    --warning-foreground: 0 0% 0%;
+    --info: 217 91% 60%;
+    --info-foreground: 0 0% 100%;
+    --background-secondary: 220 20% 10%;
+    /* Enhanced dark mode colors for better consistency */
+    --card: 222.2 84% 8%;
+    --popover: 222.2 84% 8%;
+    --muted: 217.2 32.6% 25%;
+    --accent: 217.2 32.6% 25%;
+    --border: 217.2 32.6% 25%;
+    --input: 217.2 32.6% 25%;
+  }
+}
+
+@layer base {
+  body {
+    /* Enhanced background with subtle gradient */
+    background: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--background-secondary)) 100%);
+    color: hsl(var(--foreground));
+    font-feature-settings: "rlig" 1, "calt" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
+  }
+}
+
+/* Enhanced custom component styling for better visual appeal */
+@layer components {
+  .dashboard-card {
+    @apply bg-card/80 backdrop-blur-sm border border-border/50 shadow-sm hover:shadow-md transition-all duration-200;
+  }
+
+  .dashboard-gradient {
+    background: linear-gradient(135deg, hsl(var(--primary) / 0.05) 0%, hsl(var(--primary) / 0.02) 100%);
+  }
+
+  .transaction-row {
+    @apply hover:bg-muted/50 transition-colors duration-150;
+  }
+
+  .stat-card {
+    @apply bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20;
+  }
+  
+  /* Enhanced button styles */
+  .btn-primary {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:scale-95 transition-all duration-200 ease-in-out;
+  }
+  
+  .btn-secondary {
+    @apply bg-secondary text-secondary-foreground hover:bg-secondary/80 focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2 active:scale-95 transition-all duration-200 ease-in-out;
+  }
+  
+  .btn-success {
+    @apply bg-success text-success-foreground hover:bg-success/90 focus-visible:ring-2 focus-visible:ring-success focus-visible:ring-offset-2 active:scale-95 transition-all duration-200 ease-in-out;
+  }
+  
+  .btn-warning {
+    @apply bg-warning text-warning-foreground hover:bg-warning/90 focus-visible:ring-2 focus-visible:ring-warning focus-visible:ring-offset-2 active:scale-95 transition-all duration-200 ease-in-out;
+  }
+  
+  .btn-destructive {
+    @apply bg-destructive text-destructive-foreground hover:bg-destructive/90 focus-visible:ring-2 focus-visible:ring-destructive focus-visible:ring-offset-2 active:scale-95 transition-all duration-200 ease-in-out;
+  }
+  
+  /* Enhanced input styles */
+  .input-field {
+    @apply border border-input bg-background rounded-md px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200;
+  }
+  
+  .input-field:focus {
+    border-color: hsl(var(--primary));
+    box-shadow: 0 0 0 3px hsla(var(--primary), 0.3);
+  }
+  
+  /* Enhanced card styles */
+  .enhanced-card {
+    @apply rounded-xl border bg-card text-card-foreground shadow transition-all duration-200 hover:shadow-md;
+  }
+  
+  .enhanced-card:hover {
+    transform: translateY(-2px);
+  }
+  
+  .enhanced-card:active {
+    transform: translateY(0);
+  }
+  
+  /* Enhanced badge styles */
+  .enhanced-badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2;
+  }
+  
+  .enhanced-badge:hover {
+    transform: scale(1.05);
+  }
+  
+  .enhanced-badge:active {
+    transform: scale(0.95);
+  }
+}
