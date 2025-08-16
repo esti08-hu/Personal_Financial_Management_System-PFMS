@@ -1,239 +1,454 @@
 @import "tailwindcss";
 
-@theme inline {
-  --font-sans: var(--font-inter);
-  --font-display: var(--font-satoshi);
-  /* Enhanced color definitions for Tailwind v4 */
-  --color-background: 0 0% 100%;
-  --color-foreground: 222.2 84% 4.9%;
-  --color-card: 0 0% 100%;
-  --color-card-foreground: 222.2 84% 4.9%;
-  --color-popover: 0 0% 100%;
-  --color-popover-foreground: 222.2 84% 4.9%;
-  --color-primary: 188 100% 40%;
-  --color-primary-foreground: 210 40% 98%;
-  --color-secondary: 210 40% 96%;
-  --color-secondary-foreground: 222.2 84% 4.9%;
-  --color-muted: 210 40% 96%;
-  --color-muted-foreground: 215.4 16.3% 46.9%;
-  --color-accent: 210 40% 96%;
-  --color-accent-foreground: 222.2 84% 4.9%;
-  --color-destructive: 0 84.2% 60.2%;
-  --color-destructive-foreground: 210 40% 98%;
-  --color-border: 214.3 31.8% 91.4%;
-  --color-input: 214.3 31.8% 91.4%;
-  --color-ring: 188 100% 40%;
-  --color-chart-1: 188 100% 40%;
-  --color-chart-2: 197 100% 48%;
-  --color-chart-3: 205 100% 56%;
-  --color-chart-4: 213 100% 64%;
-  --color-chart-5: 221 100% 72%;
-  /* Additional semantic colors */
-  --color-success: 142 76% 36%;
-  --color-success-foreground: 0 0% 100%;
-  --color-warning: 48 96% 53%;
-  --color-warning-foreground: 0 0% 0%;
-  --color-info: 217 91% 60%;
-  --color-info-foreground: 0 0% 100%;
-  --color-background-secondary: 0 0% 98%;
-  /* Dark mode color definitions */
-  --color-dark-background: 222.2 84% 4.9%;
-  --color-dark-foreground: 210 40% 98%;
-  --color-dark-card: 222.2 84% 8%;
-  --color-dark-card-foreground: 210 40% 98%;
-  --color-dark-popover: 222.2 84% 8%;
-  --color-dark-popover-foreground: 210 40% 98%;
-  --color-dark-primary: 188 100% 40%;
-  --color-dark-primary-foreground: 222.2 84% 4.9%;
-  --color-dark-secondary: 217.2 32.6% 17.5%;
-  --color-dark-secondary-foreground: 210 40% 98%;
-  --color-dark-muted: 217.2 32.6% 25%;
-  --color-dark-muted-foreground: 215 20.2% 65.1%;
-  --color-dark-accent: 217.2 32.6% 25%;
-  --color-dark-accent-foreground: 210 40% 98%;
-  --color-dark-destructive: 0 62.8% 30.6%;
-  --color-dark-destructive-foreground: 210 40% 98%;
-  --color-dark-border: 217.2 32.6% 25%;
-  --color-dark-input: 217.2 32.6% 25%;
-  --color-dark-ring: 188 100% 40%;
-  --color-dark-chart-1: 188 100% 40%;
-  --color-dark-chart-2: 197 100% 48%;
-  --color-dark-chart-3: 205 100% 56%;
-  --color-dark-chart-4: 213 100% 64%;
-  --color-dark-chart-5: 221 100% 72%;
-  --color-dark-success: 142 76% 36%;
-  --color-dark-success-foreground: 0 0% 100%;
-  --color-dark-warning: 48 96% 53%;
-  --color-dark-warning-foreground: 0 0% 0%;
-  --color-dark-info: 217 91% 60%;
-  --color-dark-info-foreground: 0 0% 100%;
-  --color-dark-background-secondary: 220 20% 10%;
-}
-
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 188 100% 40%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222.2 84% 4.9%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96%;
-    --accent-foreground: 222.2 84% 4.9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 188 100% 40%;
-    --chart-1: 188 100% 40%;
-    --chart-2: 197 100% 48%;
-    --chart-3: 205 100% 56%;
-    --chart-4: 213 100% 64%;
-    --chart-5: 221 100% 72%;
+    /* RGB values for background/foreground */
+    --background: 255 255 255;
+    --foreground: 17 24 39;
+
+    /* HSL values for design system colors */
+    --color-background: 0 0% 100%;
+    --color-foreground: 222.2 84% 4.9%;
+    --color-card: 0 0% 100%;
+    --color-card-foreground: 222.2 84% 4.9%;
+    --color-popover: 0 0% 100%;
+    --color-popover-foreground: 222.2 84% 4.9%;
+
+    /* Primary brand colors - Sky blue theme */
+    --color-primary: 204 86% 53%;
+    --color-primary-foreground: 0 0% 100%;
+
+    /* Secondary colors */
+    --color-secondary: 210 40% 96%;
+    --color-secondary-foreground: 222.2 84% 4.9%;
+    --color-muted: 210 40% 96%;
+    --color-muted-foreground: 215.4 16.3% 46.9%;
+    --color-accent: 210 40% 96%;
+    --color-accent-foreground: 222.2 84% 4.9%;
+
+    /* Semantic colors */
+    --color-destructive: 0 84.2% 60.2%;
+    --color-destructive-foreground: 210 40% 98%;
+    --color-success: 142 76% 36%;
+    --color-success-foreground: 0 0% 100%;
+    --color-warning: 48 96% 53%;
+    --color-warning-foreground: 0 0% 0%;
+    --color-info: 217 91% 60%;
+    --color-info-foreground: 0 0% 100%;
+
+    /* UI colors */
+    --color-border: 214.3 31.8% 91.4%;
+    --color-input: 214.3 31.8% 91.4%;
+    --color-ring: 204 86% 53%;
     --radius: 0.5rem;
-    /* Additional semantic colors */
-    --success: 142 76% 36%;
-    --success-foreground: 0 0% 100%;
-    --warning: 48 96% 53%;
-    --warning-foreground: 0 0% 0%;
-    --info: 217 91% 60%;
-    --info-foreground: 0 0% 100%;
-    --background-secondary: 0 0% 98%;
+
+    /* Chart colors - Sky blue theme */
+    --color-chart-1: 204 86% 53%;
+    --color-chart-2: 262 83% 58%;
+    --color-chart-3: 24 95% 53%;
+    --color-chart-4: 142 76% 36%;
+    --color-chart-5: 0 84% 60%;
+
+    /* Financial colors */
+    --color-income: 142 76% 36%;
+    --color-income-foreground: 0 0% 100%;
+    --color-expense: 0 84% 60%;
+    --color-expense-foreground: 0 0% 100%;
+    --color-investment: 262 83% 58%;
+    --color-investment-foreground: 0 0% 100%;
+    --color-savings: 188 100% 40%;
+    --color-savings-foreground: 0 0% 100%;
+    --color-budget: 48 96% 53%;
+    --color-budget-foreground: 0 0% 0%;
+
+    /* Background variations */
+    --color-background-secondary: 0 0% 98%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 188 100% 40%;
-    --primary-foreground: 222.2 84% 4.9%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 188 100% 40%;
-    --chart-1: 188 100% 40%;
-    --chart-2: 197 100% 48%;
-    --chart-3: 205 100% 56%;
-    --chart-4: 213 100% 64%;
-    --chart-5: 221 100% 72%;
-    /* Additional semantic colors for dark mode */
-    --success: 142 76% 36%;
-    --success-foreground: 0 0% 100%;
-    --warning: 48 96% 53%;
-    --warning-foreground: 0 0% 0%;
-    --info: 217 91% 60%;
-    --info-foreground: 0 0% 100%;
-    --background-secondary: 220 20% 10%;
-    /* Enhanced dark mode colors for better consistency */
-    --card: 222.2 84% 8%;
-    --popover: 222.2 84% 8%;
-    --muted: 217.2 32.6% 25%;
-    --accent: 217.2 32.6% 25%;
-    --border: 217.2 32.6% 25%;
-    --input: 217.2 32.6% 25%;
+    /* RGB values for background/foreground */
+    --background: 17 24 39;
+    --foreground: 255 255 255;
+
+    /* HSL values for design system colors */
+    --color-background: 222.2 84% 4.9%;
+    --color-foreground: 210 40% 98%;
+    --color-card: 222.2 84% 8%;
+    --color-card-foreground: 210 40% 98%;
+    --color-popover: 222.2 84% 8%;
+    --color-popover-foreground: 210 40% 98%;
+
+    /* Primary colors in dark mode */
+    --color-primary: 204 86% 60%;
+    --color-primary-foreground: 0 0% 100%;
+
+    /* Secondary colors in dark mode */
+    --color-secondary: 217.2 32.6% 17.5%;
+    --color-secondary-foreground: 210 40% 98%;
+    --color-muted: 217.2 32.6% 25%;
+    --color-muted-foreground: 215 20.2% 65.1%;
+    --color-accent: 217.2 32.6% 25%;
+    --color-accent-foreground: 210 40% 98%;
+
+    /* Semantic colors in dark mode */
+    --color-destructive: 0 62.8% 50%;
+    --color-destructive-foreground: 210 40% 98%;
+    --color-success: 142 76% 45%;
+    --color-success-foreground: 0 0% 100%;
+    --color-warning: 48 96% 60%;
+    --color-warning-foreground: 0 0% 0%;
+    --color-info: 217 91% 65%;
+    --color-info-foreground: 0 0% 100%;
+
+    /* UI colors in dark mode */
+    --color-border: 217.2 32.6% 25%;
+    --color-input: 217.2 32.6% 25%;
+    --color-ring: 204 86% 60%;
+
+    /* Chart colors in dark mode */
+    --color-chart-1: 204 86% 60%;
+    --color-chart-2: 262 83% 65%;
+    --color-chart-3: 24 95% 60%;
+    --color-chart-4: 142 76% 45%;
+    --color-chart-5: 0 84% 65%;
+
+    /* Financial colors in dark mode */
+    --color-income: 142 76% 45%;
+    --color-income-foreground: 0 0% 100%;
+    --color-expense: 0 84% 65%;
+    --color-expense-foreground: 0 0% 100%;
+    --color-investment: 262 83% 65%;
+    --color-investment-foreground: 0 0% 100%;
+    --color-savings: 188 100% 45%;
+    --color-savings-foreground: 0 0% 100%;
+    --color-budget: 48 96% 60%;
+    --color-budget-foreground: 0 0% 0%;
+
+    /* Background variations in dark mode */
+    --color-background-secondary: 220 20% 10%;
   }
 }
 
 @layer base {
+  * {
+    border-color: hsl(var(--color-border));
+  }
+
   body {
-    /* Enhanced background with subtle gradient */
-    background: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--background-secondary)) 100%);
-    color: hsl(var(--foreground));
-    font-feature-settings: "rlig" 1, "calt" 1;
+    background: rgb(var(--background));
+    color: rgb(var(--foreground));
+    font-feature-settings: "rlig" 1, "calt" 1, "kern" 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
     min-height: 100vh;
+  }
+
+  /* Enhanced scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--color-muted));
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--color-muted-foreground) / 0.3);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--color-muted-foreground) / 0.5);
+  }
+
+  /* Focus styles for accessibility */
+  :focus-visible {
+    outline: 2px solid hsl(var(--color-ring));
+    outline-offset: 2px;
+  }
+
+  /* Selection styles */
+  ::selection {
+    background: hsl(var(--color-primary) / 0.2);
+    color: hsl(var(--color-primary-foreground));
   }
 }
 
-/* Enhanced custom component styling for better visual appeal */
 @layer components {
-  .dashboard-card {
-    @apply bg-card/80 backdrop-blur-sm border border-border/50 shadow-sm hover:shadow-md transition-all duration-200;
-  }
-
-  .dashboard-gradient {
-    background: linear-gradient(135deg, hsl(var(--primary) / 0.05) 0%, hsl(var(--primary) / 0.02) 100%);
-  }
-
-  .transaction-row {
-    @apply hover:bg-muted/50 transition-colors duration-150;
-  }
-
-  .stat-card {
-    @apply bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20;
-  }
-  
-  /* Enhanced button styles */
+  /* Primary button */
   .btn-primary {
-    @apply bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:scale-95 transition-all duration-200 ease-in-out;
+    background: hsl(var(--color-primary));
+    color: hsl(var(--color-primary-foreground));
+    border-radius: calc(var(--radius) - 2px);
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
   }
-  
-  .btn-secondary {
-    @apply bg-secondary text-secondary-foreground hover:bg-secondary/80 focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2 active:scale-95 transition-all duration-200 ease-in-out;
+
+  .btn-primary:hover {
+    background: hsl(var(--color-primary) / 0.9);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px hsl(var(--color-primary) / 0.25);
   }
-  
-  .btn-success {
-    @apply bg-success text-success-foreground hover:bg-success/90 focus-visible:ring-2 focus-visible:ring-success focus-visible:ring-offset-2 active:scale-95 transition-all duration-200 ease-in-out;
-  }
-  
-  .btn-warning {
-    @apply bg-warning text-warning-foreground hover:bg-warning/90 focus-visible:ring-2 focus-visible:ring-warning focus-visible:ring-offset-2 active:scale-95 transition-all duration-200 ease-in-out;
-  }
-  
-  .btn-destructive {
-    @apply bg-destructive text-destructive-foreground hover:bg-destructive/90 focus-visible:ring-2 focus-visible:ring-destructive focus-visible:ring-offset-2 active:scale-95 transition-all duration-200 ease-in-out;
-  }
-  
-  /* Enhanced input styles */
-  .input-field {
-    @apply border border-input bg-background rounded-md px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200;
-  }
-  
-  .input-field:focus {
-    border-color: hsl(var(--primary));
-    box-shadow: 0 0 0 3px hsla(var(--primary), 0.3);
-  }
-  
-  /* Enhanced card styles */
-  .enhanced-card {
-    @apply rounded-xl border bg-card text-card-foreground shadow transition-all duration-200 hover:shadow-md;
-  }
-  
-  .enhanced-card:hover {
-    transform: translateY(-2px);
-  }
-  
-  .enhanced-card:active {
-    transform: translateY(0);
-  }
-  
-  /* Enhanced badge styles */
-  .enhanced-badge {
-    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2;
-  }
-  
-  .enhanced-badge:hover {
-    transform: scale(1.05);
-  }
-  
-  .enhanced-badge:active {
+
+  .btn-primary:active {
     transform: scale(0.95);
   }
+
+  /* Secondary button */
+  .btn-secondary {
+    background: hsl(var(--color-secondary));
+    color: hsl(var(--color-secondary-foreground));
+    border-radius: calc(var(--radius) - 2px);
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+  }
+
+  .btn-secondary:hover {
+    background: hsl(var(--color-secondary) / 0.9);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px hsl(var(--color-secondary) / 0.25);
+  }
+
+  .btn-secondary:active {
+    transform: scale(0.95);
+  }
+
+  /* Accent button */
+  .btn-accent {
+    background: hsl(var(--color-accent));
+    color: hsl(var(--color-accent-foreground));
+    border-radius: calc(var(--radius) - 2px);
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+  }
+
+  .btn-accent:hover {
+    background: hsl(var(--color-accent) / 0.9);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px hsl(var(--color-accent) / 0.25);
+  }
+
+  .btn-accent:active {
+    transform: scale(0.95);
+  }
+
+  /* Destructive button (red / delete) */
+  .btn-destructive {
+    background: hsl(var(--color-destructive));
+    color: hsl(var(--color-destructive-foreground));
+    border-radius: calc(var(--radius) - 2px);
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+  }
+
+  .btn-destructive:hover {
+    background: hsl(var(--color-destructive) / 0.9);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px hsl(var(--color-destructive) / 0.25);
+  }
+
+  .btn-destructive:active {
+    transform: scale(0.95);
+  }
+
+  /* Outline button (transparent with border) */
+  .btn-outline {
+    background: transparent;
+    color: hsl(var(--color-foreground));
+    border: 1px solid hsl(var(--color-foreground));
+    border-radius: calc(var(--radius) - 2px);
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+  }
+
+  .btn-outline:hover {
+    background: hsl(var(--color-foreground) / 0.1);
+  }
+
+  /* Small / icon buttons */
+  .btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem;
+    border-radius: calc(var(--radius) - 2px);
+    transition: all 0.2s ease-in-out;
+  }
+
+  .btn-icon:hover {
+    background: hsl(var(--color-primary) / 0.1);
+  }
+
+  /* Enhanced card styles */
+  .enhanced-card {
+    background: hsl(var(--color-card));
+    color: hsl(var(--color-card-foreground));
+    border: 1px solid hsl(var(--color-border));
+    border-radius: calc(var(--radius) + 4px);
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    transition: all 0.2s ease-in-out;
+  }
+
+  .enhanced-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+      0 4px 6px -4px rgb(0 0 0 / 0.1);
+  }
+
+  /* Financial card variants */
+  .financial-card {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--color-card)) 0%,
+      hsl(var(--color-card) / 0.95) 100%
+    );
+    border: 1px solid hsl(var(--color-border) / 0.6);
+    backdrop-filter: blur(8px);
+  }
+
+  .income-card {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--color-income) / 0.08) 0%,
+      hsl(var(--color-income) / 0.12) 100%
+    );
+    border: 1px solid hsl(var(--color-income) / 0.2);
+    color: hsl(var(--color-income));
+  }
+
+  .expense-card {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--color-expense) / 0.08) 0%,
+      hsl(var(--color-expense) / 0.12) 100%
+    );
+    border: 1px solid hsl(var(--color-expense) / 0.2);
+    color: hsl(var(--color-expense));
+  }
+
+  /* Background patterns */
+  .bg-grid-pattern {
+    background-image: linear-gradient(
+        hsl(var(--color-primary) / 0.1) 1px,
+        transparent 1px
+      ),
+      linear-gradient(
+        90deg,
+        hsl(var(--color-primary) / 0.1) 1px,
+        transparent 1px
+      );
+    background-size: 20px 20px;
+  }
+
+  /* Additional utility classes */
+  .text-primary {
+    color: hsl(var(--color-primary));
+  }
+  .bg-primary {
+    background-color: hsl(var(--color-primary));
+  }
+  .border-primary {
+    border-color: hsl(var(--color-primary));
+  }
+  .ring-primary {
+    box-shadow: 0 0 0 2px hsl(var(--color-primary));
+  }
+  .text-primary-foreground {
+    color: hsl(var(--color-primary-foreground));
+  }
+  .bg-primary-foreground {
+    background-color: hsl(var(--color-primary-foreground));
+  }
+  .text-success {
+    color: hsl(var(--color-success));
+  }
+  .text-warning {
+    color: hsl(var(--color-warning));
+  }
+  .text-error {
+    color: hsl(var(--color-destructive));
+  }
+  .text-info {
+    color: hsl(var(--color-info));
+  }
+  .text-foreground {
+    color: hsl(var(--color-foreground));
+  }
+  .bg-foreground {
+    background-color: hsl(var(--color-foreground));
+  }
+  .text-muted {
+    color: hsl(var(--color-muted-foreground));
+  }
+  .bg-muted {
+    background-color: hsl(var(--color-muted));
+  }
+
+  /* Enhanced input styles */
+  .input-enhanced {
+    background: hsl(var(--color-background));
+    border: 1px solid hsl(var(--color-input));
+    border-radius: calc(var(--radius) - 2px);
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    transition: all 0.2s ease-in-out;
+  }
+
+  .input-enhanced:focus {
+    outline: none;
+    border-color: hsl(var(--color-primary));
+    box-shadow: 0 0 0 3px hsl(var(--color-primary) / 0.1);
+  }
+
+  .input-enhanced::placeholder {
+    color: hsl(var(--color-muted-foreground));
+  }
+
+  .recharts-tooltip-wrapper,
+  .recharts-default-tooltip,
+  .custom-tooltip-class {
+    background: hsl(var(--color-card)) !important;
+    color: hsl(var(--color-card-foreground)) !important;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+}
+
+/* Custom animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease-out;
 }
