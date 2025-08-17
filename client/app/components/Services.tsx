@@ -1,103 +1,99 @@
-import React from "react";
-import Image from "next/image";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { TrendingUp, PiggyBank, Target } from "lucide-react"
+import Image from "next/image"
 
 const Services = () => {
+  const services = [
+    {
+      icon: <TrendingUp className="h-8 w-8 text-primary" />,
+      title: "Budgeting and Expense Tracking",
+      description:
+        "Create and manage household budgets, categorize expenses, and track spending patterns over time with intelligent insights.",
+      image: "/images/services1.png",
+      features: ["Smart categorization", "Real-time tracking", "Spending insights"],
+    },
+    {
+      icon: <PiggyBank className="h-8 w-8 text-primary" />,
+      title: "Income and Savings Management",
+      description:
+        "Track and record all sources of income including salaries, investments, and other revenue streams with automated reporting.",
+      image: "/images/services2.png",
+      features: ["Multiple income sources", "Automated tracking", "Savings goals"],
+    },
+    {
+      icon: <Target className="h-8 w-8 text-primary" />,
+      title: "Financial Goal Setting",
+      description:
+        "Set meaningful financial goals and monitor progress with personalized recommendations to stay on track.",
+      image: "/images/services3.png",
+      features: ["Goal tracking", "Progress monitoring", "Smart recommendations"],
+    },
+  ]
+
   return (
-    <div
-      id="services"
-      className="services-container w-full mb-16 flex flex-col justify-center items-center"
-    >
-      <div className="text-section mt-10 mb-10 flex flex-col justify-center items-center w-full">
-        <h5 className="text-gray-500">-- OUR SERVICES</h5>
-      </div>
-      <div className="services container flex flex-col gap-16 justify-center items-center pt-10 pb-10 rounded-lg ">
-        <div className="flex flex-col items-center gap-6 w-3/4">
-          <div className="flex items-center justify-around gap-20 w-full">
-            <div className="flex flex-col gap-4 w-1/2">
-              <h2 className="text-2xl font-bold text-[#22577A] ">
-                Budgeting and Expense Tracking
-              </h2>
-              <p className="w-3/4">
-                The ability to create and manage a household budget, categorize
-                expenses, and track spending patterns over time.
-              </p>
-              {/* <button className="bg-[#00ABCD] text-white p-2 rounded-lg w-1/3">
-                Read More
-              </button> */}
-            </div>
-            {/* Services Image */}
-            <div>
-              <Image
-                src="/images/services1.png"
-                width={250}
-                height={60}
-                alt="Retirement"
-              />
-            </div>
-          </div>
-          <hr className=" rounded bg-gray-600 w-1/3" />
+    <section id="services" className="py-24 bg-muted/30" style={{ background: "hsl(var(--color-primary) / 0.06)" }}>
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="text-center mb-16">
+          <Badge variant="secondary" className="mb-4 text-md uppercase bg-transparent">
+            -- Our Services
+          </Badge>
+          <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground mb-4">
+            Comprehensive Financial Tools
+          </h2>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            Everything you need to take control of your finances and build a secure future
+          </p>
         </div>
 
-        <div className="flex flex-col items-center gap-6 w-3/4">
-          <div className="flex items-center justify-around gap-20 w-full">
-            <div>
-              <Image
-                src="/images/services2.png"
-                width={250}
-                height={60}
-                alt="Retirement"
-              />
-            </div>
+        {/* Services Grid */}
+        <div className="space-y-16">
+          {services.map((service, index) => (
+            <Card key={index} className="overflow-hidden border-0 shadow-lg enhanced-card">
+              <div
+                className={`grid lg:grid-cols-2 gap-8 items-center ${index % 2 === 1 ? "lg:grid-flow-col-dense" : ""}`}
+              >
+                {/* Content */}
+                <div className={`p-8 lg:p-12 ${index % 2 === 1 ? "lg:col-start-2" : ""}`}>
+                  <CardHeader className="p-0 mb-6">
+                    <div className="flex items-center gap-3 mb-4">
+                      {service.icon}
+                      <CardTitle className="text-2xl font-display font-bold">{service.title}</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="p-0 space-y-6">
+                    <p className="text-lg text-muted-foreground leading-relaxed">{service.description}</p>
+                    <div className="flex flex-wrap gap-2">
+                      {service.features.map((feature, featureIndex) => (
+                        <Badge key={featureIndex} variant="outline">
+                          {feature}
+                        </Badge>
+                      ))}
+                    </div>
+                  </CardContent>
+                </div>
 
-            <div className="flex flex-col items-end gap-4 w-1/2">
-              <h2 className="text-2xl font-bold text-[#22577A] ">
-                Income and Savings Management
-              </h2>
-              <div className="">
-                <p className="">
-                  Tracking and recording all sources of income, such as
-                  salaries,
-                </p>
-                <p className="">investments, and other revenue streams.</p>
+                {/* Image */}
+                <div className={`relative p-8 ${index % 2 === 1 ? "lg:col-start-1" : ""}`}>
+                  <div className="relative">
+                    <Image
+                      src={service.image || "/placeholder.svg"}
+                      alt={service.title}
+                      width={400}
+                      height={300}
+                      className="w-full h-auto rounded-xl shadow-lg"
+                    />
+                    <div className="absolute -bottom-4 -right-4 w-full h-full bg-primary/10 rounded-xl -z-10" />
+                  </div>
+                </div>
               </div>
-              {/* <button className="bg-[#00ABCD] text-white p-2 rounded-lg w-1/3">
-                Read More
-              </button> */}
-            </div>
-            {/* Services Image */}
-          </div>
-          <hr className="rounded bg-gray-600 w-1/3" />
-        </div>
-
-        <div className="flex flex-col items-center gap-6 w-3/4">
-          <div className="flex items-center justify-around gap-20 w-full">
-            <div className="flex flex-col gap-4 w-1/2">
-              <h2 className="text-2xl font-bold text-[#22577A] ">
-                Financial Goal Setting{" "}
-              </h2>
-              <p className="w-3/4">
-                Monitoring progress towards these goals and adjusting plans as
-                needed to stay on track.
-              </p>
-              {/* <button className="bg-[#00ABCD] text-white p-2 rounded-lg w-1/3">
-                Read More
-              </button> */}
-            </div>
-            {/* Services Image */}
-            <div>
-              <Image
-                src="/images/services3.png"
-                width={250}
-                height={60}
-                alt="Retirement"
-              />
-            </div>
-          </div>
+            </Card>
+          ))}
         </div>
       </div>
-      <div className="w-52 h-0 border-b border-dashed border-2 border-gray-500 mt-16"></div>
-    </div>
-  );
-};
+    </section>
+  )
+}
 
-export default Services;
+export default Services

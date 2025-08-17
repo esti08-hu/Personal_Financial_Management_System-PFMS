@@ -177,10 +177,10 @@ const SetNewPasswordForm = () => {
               />
             </Link>
           </div>
-          <h1 className="text-2xl font-black text-[#22577A] mb-6">
+          <h1 className="text-2xl font-black text-primary mb-6">
             Set New Password
           </h1>
-          <p className="max-w-[450px] mb-10 text-[#6C7278]">
+          <p className="max-w-[450px] mb-10 text-muted-foreground">
             Please enter your new password and confirm it below to complete the
             update.{" "}
           </p>
@@ -215,11 +215,11 @@ const SetNewPasswordForm = () => {
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray focus:outline-none"
                 onClick={handleNewPasswordToggle}
               >
-                <Icon
-                  className={newPasswordIcon === eye ? "text-[#00ABCD]" : ""}
-                  icon={newPasswordIcon}
-                  size={20}
-                />
+                    <Icon
+                      className={newPasswordIcon === eye ? "text-primary" : ""}
+                      icon={newPasswordIcon}
+                      size={20}
+                    />
               </button>
             </div>
 
@@ -268,7 +268,7 @@ const SetNewPasswordForm = () => {
               >
                 <Icon
                   className={
-                    confirmPasswordIcon === eye ? "text-[#00ABCD]" : ""
+                    confirmPasswordIcon === eye ? "text-primary" : ""
                   }
                   icon={confirmPasswordIcon}
                   size={20}
@@ -288,7 +288,7 @@ const SetNewPasswordForm = () => {
             whileHover="hover"
             type="submit"
             disabled={isLoading}
-            className="w-full flex justify-center text-white bg-[#00ABCD] hover:bg-[#37a5bb] focus:ring-4 focus:outline-none focus:ring-blue-300 font-bold text-md px-5 py-2.5 text-center rounded-full transition-all duration-300 mb-6"
+            className="w-full flex justify-center text-white bg-primary hover:opacity-90 focus:ring-4 focus:outline-none font-bold text-md px-5 py-2.5 text-center rounded-full transition-all duration-300 mb-6"
           >
             {isLoading ? (
               <svg

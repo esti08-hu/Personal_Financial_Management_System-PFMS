@@ -1,42 +1,65 @@
-import Image from "next/image";
-import React from "react";
+import Image from "next/image"
+import { Button } from "@/components/ui/button"
+import { ArrowRight } from "lucide-react"
+import Link from "next/link"
 
 const Hero = () => {
   return (
-    <div
+    <section
       id="hero"
-      style={{ backgroundColor: "rgba(0, 172, 205, 0.25)" }}
-      className="hero-container flex items-center md:mt-20 lg:mt-20 w-full justify-center relative"
+      style={{ background: "hsl(var(--color-primary) / 0.06)" }}
+      className="relative min-h-screen flex items-center justify-center pt-20"
     >
-      <div className="hero flex flex-col md:flex-row h-full w-2/3 justify-around items-center p-10">
-        <div className="flex flex-col items-start justify-center max-w-fit h-96 gap-5 text-center md:text-left md:w-2/3">
-          <h1 className="lg:!text-4xl md:text-2xl font-black text-[#22577A] mb-6 w-full md:w-96">
-            Plan your future with confidence.
-          </h1>
-          <p className="text-xl md:text-xl font-bold text-[#00ABCD] w-full md:w-72">
-            Create and manage budgets effortlessly.
-          </p>
-          <a href="/pages/signup">
-            <button
-              type="button"
-              className="text-white border-2 bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 rounded-lg text-lg md:text-xl px-4 md:px-5 py-2 text-center me-2 mb-2"
-            >
-              Create account now
-            </button>
-          </a>
-        </div>
-        <div className="mt-6 md:mt-0">
-          <Image
-            src="/images/hero-img.png"
-            alt="Hero img"
-            width={400}
-            height={300}
-            className="w-full md:w-auto"
-          />
+      {/* Background Pattern */}
+      <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+      <div className="absolute inset-0 bg-gradient-to-t from-background/50 to-transparent"></div>
+
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
+          {/* Content */}
+          <div className="space-y-8 text-center lg:text-left">
+            <div className="space-y-4">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-foreground leading-tight">
+                Plan your future with <span className="text-primary">confidence</span>
+              </h1>
+              <p className="text-xl md:text-2xl text-muted-foreground font-medium">
+                Create and manage budgets effortlessly with our comprehensive financial tools.
+              </p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+              <Button size="lg" className="text-lg px-8 py-6 enhanced-badge" asChild>
+                <Link href="/pages/signup">
+                  Get Started Free
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+              <Button variant="outline" size="lg" className="text-lg px-8 py-6 enhanced-badge" asChild>
+                <Link href="#services">Learn More</Link>
+              </Button>
+            </div>
+          </div>
+
+          {/* Hero Image */}
+          <div className="relative">
+            <div className="relative z-10">
+              <Image
+                src="/images/hero-img.png"
+                alt="Financial planning dashboard"
+                width={600}
+                height={450}
+                className="w-full h-auto rounded-2xl shadow-2xl"
+                priority
+              />
+            </div>
+            {/* Background decoration */}
+            <div className="absolute -top-4 -right-4 w-full h-full bg-primary/30 rounded-2xl -z-10" />
+            <div className="absolute -top-8 -right-8 w-full h-full bg-primary/10 rounded-2xl -z-20" />
+          </div>
         </div>
       </div>
-    </div>
-  );
-};
+    </section>
+  )
+}
 
-export default Hero;
+export default Hero

@@ -97,10 +97,10 @@ const ForgotPasswordForm = () => {
               />
             </Link>
           </div>
-          <h1 className="text-2xl font-black text-[#22577A] mb-6">
+          <h1 className="text-2xl font-black text-primary mb-6">
             Forgot Password
           </h1>
-          <p className="mb-10 max-w-[450px] text-[#6C7278]">
+          <p className="mb-10 max-w-[450px] text-muted-foreground">
             Enter your email address below to receive instructions to reset your
             password.{" "}
           </p>
@@ -134,7 +134,7 @@ const ForgotPasswordForm = () => {
             whileHover="hover"
             type="submit"
             disabled={isLoading}
-            className="w-full flex justify-center text-white bg-[#00ABCD] hover:bg-[#37a5bb] focus:ring-4 focus:outline-none focus:ring-blue-300 font-bold text-md px-5 py-2.5 text-center rounded-full transition-all duration-300 mb-6"
+            className="w-full flex justify-center text-white bg-primary hover:opacity-90 focus:ring-4 focus:outline-none font-bold text-md px-5 py-2.5 text-center rounded-full transition-all duration-300 mb-6"
           >
             {isLoading ? (
               <svg
@@ -157,9 +157,8 @@ const ForgotPasswordForm = () => {
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                 />
               </svg>
-            ) : (
-              "Submit"
-            )}
+          ) : (
+              "Submit")}
           </motion.button>
 
           <label className="text-center">
