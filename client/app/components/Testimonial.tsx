@@ -1,107 +1,141 @@
-"use client";
-import React from "react";
-import { Splide, SplideSlide } from "@splidejs/react-splide";
-import "@splidejs/react-splide/css/skyblue";
-import "@splidejs/react-splide/css/sea-green";
-import Image from "next/image";
+"use client"
+import { useState, useEffect } from "react"
+import Image from "next/image"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { ChevronLeft, ChevronRight, Star, Quote } from "lucide-react"
 
 const testimonials = [
   {
     id: 1,
     name: "Sarah, Retail Manager",
     image: "/images/testimonial1.png",
-    text: "Using this personal financial system has been a game-changer for me...",
+    text: "Using this personal financial system has been a game-changer for me. I can now track my expenses, set budgets, and monitor my financial goals with ease. The intuitive interface makes managing my finances a breeze!",
   },
   {
     id: 2,
     name: "Michael, Small Business Owner",
     image: "/images/testimonial2.png",
-    text: "As a small business owner, I was struggling to keep track...",
+    text: "As a small business owner, I was struggling to keep track of my business expenses and personal finances separately. This system has helped me organize everything efficiently and make informed financial decisions.",
   },
   {
     id: 3,
     name: "Jenna, Marketing Coordinator",
     image: "/images/testimonial3.png",
-    text: "This personal financial system has been a game-changer for my family's financial well-being...",
+    text: "This personal financial system has been a game-changer for my family's financial well-being. The budgeting tools and expense tracking features have helped us save more and spend wisely.",
   },
-];
+]
 
 const Testimonial = () => {
+  const [currentIndex, setCurrentIndex] = useState(0)
+
+  // Auto-advance testimonials
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prevIndex) => (prevIndex === testimonials.length - 1 ? 0 : prevIndex + 1))
+    }, 5000)
+
+    return () => clearInterval(interval)
+  }, [])
+
+  const goToPrevious = () => {
+    setCurrentIndex(currentIndex === 0 ? testimonials.length - 1 : currentIndex - 1)
+  }
+
+  const goToNext = () => {
+    setCurrentIndex(currentIndex === testimonials.length - 1 ? 0 : currentIndex + 1)
+  }
+
   return (
-    <div id="testimonials" className="testimonial-container px-4 md:px-0">
-      <div className="text-section mb-10 flex flex-col justify-center items-center w-full">
-        <h5 className="text-gray-500 text-sm md:text-base">-- TESTIMONIALS</h5>
-      </div>
-      <div className="testimonial container flex justify-center items-center pt-4 pb-4 bg-[#E3F0F3] rounded-lg">
-        <Splide
-          aria-label="Testimonials"
-          className="rounded-sm w-full md:w-3/5"
-          options={{
-            type: "loop",
-            perPage: 1,
-            autoplay: true,
-            interval: 3000,
-            pauseOnHover: true,
-          }}
-        >
-          {testimonials.map((testimonial) => (
-            <SplideSlide
-              key={testimonial.id}
-              className="flex justify-center items-center w-full"
-            >
-              <div className="w-full bg-white rounded-lg flex flex-col p-4 md:p-8">
-                <div className="flex sm:flex-col justify-between gap-4 md:gap-4 items-center w-full">
-                  <div className="h-32 w-32 md:h-44 md:w-44 bg-[#00ABCD] rounded-r-full sm:rounded-full sm:!w-32 sm:!h-32 flex justify-center items-center">
-                    <Image
-                      src={testimonial.image}
-                      alt={`Testimonial from ${testimonial.name}`}
-                      className="p-3 md:p-5"
-                      width={200}
-                      height={200}
-                    />
-                  </div>
-                  <div className="text-center md:text-left">
-                    <h3 className="text-lg md:text-2xl font-bold font-mono text-[#22577A]">
-                      {testimonial.name}
-                    </h3>
-                  </div>
-                  <div className="bg-[#00A9CB] p-4 rounded-full h-fit">
-                    <Image
-                      src="/images/quote.png"
-                      alt="Quote img"
-                      width={20}
-                      height={20}
-                      className="md:w-6 md:h-6"
-                    />
+    <section id="testimonials" className="py-16 px-4 bg-gradient-to-br from-primary/10 to-primary/20">
+      <div className="container mx-auto max-w-6xl">
+        {/* Section Header */}
+        <div className="text-center mb-12">
+          <p className="text-sm font-medium text-muted-foreground tracking-wider uppercase mb-2">Testimonials</p>
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">What Our Users Say</h2>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Discover how MoneyMaster has transformed the financial lives of thousands of users
+          </p>
+        </div>
+
+        {/* Testimonial Carousel */}
+        <div className="relative max-w-4xl mx-auto">
+          <Card className="bg-white shadow-lg border-0">
+            <CardContent className="p-8 md:p-12">
+              <div className="flex flex-col md:flex-row items-center gap-8">
+                {/* User Image */}
+                <div className="flex-shrink-0">
+                  <div className="relative w-24 h-24 md:w-32 md:h-32 rounded-full bg-gradient-to-br from-primary to-primary/80 p-1">
+                    <div className="w-full h-full rounded-full bg-white p-2 flex items-center justify-center">
+                      <Image
+                        src={testimonials[currentIndex].image || "/placeholder.svg"}
+                        alt={`${testimonials[currentIndex].name} testimonial`}
+                        width={100}
+                        height={100}
+                        className="rounded-full object-cover"
+                      />
+                    </div>
                   </div>
                 </div>
-                <div className="flex justify-center gap-2 mt-4">
-                  <ul className="flex items-center">
-                    {[...Array(5)].map((_, index) => (
-                      <li key={index}>
-                        <Image
-                          src="/images/full-star.png"
-                          width={30}
-                          height={30}
-                          alt="Star"
-                        />
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="text-gray-500">5.0</div>
-                </div>
-                <div className="p-4 md:p-5 text-[#807E7E] flex justify-center items-center">
-                  <p className="w-full md:w-5/6 text-sm md:text-base text-center">
-                    {testimonial.text}
-                  </p>
+
+                {/* Testimonial Content */}
+                <div className="flex-1 text-center md:text-left">
+                  {/* Quote Icon */}
+                  <div className="mb-4">
+                    <Quote className="w-8 h-8 text-primary mx-auto md:mx-0" />
+                  </div>
+
+                  {/* Testimonial Text */}
+                  <blockquote className="text-lg md:text-xl text-muted-foreground leading-relaxed mb-6">
+                    "{testimonials[currentIndex].text}"
+                  </blockquote>
+
+                  {/* User Info and Rating */}
+                  <div className="space-y-3">
+                    <h4 className="text-xl font-semibold text-foreground">{testimonials[currentIndex].name}</h4>
+
+                    {/* Star Rating */}
+                    <div className="flex items-center justify-center md:justify-start gap-2">
+                      <div className="flex items-center">
+                        {[...Array(5)].map((_, index) => (
+                          <Star key={index} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                        ))}
+                      </div>
+                      <span className="text-sm font-medium text-muted-foreground">5.0</span>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </SplideSlide>
-          ))}
-        </Splide>
-      </div>
-    </div>
-  );
-};
+            </CardContent>
+          </Card>
 
-export default Testimonial;
+          {/* Navigation Buttons */}
+          <div className="flex items-center justify-center gap-4 mt-8">
+            <Button variant="outline" size="icon" onClick={goToPrevious} className="rounded-full">
+              <ChevronLeft className="w-4 h-4" />
+            </Button>
+
+            {/* Dots Indicator */}
+            <div className="flex items-center gap-2">
+              {testimonials.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentIndex(index)}
+                  className={`w-2 h-2 rounded-full transition-colors ${
+                    index === currentIndex ? "bg-primary" : "bg-muted"
+                  }`}
+                />
+              ))}
+            </div>
+
+            <Button variant="outline" size="icon" onClick={goToNext} className="rounded-full">
+              <ChevronRight className="w-4 h-4" />
+            </Button>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+export default Testimonial
