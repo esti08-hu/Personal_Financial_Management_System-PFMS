@@ -1,112 +1,129 @@
-"use client";
+"use client"
 
-import { useState, useEffect } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import { Link as ScrollLink } from "react-scroll";
-import { HiX, HiOutlineMenu } from "react-icons/hi";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from "react"
+import Image from "next/image"
+import Link from "next/link"
+import { Link as ScrollLink } from "react-scroll"
+import { Menu, X } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
+import { Button } from "@/components/ui/button"
+import { usePathname } from "next/navigation"
+import { cn } from "@/lib/utils"
 
 const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const [isOpen, setIsOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+  const pathname = usePathname()
 
-  // Handle scroll behavior
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    const handleScroll = () => setScrolled(window.scrollY > 50)
+    window.addEventListener("scroll", handleScroll)
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
 
-  // Navigation items
   const navItems = [
     { name: "HOME", to: "hero" },
     { name: "PROCESS", to: "working-process" },
     { name: "SERVICES", to: "services" },
     { name: "TESTIMONIALS", to: "testimonials" },
-  ];
+  ]
+
+  const isLanding = pathname === "/"
+  const navStyle: React.CSSProperties = isLanding
+    ? scrolled
+      ? { background: "hsl(var(--color-primary) / 0.8)" }
+      : { background: "hsl(var(--color-primary) / 0.2)" }
+    : scrolled
+    ? { background: "hsl(var(--color-primary) / 0.95)" }
+    : { background: "hsl(var(--color-primary) / 0.95)" };
 
   return (
     <motion.nav
-    style={!scrolled ? { backgroundColor: "rgba(0, 172, 205, 0.50)"  } : {}}
-    className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
-      scrolled ? "bg-cyan-500 shadow-lg text-white" : " !text-[#22577A]"
-    }`}
-  >
+      style={navStyle}
+      className={cn(
+        "fixed top-0 left-0 w-full z-50 transition-all duration-300",
+        isLanding
+          ? scrolled
+            ? "backdrop-blur border-b border-primary/30 navbar-bg-strong"
+            : "backdrop-blur-sm navbar-bg-opaque"
+          : scrolled
+          ? "backdrop-blur-sm border-b border-gray-200 navbar-bg"
+          : "backdrop-blur-sm navbar-bg"
+      )}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between w-full items-center h-16 md:h-20">
+        <div className="flex justify-between items-center h-16 md:h-20">
           {/* Logo */}
-          <Link href="#">
+          <Link href="/" className="flex-shrink-0">
             <Image
               width={110}
               height={32}
               src="/images/logo/moneymaster.png"
-              alt="Logo"
-              className=" w-auto"
+              alt="MoneyMaster Logo"
+              className="w-auto h-8 md:h-10"
             />
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-4 cursor-pointer">
-              {navItems.map((item) => (
-                <ScrollLink
-                  key={item.name}
-                  to={item.to}
-                  smooth={true}
-                  duration={500}
-                  className={`px-3 py-2 rounded-md text-sm font-medium ${
-                    scrolled
-                      ? "text-white hover:!text-[#22577A] "
-                      : "hover:!text-white !text-[#22577A]  hover:bg-opacity-20"
-                  } transition-colors duration-300`}
-                >
-                  {item.name}
-                </ScrollLink>
-              ))}
-            </div>
+          <div className="hidden md:flex items-center space-x-8">
+            {navItems.map((item) => (
+              <ScrollLink
+                key={item.name}
+                to={item.to}
+                smooth={true}
+                duration={500}
+                offset={-80}
+                spy={true}
+                activeClass="active-nav"
+                className={cn(
+                  "group relative inline-flex items-center text-sm font-medium transition-transform duration-200",
+                  "hover:scale-105",
+                  "cursor-pointer",
+                  scrolled ? "text-white" : "text-slate-700"
+                )}
+              >
+                <span className="relative z-10">{item.name}</span>
+                <span
+                  className={cn(
+                    "absolute left-0 -bottom-1 h-0.5 bg-current transition-all duration-200 nav-underline",
+                    "group-hover:w-full",
+                    "w-0"
+                  )}
+                />
+              </ScrollLink>
+            ))}
           </div>
 
-          {/* Desktop Sign In / Sign Up */}
-          <div className="hidden md:flex items-center space-x-4">
-            <Link href="/pages/login">
-            <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-4 py-2 rounded-md border border-stroke text-sm font-medium  text-cyan-400 to-cyan-600 bg-gray-2 hover:from-cyan-500 hover:to-cyan-700 transition-colors duration-300"
-              >
-                Sign In
-              </motion.button>
-            </Link>
-            <Link href="/pages/signup">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-4 py-2 rounded-md text-sm font-medium bg-gradient-to-r from-cyan-400 to-cyan-600 text-white hover:from-cyan-500 hover:to-cyan-700 transition-colors duration-300"
-              >
-                Sign Up
-              </motion.button>
-            </Link>
+          {/* Desktop Auth Buttons */}
+          <div className="hidden md:flex items-center space-x-3">
+            <Button
+              variant="ghost"
+              asChild
+              className={cn(
+                "rounded-full px-4 py-2 text-sm transition transform hover:scale-105 hover:bg-white/10 border",
+                scrolled ? "text-white border-white" : "text-slate-700 border-slate-700"
+              )}
+            >
+              <Link href="/pages/login">Sign In</Link>
+            </Button>
+            <Button
+              asChild
+              className="rounded-full bg-primary text-primary-foreground px-4 py-2 text-sm shadow-md hover:shadow-lg transform transition hover:scale-105"
+            >
+              <Link href="/pages/signup">Sign Up</Link>
+            </Button>
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="md:hidden">
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className={`inline-flex items-center justify-center p-2 rounded-md ${
-                scrolled ? "text-gray-800" : "text-white"
-              } focus:outline-none focus:ring-2  focus:ring-inset focus:ring-white`}
-            >
-              <span className="sr-only">Open main menu</span>
-              {isOpen ? (
-                <HiX className="block h-6 w-6" aria-hidden="true" />
-              ) : (
-                <HiOutlineMenu className="block h-6 w-6" aria-hidden="true" />
-              )}
-            </button>
-          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden"
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            <span className="sr-only">Open main menu</span>
+            {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </Button>
         </div>
       </div>
 
@@ -118,51 +135,47 @@ const Navbar = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className={`md:hidden max-w-fit border-br:rounded-sm ${
-              scrolled ? "bg-white" : "bg-graydark"
-            }`}
+            className="md:hidden !bg-primary/95 backdrop-blur-sm border-b border-gray-200"
           >
-            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 cursor-pointer">
+            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
               {navItems.map((item) => (
                 <ScrollLink
                   key={item.name}
                   to={item.to}
                   smooth={true}
                   duration={500}
+                  offset={-80}
+                  spy={true}
+                  activeClass="active-nav"
                   onClick={() => setIsOpen(false)}
-                  className={`block px-3 py-2 rounded-md text-base font-medium ${
-                    scrolled
-                      ? "text-graydark border border-white hover:border-gray"
-                      : "text-white hover:bg-gray"
-                  } transition-colors duration-300`}
+                  className={cn(
+                    "block px-3 py-2 text-base font-medium transition-transform duration-200 rounded-md",
+                    "hover:scale-105",
+                    "cursor-pointer",
+                    scrolled ? "text-white" : "text-gray-900 hover:text-primary"
+                  )}
                 >
-                  {item.name}
+                  <span className="relative">{item.name}</span>
                 </ScrollLink>
               ))}
-              <div className="mt-4 space-y-2 flex flex-col gap-2">
-                <Link href="/pages/login">
-                  <motion.button
-                    whileTap={{ scale: 0.95 }}
-                    className="max-w-fit px-12 py-2 rounded-md border border-stroke text-sm font-medium  text-cyan-400 to-cyan-600 bg-gray-2 hover:from-cyan-500 hover:to-cyan-700 transition-colors duration-300"
-                    >
-                    Sign In
-                  </motion.button>
-                </Link>
-                <Link href="/pages/signup">
-                  <motion.button
-                    whileTap={{ scale: 0.95 }}
-                    className="max-w-fit px-12 py-2 rounded-md text-sm font-medium bg-gradient-to-r from-cyan-400 to-cyan-600 text-white hover:from-cyan-500 hover:to-cyan-700 transition-colors duration-300"
-                  >
-                    Sign Up
-                  </motion.button>
-                </Link>
+              <div className="pt-4 space-y-2">
+                <Button
+                  variant="ghost"
+                  className={cn("w-full justify-start border px-3 py-2 rounded-md", scrolled ? "text-white border-white" : "text-slate-700 border-slate-700")}
+                  asChild
+                >
+                  <Link href="/pages/login">Sign In</Link>
+                </Button>
+                <Button className="w-full" asChild>
+                  <Link href="/pages/signup">Sign Up</Link>
+                </Button>
               </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
     </motion.nav>
-  );
-};
+  )
+}
 
-export default Navbar;
+export default Navbar
