@@ -140,8 +140,7 @@ const SignupForm = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute w-full h-full flex justify-center items-center z-50"
-            style={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
+            className="absolute w-full h-full flex justify-center items-center z-50 bg-white/50"
           >
             <Loader />
           </motion.div>
@@ -161,8 +160,8 @@ const SignupForm = () => {
               />
             </Link>
           </div>
-          <h1 className="text-2xl font-black text-[#22577A] mb-4">Sign Up</h1>
-          <p className="max-w-[450px] mb-4 text-[#6C7278]">
+          <h1 className="text-2xl font-black text-primary mb-4">Sign Up</h1>
+          <p className="max-w-[450px] mb-4 text-muted-foreground">
             Fill your information below or register using your social account.
           </p>
         </div>
@@ -184,7 +183,7 @@ const SignupForm = () => {
                   placeholder="Enter your first name"
                   value={formData.firstName}
                   onChange={handleChange}
-                  className={`shadow-sm bg-gray-50 text-gray-900 text-sm rounded-lg block w-full p-2.5 pr-10 transition-all duration-300 focus:ring-2 focus:ring-[#37a5bb] ${
+                  className={`shadow-sm bg-gray-50 text-gray-900 text-sm rounded-lg block w-full p-2.5 pr-10 transition-all duration-300 focus:ring-2 focus:ring-primary ${
                     errors.firstName
                       ? "border-2 border-red"
                       : "border border-gray"
@@ -288,7 +287,7 @@ const SignupForm = () => {
                 onClick={handleToggle}
               >
                 <Icon
-                  className={icon === eye ? "text-[#00ABCD]" : ""}
+                  className={icon === eye ? "text-primary" : ""}
                   icon={icon}
                   size={20}
                 />
