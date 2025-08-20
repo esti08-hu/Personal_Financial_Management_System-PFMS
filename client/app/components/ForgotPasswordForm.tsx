@@ -90,7 +90,7 @@ const ForgotPasswordForm = () => {
           <div className="max-w-fit mb-2">
             <Link href="/">
               <Image
-                src="/moneymaster.png"
+                src="/images/logo/moneymaster.png"
                 width={150}
                 height={150}
                 alt="Money Master Logo"

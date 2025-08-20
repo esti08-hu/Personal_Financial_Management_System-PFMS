@@ -18,22 +18,25 @@ import {
 
 const Footer = () => {
   return (
-    <footer style={{ background: "hsl(var(--color-primary) / 0.1)" }} className="relative bg-gradient-to-br from-primary/15 to-primary/25 border-t border-border text-foreground bg-grid-pattern">
+    <footer
+      style={{ background: "hsl(var(--color-primary) / 0.1)" }}
+      className="relative bg-gradient-to-br from-primary/15 to-primary/25 border-t border-border text-foreground bg-grid-pattern"
+    >
       <div className="container max-w-full mx-auto px-4 py-12 animate-fade-in">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Logo & About */}
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
               <Image
-                src="/moneymaster.png"
-                width={40}
-                height={40}
+                src="/images/logo/moneymaster.png"
+                width={150}
+                height={150}
                 alt="Money Master Logo"
                 className="rounded-lg"
               />
-              <span className="text-xl font-display font-bold text-primary">
+              {/* <span className="text-xl font-display font-bold text-primary">
                 MoneyMaster
-              </span>
+              </span> */}
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Take control of your finances with our comprehensive money

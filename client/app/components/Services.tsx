@@ -64,9 +64,9 @@ const Services = () => {
                   </CardHeader>
                   <CardContent className="p-0 space-y-6">
                     <p className="text-lg text-muted-foreground leading-relaxed">{service.description}</p>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-2 text-lg">
                       {service.features.map((feature, featureIndex) => (
-                        <Badge key={featureIndex} variant="outline">
+                        <Badge key={featureIndex} className="text-xl text-primary border-primary border-2" variant="outline">
                           {feature}
                         </Badge>
                       ))}

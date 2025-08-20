@@ -1,162 +1,175 @@
-"use client";
+"use client"
+import { useBudgetStore } from "@/app/pages/store/budgetStore"
+import { useState } from "react"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import * as z from "zod"
+import { toast } from "sonner"
+import type { NewBudget } from "@/app/types/acc"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Loader2, Target } from "lucide-react"
 
-import { useBudgetStore } from "@/app/pages/store/budgetStore";
-import { useState } from "react";
-import { motion } from "framer-motion";
-import type { NewBudget } from "@/app/types/acc";
+const budgetSchema = z.object({
+  title: z.string().min(2, "Title must be at least 2 characters"),
+  type: z.enum(["Deposit", "Transfer", "Withdrawal"], {
+    required_error: "Please select a budget type",
+  }),
+  amount: z.number().min(1, "Amount must be at least 1"),
+  date: z.string().min(1, "Date is required"),
+})
+
+type BudgetFormData = z.infer<typeof budgetSchema>
 
 const SetBudget = () => {
-  const setBudget = useBudgetStore((state) => state.setBudget);
-  const [type, setType] = useState("");
-  const [amount, setAmount] = useState(0);
-  const [date, setDate] = useState("");
-  const [title, setTitle] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const setBudget = useBudgetStore((state) => state.setBudget)
+  const [isLoading, setIsLoading] = useState(false)
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsLoading(true);
+  const form = useForm<BudgetFormData>({
+    resolver: zodResolver(budgetSchema),
+    defaultValues: {
+      title: "",
+      type: undefined,
+      amount: 0,
+      date: "",
+    },
+  })
 
+  const onSubmit = async (data: BudgetFormData) => {
+    setIsLoading(true)
 
     const newBudget: NewBudget = {
-      type,
-      amount,
-      date,
-      title,
-    };
+      type: data.type,
+      amount: data.amount,
+      date: data.date,
+      title: data.title,
+    }
 
-    await setBudget(newBudget);
-
-    // Clear form fields after successful submission
-    setType("Deposit");
-    setAmount(0);
-    setDate("");
-    setTitle("");
-    setIsLoading(false);
-  };
+    try {
+      await setBudget(newBudget)
+      toast.success("Budget set successfully!")
+      form.reset()
+    } catch (error) {
+      toast.error("Failed to set budget")
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   return (
-    <div className="min-h-fit flex items-center justify-center px-4 sm:px-2 lg:px-4">
-      <div className="container max-w-2xl mx-auto bg-white py-10 px-8 border-sm border-stroke border">
-        <div className="flex flex-col gap-4 mb-5">
-          <h1 className="text-2xl font-bold text-[#22577A]">Budget Form</h1>
-          <p className="text-gray-600 mt-2">
-            Required fields are marked <span className="text-red">*</span>
-          </p>
-          <hr className="h-1 text-gray w-full" />
-        </div>
-
-        <form className="space-y-6" onSubmit={handleSubmit}>
-          <div className="flex flex-col sm:flex-row items-center mb-5">
-            <label
-              htmlFor="title"
-              className="block text-lg text-graydark sm:w-40 mb-2 sm:mb-0"
-            >
-              Title:
-            </label>
-            <input
-              id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className=" border border-gray text-graydark text-md rounded-lg w-full p-2.5"
-              placeholder="Enter your title"
-              required
-            />
+    <div className="min-h-fit flex items-center justify-center px-4">
+      <Card className="w-full max-w-2xl">
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <Target className="h-6 w-6 text-primary" />
+            <CardTitle className="text-2xl font-bold text-primary">Set Budget</CardTitle>
           </div>
+          <CardDescription>
+            Create a new budget to track your financial goals. Required fields are marked with *
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Budget Title *</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g., Monthly Groceries, Vacation Fund" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          <div className="flex flex-col sm:flex-row items-center mb-5">
-            <label
-              htmlFor="type"
-              className="block text-lg text-graydark sm:w-40 mb-2 sm:mb-0"
-            >
-              Type:
-            </label>
-            <select
-              id="type"
-              value={type}
-              onChange={(e) => setType(e.target.value)}
-              className="border border-gray text-graydark text-md rounded-lg w-full p-2.5"
-            >
-              <option value="" disabled>Select type</option>
-              <option>Deposit</option>
-              <option>Transfer</option>
-              <option>Withdrawal</option>
-            </select>
-          </div>
+              <FormField
+                control={form.control}
+                name="type"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Budget Type *</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select budget type" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="Deposit">
+                          <div className="flex flex-col">
+                            <span>Deposit</span>
+                            <span className="text-xs text-muted-foreground">Income or savings goal</span>
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="Transfer">
+                          <div className="flex flex-col">
+                            <span>Transfer</span>
+                            <span className="text-xs text-muted-foreground">Moving funds between accounts</span>
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="Withdrawal">
+                          <div className="flex flex-col">
+                            <span>Withdrawal</span>
+                            <span className="text-xs text-muted-foreground">Expense or spending limit</span>
+                          </div>
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          <div className="flex flex-col sm:flex-row items-center mb-5">
-            <label
-              htmlFor="amount"
-              className="block text-lg text-graydark sm:w-40 mb-2 sm:mb-0"
-            >
-              Amount <span className="text-red">*</span>:
-            </label>
-            <input
-              type="text"
-              id="amount"
-              value={amount}
-              onChange={(e) => setAmount(Number(e.target.value))}
-              className="border border-gray text-graydark text-md rounded-lg w-full p-2.5"
-              placeholder="Enter amount"
-              required
-            />
-          </div>
+              <FormField
+                control={form.control}
+                name="amount"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Budget Amount *</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min={1}
+                        placeholder="Enter budget amount"
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          <div className="flex flex-col sm:flex-row items-center mb-5">
-            <label
-              htmlFor="date"
-              className="block text-lg text-graydark sm:w-40 mb-2 sm:mb-0"
-            >
-              Date <span className="text-red">*</span>:
-            </label>
-            <input
-              type="date"
-              id="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="border border-gray text-graydark text-md rounded-lg w-full p-2.5"
-              required
-            />
-          </div>
+              <FormField
+                control={form.control}
+                name="date"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Target Date *</FormLabel>
+                    <FormControl>
+                      <Input type="date" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          <div className="w-full flex justify-center mt-6">
-            <motion.button
-              whileTap="tap"
-              whileHover="hover"
-              type="submit"
-              disabled={isLoading}
-              className="w-full sm:w-64 flex justify-center text-white bg-[#00ABCD] hover:bg-[#37a5bb] focus:ring-4 focus:outline-none focus:ring-blue-300 font-bold text-md px-16 py-2.5 rounded-lg transition-all duration-300"
-            >
-              {isLoading ? (
-                <svg
-                  className="animate-spin h-5 w-5 mr-3 text-white"
-                  viewBox="0 0 24 24"
-                  aria-labelledby="loadingTitle"
-                >
-                  <title id="loadingTitle">Loading...</title>
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  />
-                </svg>
-              ) : (
-                "Submit"
-              )}
-            </motion.button>
-          </div>
-        </form>
-      </div>
+              <Button type="submit" disabled={isLoading} className="w-full" size="lg">
+                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {isLoading ? "Setting Budget..." : "Set Budget"}
+              </Button>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
     </div>
-  );
-};
+  )
+}
 
-export default SetBudget;
+export default SetBudget

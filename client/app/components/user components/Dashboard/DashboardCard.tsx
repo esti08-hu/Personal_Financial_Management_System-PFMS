@@ -1,16 +1,31 @@
-import { motion } from 'framer-motion';
+"use client"
+
+import type React from "react"
+
+import { motion } from "framer-motion"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 const DashboardCard: React.FC<{
-    icon: React.ReactNode;
-    title: string;
-    value: string;
-  }> = ({ icon, title, value }) => (
-    <motion.div className="p-6 flex items-center justify-center rounded-sm border border-stroke bg-white px-7.5 py-6 shadow-default">
-      <div className="mr-4 md:text-sm">{icon}</div>
-      <div>
-        <h3 className="text-sm font-semibold text-gray-600">{title}</h3>
-        <p className="text-lg font-bold text-center">{value}</p>
-      </div>
-    </motion.div>
-  );
+  icon: React.ReactNode
+  title: string
+  value: string
+}> = ({ icon, title, value }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    whileHover={{ y: -2 }}
+    transition={{ duration: 0.2 }}
+  >
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-sm font-medium">{title}</CardTitle>
+        {icon}
+      </CardHeader>
+      <CardContent>
+        <div className="text-2xl font-bold">{value}</div>
+      </CardContent>
+    </Card>
+  </motion.div>
+)
+
 export default DashboardCard

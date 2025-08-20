@@ -1,9 +1,9 @@
-"use client"
-import { useState, useEffect } from "react"
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { ChevronLeft, ChevronRight, Star, Quote } from "lucide-react"
+"use client";
+import { useState, useEffect } from "react";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { ChevronLeft, ChevronRight, Star, Quote } from "lucide-react";
 
 const testimonials = [
   {
@@ -24,43 +24,60 @@ const testimonials = [
     image: "/images/testimonial3.png",
     text: "This personal financial system has been a game-changer for my family's financial well-being. The budgeting tools and expense tracking features have helped us save more and spend wisely.",
   },
-]
+];
 
 const Testimonial = () => {
-  const [currentIndex, setCurrentIndex] = useState(0)
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   // Auto-advance testimonials
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex === testimonials.length - 1 ? 0 : prevIndex + 1))
-    }, 5000)
+      setCurrentIndex((prevIndex) =>
+        prevIndex === testimonials.length - 1 ? 0 : prevIndex + 1
+      );
+    }, 5000);
 
-    return () => clearInterval(interval)
-  }, [])
+    return () => clearInterval(interval);
+  }, []);
 
   const goToPrevious = () => {
-    setCurrentIndex(currentIndex === 0 ? testimonials.length - 1 : currentIndex - 1)
-  }
+    setCurrentIndex(
+      currentIndex === 0 ? testimonials.length - 1 : currentIndex - 1
+    );
+  };
 
   const goToNext = () => {
-    setCurrentIndex(currentIndex === testimonials.length - 1 ? 0 : currentIndex + 1)
-  }
+    setCurrentIndex(
+      currentIndex === testimonials.length - 1 ? 0 : currentIndex + 1
+    );
+  };
 
   return (
-    <section id="testimonials" className="py-16 px-4 bg-gradient-to-br from-primary/10 to-primary/20">
+    <section
+      id="testimonials"
+      className="py-16 px-4 bg-gradient-to-br from-primary/10 to-primary/20"
+    >
       <div className="container mx-auto max-w-6xl">
         {/* Section Header */}
         <div className="text-center mb-12">
-          <p className="text-sm font-medium text-muted-foreground tracking-wider uppercase mb-2">Testimonials</p>
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">What Our Users Say</h2>
+          <p className="text-sm font-medium text-muted-foreground tracking-wider uppercase mb-2">
+            Testimonials
+          </p>
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+            What Our Users Say
+          </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Discover how MoneyMaster has transformed the financial lives of thousands of users
+            Discover how MoneyMaster has transformed the financial lives of
+            thousands of users
           </p>
         </div>
 
         {/* Testimonial Carousel */}
         <div className="relative max-w-4xl mx-auto">
-          <Card className="bg-white shadow-lg border-0">
+          <Card
+            style={{ background: "hsl(var(--color-primary) / 0.06)" }}
+            className="bg-white shadow-lg border-0"
+          >
             <CardContent className="p-8 md:p-12">
               <div className="flex flex-col md:flex-row items-center gap-8">
                 {/* User Image */}
@@ -68,7 +85,9 @@ const Testimonial = () => {
                   <div className="relative w-24 h-24 md:w-32 md:h-32 rounded-full bg-gradient-to-br from-primary to-primary/80 p-1">
                     <div className="w-full h-full rounded-full bg-white p-2 flex items-center justify-center">
                       <Image
-                        src={testimonials[currentIndex].image || "/placeholder.svg"}
+                        src={
+                          testimonials[currentIndex].image || "/placeholder.svg"
+                        }
                         alt={`${testimonials[currentIndex].name} testimonial`}
                         width={100}
                         height={100}
@@ -92,16 +111,23 @@ const Testimonial = () => {
 
                   {/* User Info and Rating */}
                   <div className="space-y-3">
-                    <h4 className="text-xl font-semibold text-foreground">{testimonials[currentIndex].name}</h4>
+                    <h4 className="text-xl font-semibold text-foreground">
+                      {testimonials[currentIndex].name}
+                    </h4>
 
                     {/* Star Rating */}
                     <div className="flex items-center justify-center md:justify-start gap-2">
                       <div className="flex items-center">
                         {[...Array(5)].map((_, index) => (
-                          <Star key={index} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                          <Star
+                            key={index}
+                            className="w-5 h-5 fill-yellow-400 text-yellow-400"
+                          />
                         ))}
                       </div>
-                      <span className="text-sm font-medium text-muted-foreground">5.0</span>
+                      <span className="text-sm font-medium text-muted-foreground">
+                        5.0
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -111,7 +137,12 @@ const Testimonial = () => {
 
           {/* Navigation Buttons */}
           <div className="flex items-center justify-center gap-4 mt-8">
-            <Button variant="outline" size="icon" onClick={goToPrevious} className="rounded-full">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={goToPrevious}
+              className="rounded-full"
+            >
               <ChevronLeft className="w-4 h-4" />
             </Button>
 
@@ -128,14 +159,19 @@ const Testimonial = () => {
               ))}
             </div>
 
-            <Button variant="outline" size="icon" onClick={goToNext} className="rounded-full">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={goToNext}
+              className="rounded-full"
+            >
               <ChevronRight className="w-4 h-4" />
             </Button>
           </div>
         </div>
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default Testimonial
+export default Testimonial;

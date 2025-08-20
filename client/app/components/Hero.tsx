@@ -48,7 +48,7 @@ const Hero = () => {
                 alt="Financial planning dashboard"
                 width={600}
                 height={450}
-                className="w-full h-auto rounded-2xl shadow-2xl"
+                className="w-full h-auto rounded-2xl"
                 priority
               />
             </div>
