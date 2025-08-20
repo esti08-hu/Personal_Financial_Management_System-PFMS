@@ -108,7 +108,7 @@ const AdminSignInForm = () => {
       <div>
         <div className="max-w-fit mb-8">
           <Image
-            src="/moneymaster.png"
+            src="/images/logo/moneymaster.png"
             width={150}
             height={150}
             alt="Money Master Logo"

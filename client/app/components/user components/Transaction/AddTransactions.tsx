@@ -1,277 +1,282 @@
-import { useTransactionStore } from "@/app/pages/store/transactionStore";
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import apiClient from "@/app/lib/axiosConfig";
-import type { Account, NewTransaction } from "@/app/types/acc";
+"use client"
+
+import { useTransactionStore } from "@/app/pages/store/transactionStore"
+import { useEffect, useState } from "react"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import * as z from "zod"
+import { toast } from "sonner"
+import apiClient from "@/app/lib/axiosConfig"
+import type { Account, NewTransaction } from "@/app/types/acc"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Textarea } from "@/components/ui/textarea"
+import { Badge } from "@/components/ui/badge"
+import { AlertCircle, Loader2 } from "lucide-react"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+
+const transactionSchema = z.object({
+  type: z.enum(["Deposit", "Transfer", "Withdrawal"]),
+  accountId: z.string().min(1, "Please select an account"),
+  amount: z.number().min(1, "Amount must be at least 1"),
+  createdAt: z.string().min(1, "Date is required"),
+  description: z.string().min(2, "Description must be at least 2 characters"),
+})
+
+type TransactionFormData = z.infer<typeof transactionSchema>
 
 const AddTransaction = () => {
-  const addTransaction = useTransactionStore((state) => state.addTransaction);
-  const [type, setType] = useState("Deposit");
-  const [accounts, setAccounts] = useState<Account[]>([]);
-  const [accountId, setAccountId] = useState<string>("");
-  const [amount, setAmount] = useState(1);
-  const [createdAt, setCreatedAt] = useState("");
-  const [description, setDescription] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string>("");
-  const [balance, setBalance] = useState<number>();
+  const addTransaction = useTransactionStore((state) => state.addTransaction)
+  const [accounts, setAccounts] = useState<Account[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+  const [balanceError, setBalanceError] = useState<string>("")
 
-  // Fetch accounts from API
+  const form = useForm<TransactionFormData>({
+    resolver: zodResolver(transactionSchema),
+    defaultValues: {
+      type: "Deposit",
+      accountId: "",
+      amount: 1,
+      createdAt: "",
+      description: "",
+    },
+  })
+
+  const watchedType = form.watch("type")
+  const watchedAccountId = form.watch("accountId")
+  const watchedAmount = form.watch("amount")
+
   const fetchAccounts = async (userId: number) => {
     try {
-      const response = await apiClient.get(`/account/${userId}`);
-      const data = await response.data;
-      setAccounts(data);
+      const response = await apiClient.get(`/account/${userId}`)
+      const data = await response.data
+      setAccounts(data)
     } catch (error) {
-      console.error("Failed to fetch accounts", error);
-      toast.error("Failed to fetch accounts");
+      console.error("Failed to fetch accounts", error)
+      toast.error("Failed to fetch accounts")
     }
-  };
+  }
 
   const fetchUserIdAndAccounts = async () => {
     try {
-      const userIdResponse = await apiClient.get("/user/userId");
-      const userId = userIdResponse.data;
-      fetchAccounts(userId);
+      const userIdResponse = await apiClient.get("/user/userId")
+      const userId = userIdResponse.data
+      fetchAccounts(userId)
     } catch (error) {
-      console.error("Failed to fetch user ID", error);
-      toast.error("Failed to fetch user ID");
+      console.error("Failed to fetch user ID", error)
+      toast.error("Failed to fetch user ID")
     }
-  };
+  }
 
-  // Fetch user ID and accounts on component mount
   useEffect(() => {
-    fetchUserIdAndAccounts();
-  }, []);
+    fetchUserIdAndAccounts()
+  }, [])
 
-  // Handle amount input change
-  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = Number(e.target.value);
-    const selectedAccount = accounts.find(
-      (acc) => acc.id === Number(accountId)
-    );
-
-    if (selectedAccount) {
-      if (
-        (type === "Withdrawal" || type === "Transfer") &&
-        value > selectedAccount.balance
-      ) {
-        setError("Amount exceeds account balance");
+  useEffect(() => {
+    if (watchedAccountId && watchedAmount) {
+      const selectedAccount = accounts.find((acc) => acc.id === Number(watchedAccountId))
+      if (selectedAccount && (watchedType === "Withdrawal" || watchedType === "Transfer")) {
+        if (watchedAmount > selectedAccount.balance) {
+          setBalanceError("Amount exceeds account balance")
+        } else {
+          setBalanceError("")
+        }
       } else {
-        setError("");
-        setBalance(selectedAccount?.balance ?? 0);
+        setBalanceError("")
       }
     }
-    setAmount(value);
-  };
+  }, [watchedAmount, watchedAccountId, watchedType, accounts])
 
-  // Handle form submission
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    const selectedAccount = accounts.find(
-      (acc) => acc.id === Number(accountId)
-    );
+  const onSubmit = async (data: TransactionFormData) => {
+    const selectedAccount = accounts.find((acc) => acc.id === Number(data.accountId))
 
     if (!selectedAccount) {
-      toast.error("No account selected");
-      return;
+      toast.error("No account selected")
+      return
     }
 
     // Calculate updated balance based on the transaction type
-    let updatedBalance: number;
-    if (type === "Deposit") {
-      updatedBalance = selectedAccount?.balance + amount;
-    } else if (type === "Withdrawal" || type === "Transfer") {
-      if (amount > selectedAccount.balance) {
-        toast.error("Insufficient balance");
-        return;
+    let updatedBalance: number
+    if (data.type === "Deposit") {
+      updatedBalance = selectedAccount.balance + data.amount
+    } else if (data.type === "Withdrawal" || data.type === "Transfer") {
+      if (data.amount > selectedAccount.balance) {
+        toast.error("Insufficient balance")
+        return
       }
-      updatedBalance = (selectedAccount?.balance ?? 0) - amount;
+      updatedBalance = selectedAccount.balance - data.amount
     } else {
-      toast.error("Invalid transaction type");
-      return;
+      toast.error("Invalid transaction type")
+      return
     }
 
-    setIsLoading(true);
+    setIsLoading(true)
 
     const newTransaction: NewTransaction = {
-      type,
-      amount,
+      type: data.type,
+      amount: data.amount,
       balance: updatedBalance,
-      accountId: Number(accountId),
-      createdAt,
-      description,
-    };
+      accountId: Number(data.accountId),
+      createdAt: data.createdAt,
+      description: data.description,
+    }
 
-    await addTransaction(newTransaction, selectedAccount.userId);
+    try {
+      await addTransaction(newTransaction, selectedAccount.userId)
+      toast.success("Transaction added successfully!")
+      form.reset()
+      fetchUserIdAndAccounts()
+    } catch (error) {
+      toast.error("Failed to add transaction")
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
-    setIsLoading(false);
-    fetchUserIdAndAccounts();
-
-    // Reset the form
-    setType("");
-    setAmount(1);
-    setCreatedAt("");
-    setDescription("");
-    setError("");
-  };
+  const selectedAccount = accounts.find((acc) => acc.id === Number(watchedAccountId))
 
   return (
     <div className="min-h-fit flex items-center justify-center px-4 sm:px-2 lg:px-4">
-      <div className="container max-w-2xl mx-auto bg-white py-10 px-8 border-sm border-stroke border">
-        <div className="flex flex-col gap-4 mb-5">
-          <h1 className="text-2xl font-bold text-[#22577A]">
-            Transaction Form
-          </h1>
-          <p className="text-gray-600 mt-2">
-            Required fields are marked <span className="text-red">*</span>
-          </p>
-          <hr className="text-gray w-full" />
-        </div>
+      <Card className="w-full max-w-2xl">
+        <CardHeader>
+          <CardTitle className="text-2xl font-bold text-primary">Transaction Form</CardTitle>
+          <CardDescription>Add a new transaction to your account. Required fields are marked with *</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <FormField
+                control={form.control}
+                name="type"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Transaction Type</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select transaction type" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="bg-background">
+                        <SelectItem value="Deposit">Deposit</SelectItem>
+                        <SelectItem value="Transfer">Transfer</SelectItem>
+                        <SelectItem value="Withdrawal">Withdrawal</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-        <form className="w-full" onSubmit={handleSubmit}>
-          <div className="flex flex-col sm:flex-row mb-5">
-            <label
-              htmlFor="type"
-              className="block mb-2 text-lg text-graydark sm:w-40"
-            >
-              Type:
-            </label>
-            <select
-              id="type"
-              value={type}
-              onChange={(e) => setType(e.target.value)}
-              className="bg-gray-50 border border-gray text-graydark text-md rounded-lg block w-full p-2.5"
-            >
-              <option value="Deposit">Deposit</option>
-              <option value="Transfer">Transfer</option>
-              <option value="Withdrawal">Withdrawal</option>
-            </select>
-          </div>
+              <FormField
+                control={form.control}
+                name="accountId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Account</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select an account" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {accounts.map((acc) => (
+                          <SelectItem key={acc.id} value={acc.id.toString()}>
+                            <div className="flex items-center justify-between w-full">
+                              <span>{acc.title}</span>
+                              <Badge variant="secondary" className="ml-2">
+                                {acc.balance} ETB
+                              </Badge>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          <div className="flex flex-col sm:flex-row mb-5">
-            <label
-              htmlFor="account"
-              className="block mb-2 text-lg text-graydark sm:w-40"
-            >
-              Account:
-            </label>
-            <select
-              id="account"
-              value={accountId}
-              onChange={(e) => setAccountId(e.target.value)}
-              className="bg-gray-50 border border-gray text-graydark text-md rounded-lg block w-full p-2.5"
-            >
-              <option value="" disabled>
-                Select an account
-              </option>
-              {accounts.map((acc) => (
-                <option key={acc.id} value={acc.id}>
-                  {acc.title} ({acc.balance} ETB)
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="flex flex-col sm:flex-row mb-1">
-            <label
-              htmlFor="amount"
-              className="block mb-2 text-lg text-graydark sm:w-40"
-            >
-              Amount <span className="text-red">*</span>:
-            </label>
-            <input
-              type="number"
-              id="amount"
-              min={1}
-              value={amount}
-              onChange={handleAmountChange}
-              className="border border-gray text-graydark text-md rounded-lg block w-full p-2.5"
-              placeholder="Enter amount"
-              required
-            />
-          </div>
-          <div className="min-h-[24px] mb-2 ">
-            {error && <p className="text-red ml-32">{error}</p>}
-          </div>
-
-          <div className="flex flex-col sm:flex-row mb-5">
-            <label
-              htmlFor="date"
-              className="block mb-2 text-lg text-graydark sm:w-40"
-            >
-              Date <span className="text-red">*</span>:
-            </label>
-            <input
-              type="date"
-              id="date"
-              value={createdAt}
-              onChange={(e) => setCreatedAt(e.target.value)}
-              className="border border-gray text-graydark text-md rounded-lg block w-full p-2.5"
-              required
-            />
-          </div>
-
-          <div className="flex flex-col sm:flex-row mb-5">
-            <label
-              htmlFor="description"
-              className="block mb-2 text-lg font-md text-graydark sm:w-40"
-            >
-              Description:
-            </label>
-            <textarea
-              id="description"
-              rows={4}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="block p-2.5 w-full text-md text-graydark rounded-lg border border-gray"
-              placeholder="Description..."
-              required
-              minLength={2}
-            />
-          </div>
-
-          <div className="w-full flex justify-center">
-            <motion.button
-              whileTap="tap"
-              whileHover="hover"
-              type="submit"
-              disabled={isLoading}
-              className="w-full flex justify-center sm:w-64 text-white bg-[#00ABCD] hover:bg-[#37a5bb] focus:ring-4 focus:outline-none focus:ring-blue-300 font-bold text-md px-16 py-2.5 text-center rounded-lg transition-all duration-300 mb-6"
-            >
-              {isLoading ? (
-                <svg
-                  className="animate-spin h-5 w-5 mr-3 text-white"
-                  viewBox="0 0 24 24"
-                  aria-labelledby="loadingTitle"
-                >
-                  <title id="loadingTitle">Loading...</title>
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  />
-                </svg>
-              ) : (
-                "Submit"
+              {selectedAccount && (
+                <div className="p-3 bg-muted rounded-lg">
+                  <p className="text-sm text-muted-foreground">
+                    Selected Account: <span className="font-medium">{selectedAccount.title}</span>
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Current Balance: <Badge variant="outline">{selectedAccount.balance} ETB</Badge>
+                  </p>
+                </div>
               )}
-            </motion.button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-};
 
-export default AddTransaction;
+              <FormField
+                control={form.control}
+                name="amount"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Amount *</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min={1}
+                        placeholder="Enter amount"
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {balanceError && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{balanceError}</AlertDescription>
+                </Alert>
+              )}
+
+              <FormField
+                control={form.control}
+                name="createdAt"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Date *</FormLabel>
+                    <FormControl>
+                      <Input type="date" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description *</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder="Enter transaction description..." className="min-h-[100px]" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <Button type="submit" disabled={isLoading || !!balanceError} className="w-full" size="lg">
+                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {isLoading ? "Adding Transaction..." : "Add Transaction"}
+              </Button>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+
+export default AddTransaction
