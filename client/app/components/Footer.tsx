@@ -54,7 +54,7 @@ const Footer = () => {
                   key={idx}
                   variant="outline"
                   size="icon"
-                  className="h-9 w-9 bg-background/20 border-border hover:bg-primary/20 hover:text-primary transition-all"
+                  className="footer-social-btn h-9 w-9 bg-background/20 border-border hover:bg-primary hover:text-primary transition-all cursor-pointer"
                 >
                   <Icon className="h-4 w-4 text-primary" />
                   <span className="sr-only">{label}</span>
