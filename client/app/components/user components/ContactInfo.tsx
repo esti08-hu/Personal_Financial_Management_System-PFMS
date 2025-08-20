@@ -11,7 +11,7 @@ const ContactInfo = () => {
       <div className="absolute top-5 left-5   mb-2 ">
             <Link href="/">
               <Image
-                src="/moneymaster.png"
+                src="/images/logo/moneymaster.png"
                 width={150}
                 height={150}
                 alt="Money Master Logo"

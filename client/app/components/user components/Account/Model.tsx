@@ -1,144 +1,170 @@
+"use client"
 
-import { HiOutlineX } from "react-icons/hi";
+import type React from "react"
+
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Card, CardContent } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Wallet, Calendar, CreditCard, Banknote, Building } from "lucide-react"
 
 type ModelProps = {
-  isEditing: boolean;
-  setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
-  handleUpdate: (e: React.FormEvent<HTMLFormElement>) => void;
-  handleChange: (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
-  ) => void;
+  isEditing: boolean
+  setIsEditing: React.Dispatch<React.SetStateAction<boolean>>
+  handleUpdate: (e: React.FormEvent<HTMLFormElement>) => void
+  handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void
   editAccountData: {
-    id: number;
-    type: string;
-    balance: number;
-    title: string;
-    createdAt: string;
-  };
-};
+    id: number
+    type: string
+    balance: number
+    title: string
+    createdAt: string
+  }
+}
 
-const Model: React.FC<ModelProps> = ({
-  isEditing,
-  setIsEditing,
-  handleUpdate,
-  handleChange,
-  editAccountData,
-}) => {
+const Model: React.FC<ModelProps> = ({ isEditing, setIsEditing, handleUpdate, handleChange, editAccountData }) => {
+  if (!isEditing) return null
 
-  if (!isEditing) return null;
+  const getAccountIcon = (type: string) => {
+    switch (type) {
+      case "Saving":
+        return <Banknote className="h-4 w-4" />
+      case "Checking":
+        return <CreditCard className="h-4 w-4" />
+      case "Business":
+        return <Building className="h-4 w-4" />
+      default:
+        return <Wallet className="h-4 w-4" />
+    }
+  }
 
   return (
-    <div
-      style={{ backgroundColor: "rgba(0, 172, 205, 0.35)" }}
-      id="crud-modal"
-      aria-hidden="true"
-      className="overflow-y-auto overflow-x-hidden fixed z-50 flex justify-center items-center w-full md:inset-0 sm:inset-0 h-[calc(100%-1rem)] max-h-full"
-    >
-      <div className="relative p-4 w-full max-w-md max-h-full">
-        <div className="relative bg-white rounded-lg shadow dark:">
-          <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-800">
-              Edit Account Form
-            </h3>
-            <button
-              type="button"
-              className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-400 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-400 dark:hover:text-white"
-              data-modal-toggle="crud-modal"
-              onClick={() => setIsEditing(false)}
-            >
-              <HiOutlineX className="text-2xl hover:bg-gray-2 hover:text-graydark" />
-              <span className="sr-only">Close modal</span>
-            </button>
-          </div>
-          <form className="p-4 md:p-5" onSubmit={handleUpdate}>
-            <div className="grid gap-4 mb-4 grid-cols-2">
-              <div className="col-span-2">
-                <label
-                  htmlFor="type"
-                  className="block mb-2 text-sm font-medium text-graydark"
-                >
-                  Type
-                </label>
-                <select
-                  id="type"
-                  name="type"
-                  value={editAccountData.type}
-                  onChange={handleChange}
-                  className=" border border-gray text-graydark text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-200 dark:border-gray-500 dark:placeholder-gray-400 dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                >
-                  <option>Saving</option>
-                  <option>Checking</option>
-                  <option>Business</option>
-                </select>
+    <Dialog open={isEditing} onOpenChange={setIsEditing}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Wallet className="h-5 w-5" />
+            Edit Account
+          </DialogTitle>
+        </DialogHeader>
+
+        <form onSubmit={handleUpdate} className="space-y-6">
+          <Card className="bg-muted/50">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  {getAccountIcon(editAccountData.type)}
+                  <span className="font-medium">{editAccountData.title || "Account Name"}</span>
+                </div>
+                <Badge variant="outline" className="font-mono">
+                  {editAccountData.balance.toLocaleString()} ETB
+                </Badge>
               </div>
-              <div className="col-span-2">
-                <label
-                  htmlFor="balance"
-                  className="block mb-2 text-sm font-medium text-graydark"
-                >
-                  Balance
-                </label>
-                <input
-                  type="number"
+            </CardContent>
+          </Card>
+
+          <div className="grid gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="type">Account Type</Label>
+              <Select
+                value={editAccountData.type}
+                onValueChange={(value) => handleChange({ target: { name: "type", value } } as any)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select account type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Saving">
+                    <div className="flex items-center gap-2">
+                      <Banknote className="h-4 w-4" />
+                      <div>
+                        <div className="font-medium">Savings Account</div>
+                        <div className="text-xs text-muted-foreground">For long-term savings</div>
+                      </div>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="Checking">
+                    <div className="flex items-center gap-2">
+                      <CreditCard className="h-4 w-4" />
+                      <div>
+                        <div className="font-medium">Checking Account</div>
+                        <div className="text-xs text-muted-foreground">For daily transactions</div>
+                      </div>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="Business">
+                    <div className="flex items-center gap-2">
+                      <Building className="h-4 w-4" />
+                      <div>
+                        <div className="font-medium">Business Account</div>
+                        <div className="text-xs text-muted-foreground">For business operations</div>
+                      </div>
+                    </div>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="balance">Account Balance</Label>
+              <div className="relative">
+                <Input
+                  id="balance"
                   name="balance"
-                  id="amount"
+                  type="number"
                   value={editAccountData.balance}
                   onChange={handleChange}
-                  className=" border border-gray text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-200 dark:border-gray-500 dark:placeholder-gray-400 dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                  placeholder=""
-                  required
+                  placeholder="0.00"
+                  className="font-mono pr-12"
+                  min={0}
+                  step="0.01"
                 />
-              </div>
-
-              <div className="col-span-2">
-                <label
-                  htmlFor="title"
-                  className="block mb-2 text-sm font-medium text-graydark"
-                >
-                  Tilte
-                </label>
-                <input
-                  id="title"
-                  name="title"
-                  value={editAccountData.title}
-                  onChange={handleChange}
-                  className="block p-2.5 w-full text-sm text-graydark  rounded-lg border border-gray focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-200 dark:border-gray-500 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder=""
-                />
-              </div>
-              <div className="col-span-2">
-                <label
-                  htmlFor="date"
-                  className="block mb-2 text-sm font-medium text-graydark"
-                >
-                  Date
-                </label>
-                <input
-                  type="date"
-                  name="createdAt"
-                  id="date"
-                  value={
-                    new Date(editAccountData.createdAt).toLocaleDateString('en-CA')
-                  }
-                  onChange={handleChange}
-                  className=" border border-gray text-graydark text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-200 dark:border-gray-500 dark:placeholder-gray-400 dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                  required
-                />
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">ETB</div>
               </div>
             </div>
-            <button
-              type="submit"
-              className="text-white inline-flex items-center bg-[#00ABCD] hover:bg-[#3d9fb2] focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-            >
-              Save
-            </button>
-          </form>
-        </div>
-      </div>
-    </div>
-  );
-};
 
-export default Model;
+            <div className="space-y-2">
+              <Label htmlFor="title">Account Name</Label>
+              <Input
+                id="title"
+                name="title"
+                value={editAccountData.title}
+                onChange={handleChange}
+                placeholder="Enter account name"
+                maxLength={50}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="date" className="flex items-center gap-2">
+                <Calendar className="h-4 w-4" />
+                Account Created Date
+              </Label>
+              <Input
+                id="date"
+                name="createdAt"
+                type="date"
+                value={new Date(editAccountData.createdAt).toLocaleDateString("en-CA")}
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+
+          <div className="flex gap-3 pt-4">
+            <Button type="button" variant="outline" onClick={() => setIsEditing(false)} className="flex-1">
+              Cancel
+            </Button>
+            <Button type="submit" className="flex-1">
+              Save Changes
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+export default Model
