@@ -1,163 +1,189 @@
+"use client"
+
+import type React from "react"
+
 // import "flowbite";
-import { useEffect, useState } from "react";
-import { HiOutlineX } from "react-icons/hi";
+import { useEffect, useState } from "react"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Card, CardContent } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Target, Calendar, TrendingUp, TrendingDown, ArrowUpDown } from "lucide-react"
 
 type ModelProps = {
-  isEditing: boolean;
-  setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
-  handleUpdate: (e: React.FormEvent<HTMLFormElement>) => void;
-  handleChange: (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
-  ) => void;
+  isEditing: boolean
+  setIsEditing: React.Dispatch<React.SetStateAction<boolean>>
+  handleUpdate: (e: React.FormEvent<HTMLFormElement>) => void
+  handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void
   editBudgetData: {
-    id: number;
-    createdAt: string;
-    type: string;
-    amount: number;
-    title: string;
-  };
-};
+    id: number
+    createdAt: string
+    type: string
+    amount: number
+    title: string
+  }
+}
 
-const Model: React.FC<ModelProps> = ({
-  isEditing,
-  setIsEditing,
-  handleUpdate,
-  handleChange,
-  editBudgetData,
-}) => {
-  const [isSaveDisabled, setIsSaveDisabled] = useState<boolean>(true);
-  const [originalData, setOriginalData] = useState(editBudgetData);
+const Model: React.FC<ModelProps> = ({ isEditing, setIsEditing, handleUpdate, handleChange, editBudgetData }) => {
+  const [isSaveDisabled, setIsSaveDisabled] = useState<boolean>(true)
+  const [originalData, setOriginalData] = useState(editBudgetData)
 
   const checkIfFormChanged = () => {
     const hasChanged =
       editBudgetData.amount !== originalData.amount ||
       editBudgetData.title !== originalData.title ||
       editBudgetData.type !== originalData.type ||
-      editBudgetData.createdAt !== originalData.createdAt;
-      
-    setIsSaveDisabled(!hasChanged);
-  };
+      editBudgetData.createdAt !== originalData.createdAt
+
+    setIsSaveDisabled(!hasChanged)
+  }
 
   useEffect(() => {
-    checkIfFormChanged();
-  }, [editBudgetData]);
+    checkIfFormChanged()
+  }, [editBudgetData])
 
-  if (!isEditing) return null;
+  if (!isEditing) return null
+
+  const getBudgetIcon = (type: string) => {
+    switch (type) {
+      case "Deposit":
+        return <TrendingUp className="h-4 w-4 text-green-600" />
+      case "Withdrawal":
+        return <TrendingDown className="h-4 w-4 text-red-600" />
+      case "Transfer":
+        return <ArrowUpDown className="h-4 w-4 text-blue-600" />
+      default:
+        return <Target className="h-4 w-4" />
+    }
+  }
 
   return (
-    <div
-      style={{ backgroundColor: "rgba(0, 172, 205, 0.35)" }}
-      id="crud-modal"
-      aria-hidden="true"
-      className="overflow-y-auto overflow-x-hidden fixed z-50 flex justify-center items-center w-full md:inset-0 sm:inset-0 h-[calc(100%-1rem)] max-h-full"
-    >
-      <div className="relative p-4 w-full max-w-md max-h-full">
-        <div className="relative bg-white rounded-lg shadow">
-          <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
-            <h3 className="text-lg font-semibold text-graydark dark:text-gray-800">
-              Edit Budget Form
-            </h3>
-            <button
-              type="button"
-              className="text-gray bg-transparent hover:bg-gray-200 hover:text-gray-400 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-400 dark:hover:text-white"
-              data-modal-toggle="crud-modal"
-              onClick={() => setIsEditing(false)}
-            >
-              <HiOutlineX className="text-2xl hover:bg-gray-2 hover:text-graydark" />
-              <span className="sr-only">Close modal</span>
-            </button>
-          </div>
-          <form className="p-4 md:p-5" onSubmit={handleUpdate}>
-            <div className="grid gap-4 mb-4 grid-cols-2">
-              <div className="col-span-2">
-                <label
-                  htmlFor="title"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  Title
-                </label>
-                <input
-                  id="title"
-                  name="title"
-                  value={editBudgetData.title}
-                  onChange={handleChange}
-                  className=" border border-gray text-graydark text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-200 dark:border-gray-500 dark:placeholder-gray-400 dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                />
+    <Dialog open={isEditing} onOpenChange={setIsEditing}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Target className="h-5 w-5" />
+            Edit Budget
+          </DialogTitle>
+        </DialogHeader>
+
+        <form onSubmit={handleUpdate} className="space-y-6">
+          <Card className="bg-muted/50">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  {getBudgetIcon(editBudgetData.type)}
+                  <span className="font-medium">{editBudgetData.title || "Budget Item"}</span>
+                </div>
+                <Badge variant="outline" className="font-mono">
+                  {editBudgetData.amount.toLocaleString()} ETB
+                </Badge>
               </div>
-              <div className="col-span-2">
-                <label
-                  htmlFor="type"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  Type
-                </label>
-                <select
-                  id="type"
-                  name="type"
-                  value={editBudgetData.type}
-                  onChange={handleChange}
-                  className=" border border-gray text-graydark text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-200 dark:border-gray-500 dark:placeholder-gray-400 dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                >
-                  <option>Deposit</option>
-                  <option>Transfer</option>
-                  <option>Withdrawal</option>
-                </select>
-              </div>
-              <div className="col-span-2">
-                <label
-                  htmlFor="amount"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  Amount
-                </label>
-                <input
-                  type="number"
-                  name="amount"
+            </CardContent>
+          </Card>
+
+          <div className="grid gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="title">Budget Title</Label>
+              <Input
+                id="title"
+                name="title"
+                value={editBudgetData.title}
+                onChange={handleChange}
+                placeholder="Enter budget title"
+                maxLength={100}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="type">Budget Type</Label>
+              <Select
+                value={editBudgetData.type}
+                onValueChange={(value) => handleChange({ target: { name: "type", value } } as any)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select budget type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Deposit">
+                    <div className="flex items-center gap-2">
+                      <TrendingUp className="h-4 w-4 text-green-600" />
+                      <div>
+                        <div className="font-medium">Income Budget</div>
+                        <div className="text-xs text-muted-foreground">Expected income or deposits</div>
+                      </div>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="Withdrawal">
+                    <div className="flex items-center gap-2">
+                      <TrendingDown className="h-4 w-4 text-red-600" />
+                      <div>
+                        <div className="font-medium">Expense Budget</div>
+                        <div className="text-xs text-muted-foreground">Planned expenses or withdrawals</div>
+                      </div>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="Transfer">
+                    <div className="flex items-center gap-2">
+                      <ArrowUpDown className="h-4 w-4 text-blue-600" />
+                      <div>
+                        <div className="font-medium">Transfer Budget</div>
+                        <div className="text-xs text-muted-foreground">Planned transfers between accounts</div>
+                      </div>
+                    </div>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="amount">Budget Amount</Label>
+              <div className="relative">
+                <Input
                   id="amount"
+                  name="amount"
+                  type="number"
                   value={editBudgetData.amount}
                   onChange={handleChange}
-                  className=" border border-gray text-graydark text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-200 dark:border-gray-500 dark:placeholder-gray-400 dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                  required
+                  placeholder="0.00"
+                  className="font-mono pr-12"
+                  min={0}
+                  step="0.01"
                 />
-              </div>
-              <div className="col-span-2">
-                <label
-                  htmlFor="date"
-                  className="block mb-2 text-sm font-medium text-graydark"
-                >
-                  Date
-                </label>
-                <input
-                  type="date"
-                  name="createdAt"
-                  id="date"
-                  value={new Date(editBudgetData.createdAt).toLocaleDateString(
-                    "en-CA"
-                  )}
-                  onChange={handleChange}
-                  className=" border border-gray text-graydark text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-200 dark:border-gray-500 dark:placeholder-gray-400 dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                  required
-                />
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">ETB</div>
               </div>
             </div>
-            <button
-              type="submit"
-              className={`flex justify-center rounded px-6 py-2 font-medium text-white ${
-                !isSaveDisabled
-                  ? "bg-[#00ABCD] hover:bg-opacity-90"
-                  : "bg-gray cursor-not-allowed"
-              }`}
-              disabled={isSaveDisabled}
-            >
-              Save
-            </button>
-          </form>
-        </div>
-      </div>
-    </div>
-  );
-};
 
-export default Model;
+            <div className="space-y-2">
+              <Label htmlFor="date" className="flex items-center gap-2">
+                <Calendar className="h-4 w-4" />
+                Budget Date
+              </Label>
+              <Input
+                id="date"
+                name="createdAt"
+                type="date"
+                value={new Date(editBudgetData.createdAt).toLocaleDateString("en-CA")}
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+
+          <div className="flex gap-3 pt-4">
+            <Button type="button" variant="outline" onClick={() => setIsEditing(false)} className="flex-1">
+              Cancel
+            </Button>
+            <Button type="submit" disabled={isSaveDisabled} className="flex-1">
+              {isSaveDisabled ? "No Changes" : "Save Changes"}
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+export default Model
