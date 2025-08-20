@@ -51,15 +51,21 @@ const AdminDashboard: React.FC = () => {
   return (
     <>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-3 2xl:gap-7.5">
-        <CardDataStats title="Total Users" total={totalAccounts}>
-          <HiOutlineUsers className="text-[#00ABCD] text-2xl dark:text-white" />
-        </CardDataStats>
-        <CardDataStats title="Total Transactions" total={totalTransactions}>
-          <HiOutlineClipboardList className="text-[#00ABCD] text-2xl dark:text-white" />
-        </CardDataStats>
-        <CardDataStats title="Locked Accounts" total={lockedAccounts}>
-          <HiOutlineLockClosed className="text-[#00ABCD] text-2xl dark:text-white" />
-        </CardDataStats>
+        <div className="enhanced-card">
+          <CardDataStats title="Total Users" total={totalAccounts}>
+            <HiOutlineUsers className="text-[#00ABCD] text-2xl dark:text-white" />
+          </CardDataStats>
+        </div>
+        <div className="enhanced-card">
+          <CardDataStats title="Total Transactions" total={totalTransactions}>
+            <HiOutlineClipboardList className="text-[#00ABCD] text-2xl dark:text-white" />
+          </CardDataStats>
+        </div>
+        <div className="enhanced-card">
+          <CardDataStats title="Locked Accounts" total={lockedAccounts}>
+            <HiOutlineLockClosed className="text-[#00ABCD] text-2xl dark:text-white" />
+          </CardDataStats>
+        </div>
       </div>
 
       <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">

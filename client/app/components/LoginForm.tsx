@@ -19,7 +19,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -234,7 +233,6 @@ const LoginForm = () => {
                   <Checkbox
                     id="rememberMe"
                     {...register("rememberMe")}
-                    checked={rememberMe}
                   />
                   <Label htmlFor="rememberMe" className="text-sm">
                     Remember me

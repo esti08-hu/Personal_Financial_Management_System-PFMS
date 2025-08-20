@@ -1,3 +1,9 @@
+/* Social icon fill on hover for footer */
+.footer-social-btn:hover svg {
+  fill: hsl(var(--color-primary));
+  color: hsl(var(--color-primary));
+  transform: translateY(-1px);
+}
 @import "tailwindcss";
 
 @layer base {
@@ -217,12 +223,14 @@ html {
     padding: 0.5rem 1rem;
     font-weight: 500;
     transition: all 0.2s ease-in-out;
+    cursor: pointer;
   }
 
   .btn-primary:hover {
     background: hsl(var(--color-primary) / 0.9);
     transform: translateY(-1px);
     box-shadow: 0 4px 12px hsl(var(--color-primary) / 0.25);
+    cursor: pointer;
   }
 
   .btn-primary:active {
@@ -325,7 +333,7 @@ html {
   }
  
   .btn-action-hover:hover {
-    background: hsl(var(--color-primary) / 0.18);
+    background: hsl(var(--color-primary) / 0.58);
     transform: translateY(-3px);
     box-shadow: 0 10px 26px hsl(var(--color-primary) / 0.10);
     color: hsl(var(--color-primary-foreground));
@@ -340,7 +348,7 @@ html {
   }
 
   .btn-delete-hover:hover {
-    background: hsl(var(--color-destructive) / 0.18);
+    background: hsl(var(--color-destructive) / 0.58);
     transform: translateY(-3px);
     box-shadow: 0 10px 26px hsl(var(--color-destructive) / 0.10);
     color: hsl(var(--color-destructive-foreground));
