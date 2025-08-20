@@ -3,234 +3,302 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { HiOutlineMenu, HiChevronDown } from "react-icons/hi";
+import { Menu } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { cn } from "@/lib/utils";
 import DropdownUser from "./DropdownUser";
 
 const UserNavbar = () => {
-  const [activeLink, setActiveLink] = useState("");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const currentPath = usePathname();
+  const pathname = usePathname();
+
+  // track scroll to toggle scrolled state for background treatment
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    import("flowbite").then(({initFlowbite}) => {
-      initFlowbite();
-    });
+    const onScroll = () => setScrolled(window.scrollY > 50);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
-    setActiveLink(currentPath);
-  }, [currentPath]);
+  const navigationItems = [
+    {
+      title: "Dashboard",
+      href: "/pages/user",
+      isActive: pathname === "/pages/user",
+    },
+    {
+      title: "Transaction",
+      isActive: pathname.includes("/pages/user/transaction"),
+      items: [
+        {
+          title: "Transaction List",
+          href: "/pages/user/transaction/transactionList",
+          description: "View all your transactions",
+        },
+        {
+          title: "Add Transaction",
+          href: "/pages/user/transaction/addTransaction",
+          description: "Record a new transaction",
+        },
+      ],
+    },
+    {
+      title: "Budget",
+      isActive: pathname.includes("/pages/user/budget"),
+      items: [
+        {
+          title: "Manage Budget",
+          href: "/pages/user/budget/manageBudget",
+          description: "View and edit your budgets",
+        },
+        {
+          title: "Set Budget",
+          href: "/pages/user/budget/setBudget",
+          description: "Create a new budget",
+        },
+      ],
+    },
+    {
+      title: "Account",
+      isActive: pathname.includes("/pages/user/account"),
+      items: [
+        {
+          title: "Manage Account",
+          href: "/pages/user/account/manageAccount",
+          description: "View and edit your accounts",
+        },
+        {
+          title: "Add Account",
+          href: "/pages/user/account/addAccount",
+          description: "Add a new financial account",
+        },
+      ],
+    },
+    {
+      title: "Report",
+      href: "/pages/user/report",
+      isActive: pathname === "/pages/user/report",
+    },
+  ];
+
+  const isLanding = pathname === "/";
+
+  const navBgClass = isLanding
+    ? scrolled
+      ? "!bg-primary/80 backdrop-blur border-b border-primary/30"
+      : "!bg-primary/20 backdrop-blur-sm"
+  : scrolled
+  ? "!bg-primary/95 backdrop-blur-sm border-b border-gray-200"
+  : "!bg-primary/95 backdrop-blur-sm";
+  const navStyle: React.CSSProperties = isLanding
+    ? scrolled
+      ? { background: "hsl(var(--color-primary) / 0.8)" }
+      : { background: "hsl(var(--color-primary) / 0.2)" }
+    : scrolled
+    ? { background: "hsl(var(--color-primary) / 0.95)" }
+    : { background: "hsl(var(--color-primary) / 0.95)" };
 
   return (
-    <div className="navbar-container bg-[#00ABCD] z-99">
-      <nav className="bg-[#00ABCD] border-gray">
-        <div className="w-full flex justify-between items-center px-4 md:px-0 md:w-3/4 mx-auto">
+  <div style={navStyle} className={`${navBgClass.replace("!bg-primary/95","")} navbar-bg`}>
+      <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link className="block flex-shrink-0 md:mr-10" href="/pages/user">
+          <Link href="/pages/user" className="flex-shrink-0">
             <Image
               width={50}
               height={32}
-              src={"/images/logo/logo.png"}
-              alt="Logo"
+              src="/images/logo/moneymaster.png"
+              alt="MoneyMaster Logo"
+              className="h-8 w-auto"
             />
-
           </Link>
 
-          {/* Menu button for mobile */}
-          <button
-            type="button"
-            className="flex absolute left-16 items-center p-2 text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200"
-            aria-controls="navbar-dropdown"
-            aria-expanded={isMenuOpen}
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            {!isMenuOpen && (
-              // "X" Icon when the menu is open
-              <HiOutlineMenu className="text-xl" />
-            )}
-          </button>
+          {/* Desktop Navigation */}
+          <div className="hidden md:block z-100">
+            <NavigationMenu>
+              <NavigationMenuList className="space-x-1 z-100">
+                {navigationItems.map((item) => (
+                  <NavigationMenuItem key={item.title}>
+                    {item.items ? (
+                      <>
+                        <NavigationMenuTrigger
+                          aria-current={item.isActive ? "page" : undefined}
+                          className={cn(
+                            "bg-transparent text-white hover:bg-white/10 hover:text-white focus:bg-white/10 focus:text-white data-[active]:bg-white/10 data-[state=open]:bg-white/10 transition-colors duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 rounded-md border-b-2 border-transparent",
+                            item.isActive && "rounded-none",
+                            item.isActive && "active-nav",
+                            "cursor-pointer z-1000"
+                          )}
+                        >
+                          {item.title}
+                        </NavigationMenuTrigger>
+                        <NavigationMenuContent
+                          className={cn(
+                            "bg-primary-foreground shadow-md rounded-md",
+                            "border border-border"
+                          )}
+                        >
+                          <ul
+                            className={cn(
+                              "grid gap-3 p-4",
+                              "w-[400px] md:w-[500px] lg:w-[600px]",
+                              "md:grid-cols-2"
+                            )}
+                          >
+                            {item.items.map((subItem) => (
+                              <li key={subItem.title}>
+                                <NavigationMenuLink
+                                  asChild
+                                  className="rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+                                >
+                                  <Link
+                                    href={subItem.href}
+                                    aria-current={
+                                      pathname === subItem.href || pathname.startsWith(subItem.href)
+                                        ? "page"
+                                        : undefined
+                                    }
+                                    className={cn(
+                                      "block space-y-1 rounded-md p-3 no-underline transition-colors",
+                                      "select-none leading-none outline-none",
+                                      "nav-hover-accent nav-focus-accent",
+                                      scrolled ? "text-white" : "text-primary",
+                                      (pathname === subItem.href || pathname.startsWith(subItem.href)) && "active-nav",
+                                      "cursor-pointer"
+                                    )}
+                                  >
+                                    <div className="text-sm font-medium leading-none text-primary">
+                                      {subItem.title}
+                                    </div>
+                                    {subItem.description && (
+                                      <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                                        {subItem.description}
+                                      </p>
+                                    )}
+                                  </Link>
+                                </NavigationMenuLink>
+                              </li>
+                            ))}
+                          </ul>
+                        </NavigationMenuContent>
+                      </>
+                    ) : (
+                        <NavigationMenuLink asChild>
+                        <Link
+                          href={item.href!}
+                          aria-current={item.isActive ? "page" : undefined}
+                          className={cn(
+                            "group inline-flex h-10 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-sm font-medium transition-colors duration-200 ease-in-out hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:pointer-events-none disabled:opacity-50 border-b-2 border-transparent",
+                            item.isActive && "rounded-none",
+                            scrolled ? "text-white" : "text-white",
+                            item.isActive && "active-nav",
+                            "cursor-pointer"
+                          )}
+                          style={
+                            item.isActive
+                              ? {
+                                  borderBottomColor:
+                                    "hsl(var(--color-primary))",
+                                }
+                              : undefined
+                          }
+                        >
+                          {item.title}
+                        </Link>
+                      </NavigationMenuLink>
+                    )}
+                  </NavigationMenuItem>
+                ))}
+              </NavigationMenuList>
+            </NavigationMenu>
+          </div>
 
-          {/* Navbar items */}
-          <div
-            className={`${
-              isMenuOpen
-                ? "block bg-[#1C2434] fixed z-999 text-white !w-56 h-1.2 top-0 left-0 p-5 rounded-br-[10px] md:bg-transparent md:h-auto md:p-0 md:relative transition-all duration-300 ease-in-out"
-                : "hidden"
-            } w-full md:flex md:items-center md:w-auto`}
-            id="navbar-dropdown"
-          >
-            <button
-              type="button"
-              className="inline-flex absolute right-0 items-center p-2 text-sm text-gray-500 rounded-lg md:hidden hover:bg-graydark focus:outline-none"
-              aria-controls="navbar-dropdown"
-              aria-expanded={isMenuOpen}
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-            >
-             
-            </button>
-            <div className="flex-10 lg:w-203 py-4">
-              <ul className="flex flex-col justify-between gap-y-6 gap-x-4 mt-4 md:flex-row md:space-x-2 md:mt-0 text-sm font-medium ">
-                <li className="flex items-center justify-center">
-                  <Link
-                    href="/pages/user"
-                    className={`block py-2  text-white hover:text-[#22577A] ${
-                      currentPath === "/pages/user"
-                        ? "border-b-4 border-[#22577A]"
-                        : ""
-                    }`}
+          {/* Mobile menu and user dropdown */}
+          <div className="flex items-center space-x-4">
+            <DropdownUser />
+
+            {/* Mobile menu */}
+            <div className="md:hidden">
+              <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+                <SheetTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-white hover:bg-white/10"
                   >
-                    Dashboard
-                  </Link>
-                </li>
-                <li className="flex items-center justify-center">
-                  <button
-                    id="transactionDropdownHoverButton"
-                    data-dropdown-toggle="transactionDropdownHover"
-                    data-dropdown-trigger="hover"
-                    className={`text-white font-medium text-sm text-center inline-flex items-center py-2 hover:text-[#22577A] ${
-                      currentPath === "/pages/user/transaction/transactionList" ||
-                      currentPath === "/pages/user/transaction/addTransaction"
-                        ? "border-b-4 border-[#22577A]"
-                        : ""
-                    }`}
-                    type="button"
-                  >
-                    Transaction <HiChevronDown className="text-xl" />
-                  </button>
-                  <div
-                    id="transactionDropdownHover"
-                    className="hidden z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-44"
-                  >
-                    <ul className="py-2 text-sm text-gray-700">
-                      <li>
-                        <Link
-                          href="/pages/user/transaction/transactionList"
-                          className="block px-4 py-2 hover:bg-[#cfeaf2] text-[#22577A]"
-                        >
-                          Transaction List
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/pages/user/transaction/addTransaction"
-                          className="block px-4 py-2 hover:bg-[#cfeaf2] text-[#22577A]"
-                        >
-                          Add Transaction
-                        </Link>
-                      </li>
-                    </ul>
+                    <Menu className="h-6 w-6" />
+                    <span className="sr-only">Open menu</span>
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="w-[300px] sm:w-[400px]">
+                  <SheetHeader>
+                    <SheetTitle className="text-left">Navigation</SheetTitle>
+                  </SheetHeader>
+                  <div className="mt-6 space-y-4">
+                    {navigationItems.map((item) => (
+                      <div key={item.title} className="space-y-2">
+                        {item.items ? (
+                          <div>
+                            <h3 className="font-medium text-[#22577A] mb-2">
+                              {item.title}
+                            </h3>
+                            <div className="ml-4 space-y-2">
+                              {item.items.map((subItem) => (
+                                <Link
+                                  key={subItem.title}
+                                  href={subItem.href}
+                                  className="block rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                                  onClick={() => setIsMenuOpen(false)}
+                                >
+                                  {subItem.title}
+                                </Link>
+                              ))}
+                            </div>
+                          </div>
+                        ) : (
+                          <Link
+                            href={item.href!}
+                            className={cn(
+                              "block rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground",
+                              item.isActive
+                                ? "bg-accent text-accent-foreground"
+                                : "text-muted-foreground"
+                            )}
+                            onClick={() => setIsMenuOpen(false)}
+                          >
+                            {item.title}
+                          </Link>
+                        )}
+                      </div>
+                    ))}
                   </div>
-                </li>
-
-                <li className="flex items-center justify-center">
-                  <button
-                    id="budgetDropdownHoverButton"
-                    data-dropdown-toggle="budgetDropdownHover"
-                    data-dropdown-trigger="hover"
-                    className={`text-white font-medium text-sm text-center inline-flex items-center py-2 hover:text-[#22577A] ${
-                      currentPath === "/pages/user/budget/setBudget" ||
-                      currentPath === "/pages/user/budget/manageBudget"
-                        ? "border-b-4 border-[#22577A]"
-                        : ""
-                    }`}
-                    type="button"
-                  >
-                    Budget <HiChevronDown className="text-xl" />
-                  </button>
-
-                  <div
-                    id="budgetDropdownHover"
-                    className="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44"
-                  >
-                    <ul
-                      className="py-2 text-sm text-gray-700 dark:text-gray-200"
-                      aria-labelledby="budgetDropdownHoverButton"
-                    >
-                      <li>
-                        <Link
-                          href="/pages/user/budget/manageBudget"
-                          className="block px-4 py-2 hover:bg-[#cfeaf2] text-[#22577A]"
-                        >
-                          Manage Budget
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/pages/user/budget/setBudget"
-                          className="block px-4 py-2 hover:bg-[#cfeaf2] text-[#22577A]"
-                        >
-                          Set Budget
-                        </Link>
-                      </li>
-                    </ul>
-                  </div>
-                </li>
-
-                <li className="flex items-center justify-center">
-                  <button
-                    id="accountDropdownHoverButton"
-                    data-dropdown-toggle="accountDropdownHover"
-                    data-dropdown-trigger="hover"
-                    className={`text-white font-medium text-sm text-center inline-flex items-center py-2 hover:text-[#22577A] ${
-                      currentPath === "/pages/user/account/addAccount" ||
-                      currentPath === "/pages/user/account/manageAccount"
-                        ? "border-b-4 border-[#22577A]"
-                        : ""
-                    }`}
-                    type="button"
-                  >
-                    Account <HiChevronDown className="text-xl" />
-                  </button>
-
-                  <div
-                    id="accountDropdownHover"
-                    className="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44"
-                  >
-                    <ul
-                      className="py-2 text-sm text-gray-700 dark:text-gray-200"
-                      aria-labelledby="accountDropdownHoverButton"
-                    >
-                      <li>
-                        <Link
-                          href="/pages/user/account/manageAccount"
-                          className="block px-4 py-2 hover:bg-[#cfeaf2] text-[#22577A]"
-                        >
-                          Manage Account
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/pages/user/account/addAccount"
-                          className="block px-4 py-2 hover:bg-[#cfeaf2] text-[#22577A]"
-                        >
-                          Add Account
-                        </Link>
-                      </li>
-                    </ul>
-                  </div>
-                </li>
-
-                {/* Add more similar dropdown menus for Budget and Account */}
-                <li className="flex items-center justify-center">
-                  <Link
-                    href="/pages/user/report"
-                    className={`block py-2  text-white hover:text-[#22577A] ${
-                      currentPath === "/pages/user/report"
-                        ? "border-b-4 border-[#22577A]"
-                        : ""
-                    }`}
-                  >
-                    Report
-                  </Link>
-                </li>
-                <li className="flex items-center justify-center sm:block"></li>
-              </ul>
+                </SheetContent>
+              </Sheet>
             </div>
           </div>
-          <DropdownUser />
         </div>
       </nav>
+
       <ToastContainer
         position="top-center"
         autoClose={5000}

@@ -8,7 +8,7 @@ import Content from "./components/Content";
 
 export default function Home() {
   return (
-    <div>
+    <div className="min-h-screen bg-gradient-to-b from-background-red-300 to-muted/20">
       <main className="flex flex-col items-center w-full">
         <Navbar />
         <Hero />
