@@ -59,7 +59,7 @@ const TableThree: React.FC<{ users: User[]; fetchUsers: () => void }> = ({
       okText: "Yes, restore",
       okType: "primary",
       cancelText: "No, cancel",
-      okButtonProps:{style: {backgroundColor: "#00ABCD", color: "#fff", borderColor: "#00ABCD"}},
+  okButtonProps:{style: {backgroundColor: "hsl(var(--color-primary))", color: "#fff", borderColor: "hsl(var(--color-primary))"}},
       async onOk() {
         try {
           const response = await apiClient.post(`/user/restore${user.pid}`);
@@ -219,16 +219,16 @@ const TableThree: React.FC<{ users: User[]; fetchUsers: () => void }> = ({
         className="!w-[400px]"
         okButtonProps={{
           disabled: !isFormChanged,
-          style: {
-            backgroundColor: isFormChanged ? "#00ABCD" : "#f5f5f5",
+            style: {
+            backgroundColor: isFormChanged ? "hsl(var(--color-primary))" : "#f5f5f5",
             color: isFormChanged ? "#fff" : "#d9d9d9",
-            borderColor: isFormChanged ? "#00ABCD" : "#f5f5f5",
+            borderColor: isFormChanged ? "hsl(var(--color-primary))" : "#f5f5f5",
           },
         }}
         cancelButtonProps={{
           style: {
-            borderColor: "#00ABCD",
-            color: "#00ABCD",
+            borderColor: "hsl(var(--color-primary))",
+            color: "hsl(var(--color-primary))",
           },
         }}
       >
