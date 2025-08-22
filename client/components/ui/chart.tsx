@@ -118,14 +118,21 @@ function ChartTooltipContent({
   color,
   nameKey,
   labelKey,
-}: React.ComponentProps<typeof RechartsPrimitive.Tooltip> &
-  React.ComponentProps<"div"> & {
-    hideLabel?: boolean
-    hideIndicator?: boolean
-    indicator?: "line" | "dot" | "dashed"
-    nameKey?: string
-    labelKey?: string
-  }) {
+}: {
+  active?: boolean
+  payload?: any[]
+  className?: string
+  indicator?: "line" | "dot" | "dashed"
+  hideLabel?: boolean
+  hideIndicator?: boolean
+  label?: any
+  labelFormatter?: ((value: any, payload: any[]) => React.ReactNode) | undefined
+  labelClassName?: string
+  formatter?: any
+  color?: string
+  nameKey?: string
+  labelKey?: string
+}) {
   const { config } = useChart()
 
   const tooltipLabel = React.useMemo(() => {
@@ -182,7 +189,12 @@ function ChartTooltipContent({
         {payload.map((item, index) => {
           const key = `${nameKey || item.name || item.dataKey || "value"}`
           const itemConfig = getPayloadConfigFromPayload(config, item, key)
-          const indicatorColor = color || item.payload.fill || item.color
+          const indicatorColor =
+            (color as string) || (item as any).payload?.fill || (item as any).color
+
+          // Prefer the scoped CSS var `--color-<key>` injected by ChartStyle when available.
+          // This ensures variables defined under [data-chart=...] resolve correctly.
+          const markerColor = itemConfig ? `var(--color-${key})` : indicatorColor
 
           return (
             <div
@@ -200,23 +212,15 @@ function ChartTooltipContent({
                     <itemConfig.icon />
                   ) : (
                     !hideIndicator && (
-                      <div
-                        className={cn(
-                          "shrink-0 rounded-[2px] border-(--color-border) bg-(--color-bg)",
-                          {
-                            "h-2.5 w-2.5": indicator === "dot",
-                            "w-1": indicator === "line",
-                            "w-0 border-[1.5px] border-dashed bg-transparent":
-                              indicator === "dashed",
-                            "my-0.5": nestLabel && indicator === "dashed",
-                          }
-                        )}
-                        style={
-                          {
-                            "--color-bg": indicatorColor,
-                            "--color-border": indicatorColor,
-                          } as React.CSSProperties
-                        }
+                      // explicit colored marker so Tailwind/JIT or CSS var issues don't hide the color
+                      <span
+                        className={cn("inline-block mr-2 shrink-0", {
+                          "h-2.5 w-2.5 rounded-[2px]": indicator === "dot",
+                          "w-1 h-4": indicator === "line",
+                        })}
+                        style={{
+                          backgroundColor: markerColor,
+                        } as React.CSSProperties}
                       />
                     )
                   )}
@@ -256,11 +260,13 @@ function ChartLegendContent({
   payload,
   verticalAlign = "bottom",
   nameKey,
-}: React.ComponentProps<"div"> &
-  Pick<RechartsPrimitive.LegendProps, "payload" | "verticalAlign"> & {
-    hideIcon?: boolean
-    nameKey?: string
-  }) {
+}: React.ComponentProps<"div"> & {
+  hideIcon?: boolean
+  nameKey?: string
+  // Use a simple any[] payload to avoid tight coupling to Recharts types here
+  payload?: any[]
+  verticalAlign?: "bottom" | "top" | "left" | "right"
+}) {
   const { config } = useChart()
 
   if (!payload?.length) {
