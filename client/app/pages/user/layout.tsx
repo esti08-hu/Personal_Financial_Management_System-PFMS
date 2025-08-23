@@ -14,7 +14,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
     <div className="relative min-h-screen bg-gray-2 flex flex-col  from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
       <UserNavbar />
-      <div className="flex flex-col justify-center items-center h-40 font-black text-gray-800 dark:text-gray-100"></div>
+      <div className="flex flex-col justify-center items-center  font-black text-gray-800 dark:text-gray-100"></div>
 
       <main className="flex-grow">
         <div className="container mx-auto px-4 py-8">
