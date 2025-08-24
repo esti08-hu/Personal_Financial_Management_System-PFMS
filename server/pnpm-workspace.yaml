@@ -1,0 +1,5 @@
+ignoredBuiltDependencies:
+  - '@biomejs/biome'
+  - '@nestjs/core'
+  - bcrypt
+  - esbuild
