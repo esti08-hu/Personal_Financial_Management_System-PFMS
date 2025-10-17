@@ -59,16 +59,12 @@
         "Admins_pid_unique": {
           "name": "Admins_pid_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "pid"
-          ]
+          "columns": ["pid"]
         },
         "Admins_email_unique": {
           "name": "Admins_email_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "email"
-          ]
+          "columns": ["email"]
         }
       }
     },
@@ -119,12 +115,8 @@
           "name": "Transactions_user_id_Users_id_fk",
           "tableFrom": "Transactions",
           "tableTo": "Users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -264,23 +256,17 @@
         "Users_pid_unique": {
           "name": "Users_pid_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "pid"
-          ]
+          "columns": ["pid"]
         },
         "Users_email_unique": {
           "name": "Users_email_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "email"
-          ]
+          "columns": ["email"]
         },
         "Users_phone_unique": {
           "name": "Users_phone_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "phone"
-          ]
+          "columns": ["phone"]
         }
       }
     }
