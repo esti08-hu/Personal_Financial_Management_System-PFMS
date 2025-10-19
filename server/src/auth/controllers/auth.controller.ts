@@ -53,17 +53,19 @@ export class AuthController {
         signInDto.password,
       ))
     } else {
-      ;({ accessToken, refreshToken } = await this.authService.signIn(
+      ({ accessToken, refreshToken } = await this.authService.signIn(
         signInDto.email,
         signInDto.password,
       ))
     }
     res.cookie('refresh_token', refreshToken, {
-      maxAge: 1000 * 60 * 60 * 15, // 15 days
+      maxAge: parseInt(process.env.JWT_REFRESH_TOKEN_EXPIRATION_TIME), // 15 days or env var
       httpOnly: true,
     })
+    // Use environment variable for access token expiration
+    const accessTokenExpiration = parseInt(process.env.JWT_ACCESS_TOKEN_EXPIRATION_TIME || '3600') * 1000
     res.cookie('access_token', accessToken, {
-      maxAge: rememberMe ? 1000 * 60 * 60 * 24 * 7 : 1000 * 15, // 3 minuts or 7 days
+      maxAge: rememberMe ? 1000 * 60 * 60 * 24 * 7 : accessTokenExpiration, // Use env var or 7 days if rememberMe
       httpOnly: true,
     })
     return { accessToken, refreshToken }
@@ -96,8 +98,10 @@ export class AuthController {
     if (!cookies.access_token) {
       const accessToken = await this.authService.updateAccessToken(refreshToken)
 
+      // Use environment variable for access token expiration
+      const accessTokenExpiration = parseInt(process.env.JWT_ACCESS_TOKEN_EXPIRATION_TIME || '3600') * 1000
       res.cookie('access_token', accessToken, {
-        maxAge: 1000 * 60 * 3, // 3 minutes
+        maxAge: accessTokenExpiration, // Use env var
         httpOnly: true,
         path: '/',
       })

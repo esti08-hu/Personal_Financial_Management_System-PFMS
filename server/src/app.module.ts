@@ -13,6 +13,7 @@ import { EmailConfirmationModule } from './emailConfirmation/emailConfirmation.m
 import { GoogleAuthenticationModule } from './googleAuth/googleAuth.module'
 import { PermissionsModule } from './permissions/permissions.module'
 import { TransactionModule } from './transaction/transaction.module'
+import { AiModule } from './ai'
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { TransactionModule } from './transaction/transaction.module'
     TransactionModule,
     AccountModule,
     BudgetModule,
+    AiModule,
     DatabaseModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

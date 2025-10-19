@@ -20,7 +20,7 @@ export class AuthDto {
 
   @ApiProperty({ required: false })
   @IsBoolean()
-  rememberMe: boolean 
+  rememberMe: boolean
 }
 
 export class EmailVerificationDto {

@@ -1,8 +1,8 @@
 import { IsNumber, IsString } from 'class-validator'
 
 export class CreateAccountDto {
-  @IsNumber()
-  userId: number
+  @IsString()
+  userId: string
   @IsString()
   title: string
   @IsString()

@@ -11,18 +11,18 @@ import { BudgetService } from './budget.service'
 export class BudgetController {
   constructor(private readonly budgetService: BudgetService) {}
   @Get('count:id')
-  async getUserBudget(@Param('id') id: number) {
+  async getUserBudget(@Param('id') id: string) {
     return await this.budgetService.getUserBudgetCount(id)
   }
   @Get(':id')
   @Public()
-  async getUserBudgets(@Param('id') userId: number) {
+  async getUserBudgets(@Param('id') userId: string) {
     return this.budgetService.getUserBudgets(userId)
   }
 
   @Post('set-budget')
   async create(@Body() CreateBudgetDto: CreateBudgetDto) {
-    const result = await this.budgetService.createBudget(CreateBudgetDto)
+    await this.budgetService.createBudget(CreateBudgetDto)
   }
 
   @Put(':id')
@@ -30,11 +30,11 @@ export class BudgetController {
     @Param('id') id: string,
     @Body() updateBudgetDto: UpdateBudgetDto,
   ) {
-    await this.budgetService.updateBudget(Number(id), updateBudgetDto)
+    await this.budgetService.updateBudget(id, updateBudgetDto)
   }
 
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    return this.budgetService.deleteBudget(Number(id))
+    return this.budgetService.deleteBudget(id)
   }
 }
