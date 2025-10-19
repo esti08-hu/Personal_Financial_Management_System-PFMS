@@ -162,6 +162,13 @@
       "when": 1760684376380,
       "tag": "0022_third_scarlet_witch",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1760771543949,
+      "tag": "0023_ambiguous_mantis",
+      "breakpoints": true
     }
   ]
 }
