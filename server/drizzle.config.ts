@@ -1,8 +1,8 @@
-import { defineConfig } from 'drizzle-kit';
-import { ConfigService } from '@nestjs/config';
-import 'dotenv/config';
+import { ConfigService } from '@nestjs/config'
+import { defineConfig } from 'drizzle-kit'
+import 'dotenv/config'
 
-const configService = new ConfigService();
+const configService = new ConfigService()
 
 export default defineConfig({
   schema: './src/database/database-schema.ts',
@@ -16,4 +16,4 @@ export default defineConfig({
     database: configService.get('POSTGRES_DB'),
     ssl: false,
   },
-});
+})
