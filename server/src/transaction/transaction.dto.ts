@@ -2,8 +2,8 @@ import { Transform } from 'class-transformer'
 import { IsNumber, IsString } from 'class-validator'
 
 export class CreateTransactionDto {
-  @IsNumber()
-  userId: number
+  @IsString()
+  userId: string
   @IsNumber()
   balance: number
   @IsNumber()
@@ -32,10 +32,10 @@ export class UpdateTransactionDto {
 
   @IsString()
   createdAt: string
-  
+
   @IsString()
   description: string
-  
+
   @Transform(({ value }) => Number(value))
   @IsNumber()
   balance: number

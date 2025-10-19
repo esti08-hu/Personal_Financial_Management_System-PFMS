@@ -8,7 +8,7 @@ import { DrizzleService } from 'src/database/drizzle.service'
 export class BudgetService {
   constructor(private drizzle: DrizzleService) {}
 
-  async getUserBudgets(userId: number) {
+  async getUserBudgets(userId: string) {
     return await this.drizzle.db
       .select()
       .from(databaseSchema.budget)
@@ -25,7 +25,7 @@ export class BudgetService {
     return result[0]
   }
 
-  async updateBudget(id: number, updateBudgetDto: UpdateBudgetDto) {
+  async updateBudget(id: string, updateBudgetDto: UpdateBudgetDto) {
     const { type, amount, date, title } = updateBudgetDto
     const result = await this.drizzle.db.execute(sql`
         UPDATE "Budgets" 
@@ -35,13 +35,13 @@ export class BudgetService {
     return result[0]
   }
 
-  async deleteBudget(id: number) {
+  async deleteBudget(id: string) {
     await this.drizzle.db
       .delete(databaseSchema.budget)
       .where(eq(databaseSchema.budget.id, id))
   }
 
-  async getUserBudgetCount(userId: number) {
+  async getUserBudgetCount(userId: string) {
     const result = await this.drizzle.db
       .select({ count: count() })
       .from(databaseSchema.budget)

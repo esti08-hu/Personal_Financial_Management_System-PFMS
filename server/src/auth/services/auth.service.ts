@@ -65,6 +65,7 @@ export class AuthService {
 
   public getCookieWithJwtAccessToken(user) {
     const payload: AccessTokenPayload = {
+      id: user.id,
       pid: user.pid,
       name: user.name,
       roles: [Role.USER],
@@ -107,21 +108,18 @@ export class AuthService {
 
   async signIn(email: string, pass: string): Promise<any> {
     const user = await this.usersService.getUserByEmail(email, [Role.USER])
-
     if (!user) throw new NotFoundException('User not found')
-    console.log(user.accountLockedUntil)
 
     if (user.accountLockedUntil && new Date() < user.accountLockedUntil) {
       const now = new Date()
       const timeDifference = user.accountLockedUntil.getTime() - now.getTime() // Difference in milliseconds
 
       const minutes = Math.floor(timeDifference / 1000 / 60)
-
       throw new UnauthorizedException(
         `Account is locked. Try again after ${minutes} minutes.`,
       )
     }
-    
+
     if (!user.isEmailConfirmed)
       throw new UnauthorizedException('Please confirm your email to Login')
 
@@ -174,6 +172,7 @@ export class AuthService {
     `)
 
     const accessTokenPayload: AccessTokenPayload = {
+      id: user.id,
       pid: user.pid,
       name: user.name,
       roles: [Role.USER],
@@ -210,6 +209,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials')
 
     const accessTokenPayload: AccessTokenPayload = {
+      id: admin.id,
       pid: admin.pid,
       name: admin.name,
       roles: [Role.ADMIN],
@@ -273,6 +273,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid refresh token')
 
     const payload: AccessTokenPayload = {
+      id: userOrAdmin.id,
       pid: userOrAdmin.pid,
       name: userOrAdmin.name,
       roles: role,

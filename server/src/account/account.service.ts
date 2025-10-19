@@ -8,7 +8,7 @@ import { CreateAccountDto, UpdateAccountDto } from './account.dto'
 export class AccountService {
   constructor(private drizzle: DrizzleService) {}
 
-  async getUserAccounts(userId: number) {
+  async getUserAccounts(userId: string) {
     return await this.drizzle.db
       .select()
       .from(databaseSchema.account)
@@ -16,7 +16,7 @@ export class AccountService {
       .orderBy(desc(databaseSchema.account.createdAt))
   }
 
-  async getBalance(userId: number) {
+  async getBalance(userId: string) {
     const result = await this.drizzle.db
       .select({ balance: sum(databaseSchema.account.balance) })
       .from(databaseSchema.account)
@@ -34,9 +34,8 @@ export class AccountService {
     return result[0]
   }
 
-  async updateAccount(id: number, updateAccountDto: UpdateAccountDto) {
+  async updateAccount(id: string, updateAccountDto: UpdateAccountDto) {
     const { type, date, balance, title } = updateAccountDto
-    console.log(updateAccountDto)
 
     const result = await this.drizzle.db.execute(sql`
         UPDATE "Accounts" 
@@ -46,7 +45,7 @@ export class AccountService {
     return result[0]
   }
 
-  async deleteAccount(id: number) {
+  async deleteAccount(id: string) {
     await this.drizzle.db
       .delete(databaseSchema.account)
       .where(eq(databaseSchema.account.id, id))
