@@ -4,6 +4,12 @@
 
 ## Features 🚀
 
+- **AI Financial Assistant 🤖:**
+  - Conversational AI powered by Google Gemini for financial insights.
+  - Natural language queries about spending patterns, trends, and anomalies.
+  - Multi-turn conversations with intelligent context management.
+  - Real-time transaction analysis and personalized recommendations.
+
 - **Transaction Management:**
   - Add, update, and delete transactions (income, expenses, etc.).
   - View transaction history and details.

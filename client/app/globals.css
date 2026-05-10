@@ -152,8 +152,8 @@
   body {
     background: rgb(var(--background));
     color: rgb(var(--foreground));
-    /* Use Inter as the default UI font provided via next/font (variable: --font-inter) */
-    font-family: var(--font-inter), system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    /* Use system fonts as primary with Google Fonts as enhancement */
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     /* Use responsive root font sizing (see html rules below) */
     font-size: var(--fs-base);
     line-height: var(--leading-base);
@@ -507,17 +507,16 @@ html {
     color: hsl(var(--color-destructive-foreground));
   }
 
-  /* Display font utility using next/font variable (Satoshi) */
-  /* Display font utility (Playfair/other) - pull from layout.tsx variable --font-display */
+  /* Display font utility - fallback to system serif fonts */
   .font-display {
-    font-family: var(--font-display);
+    font-family: "Times New Roman", Times, serif;
   }
 
   /* Apply display font to major headings for visual consistency */
   h1,
   h2,
   h3 {
-    font-family: var(--font-display);
+    font-family: "Times New Roman", Times, serif;
     letter-spacing: -0.01em;
   }
 

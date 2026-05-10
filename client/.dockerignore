@@ -1,0 +1,12 @@
+node_modules
+.next
+.swc
+.env
+*.log
+.git
+.gitignore
+coverage
+e2e
+__tests__
+tsconfig.tsbuildinfo
+tsconfig.test.tsbuildinfo

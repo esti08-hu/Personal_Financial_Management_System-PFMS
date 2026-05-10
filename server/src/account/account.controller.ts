@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common'
+import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put } from '@nestjs/common'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { CreateAccountDto, UpdateAccountDto } from './account.dto'
 import { AccountService } from './account.service'
@@ -20,8 +20,9 @@ export class AccountController {
   }
 
   @Post('add-account')
-  async create(@Body() CreateBudgetDto: CreateAccountDto) {
-    const result = await this.accountService.createAccount(CreateBudgetDto)
+  @HttpCode(201)
+  async create(@Body() createAccountDto: CreateAccountDto) {
+    return await this.accountService.createAccount(createAccountDto)
   }
 
   @Put(':id')

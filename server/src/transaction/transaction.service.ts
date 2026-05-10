@@ -1,5 +1,4 @@
-import { createDecipheriv } from 'crypto'
-import { Injectable } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import { and, asc, count, desc, eq, or, sql, sum } from 'drizzle-orm'
 import { databaseSchema, user } from 'src/database/database-schema'
 import { DrizzleService } from 'src/database/drizzle.service'
@@ -22,7 +21,7 @@ export class TransactionService {
     })
   }
 
-  async getResentTransactions(userId: string) {
+  async getRecentTransactions(userId: string) {
     return await this.drizzle.db
       .select()
       .from(databaseSchema.transaction)
@@ -62,10 +61,11 @@ export class TransactionService {
     const { userId, accountId, balance, type, amount, createdAt, description } =
       createTransactionDto
 
-    await this.drizzle.db.transaction(async (tx) => {
-      const result = await this.drizzle.db.execute(sql`
-          INSERT INTO "Transactions" ("user_id", "account_id", "type", "amount", "createdAt", "description")
-          VALUES (${userId}, ${accountId}, ${type}, ${amount}, ${new Date(createdAt).toISOString()}, ${description});
+    return await this.drizzle.db.transaction(async (tx) => {
+      const result = await tx.execute(sql`
+        INSERT INTO "Transactions" ("user_id", "account_id", "type", "amount", "createdAt", "description")
+        VALUES (${userId}, ${accountId}, ${type}, ${amount}, ${new Date(createdAt).toISOString()}, ${description})
+        RETURNING *
       `)
 
       if (result.rowCount === 0) {
@@ -73,19 +73,19 @@ export class TransactionService {
         throw new Error('Failed to create transaction')
       }
 
-      const updateAccount = await this.drizzle.db.execute(sql`
-              UPDATE "Accounts"
-              SET "balance" = ${balance}
-              WHERE "id" = ${accountId}
-          `)
+      const [updatedAccount] = await tx
+        .update(databaseSchema.account)
+        .set({ balance })
+        .where(eq(databaseSchema.account.id, accountId))
+        .returning()
 
-      if (updateAccount.rowCount === 0) {
+      if (!updatedAccount) {
         await tx.rollback()
         throw new Error('Failed to update account balance')
       }
-    })
 
-    return 'Transaction created successfully'
+      return result.rows[0]
+    })
   }
 
   async updateTransaction(
@@ -96,11 +96,12 @@ export class TransactionService {
       updateTransactionDto
 
     await this.drizzle.db.transaction(async (tx) => {
-      const result = await this.drizzle.db.execute(sql`
-        UPDATE "Transactions" 
-        SET "type" = ${type}, "account_id"=${accountId}, "amount" = ${amount}, "createdAt" = ${new Date(createdAt).toISOString()}, "description" = ${description}
+      const result = await tx.execute(sql`
+        UPDATE "Transactions"
+        SET "type" = ${type}, "account_id" = ${accountId}, "amount" = ${amount},
+            "createdAt" = ${new Date(createdAt).toISOString()}, "description" = ${description}
         WHERE id = ${id}
-        `)
+      `)
 
       if (result.rowCount === 0) {
         await tx.rollback()
@@ -108,10 +109,13 @@ export class TransactionService {
       }
 
       if (balance !== undefined && balance !== null && !Number.isNaN(balance)) {
-        const updateAccount = await this.drizzle.db.execute(sql`
-          UPDATE "Accounts" SET "balance" = ${balance} WHERE id = ${accountId}`)
+        const [updatedAccount] = await tx
+          .update(databaseSchema.account)
+          .set({ balance })
+          .where(eq(databaseSchema.account.id, accountId))
+          .returning()
 
-        if (updateAccount.rowCount === 0) {
+        if (!updatedAccount) {
           await tx.rollback()
           throw new Error('Failed to update account balance')
         }
@@ -121,8 +125,26 @@ export class TransactionService {
     return 'Transaction updated successfully'
   }
 
-  async deleteTransaction(data, id: string) {
-    const { balance, accountId } = data
+  async deleteTransaction(id: string) {
+    const existing = await this.drizzle.db.query.transaction.findFirst({
+      where: eq(databaseSchema.transaction.id, id),
+      with: {
+        account: {
+          columns: { balance: true },
+        },
+      },
+    })
+
+    if (!existing) throw new NotFoundException('Transaction not found')
+
+    const { type, amount, accountId, account } = existing
+    let newBalance = account.balance
+    if (type === 'Deposit') {
+      newBalance -= amount
+    } else if (type === 'Withdrawal' || type === 'Transfer') {
+      newBalance += amount
+    }
+
     await this.drizzle.db.transaction(async (tx) => {
       const result = await this.drizzle.db
         .delete(databaseSchema.transaction)
@@ -133,18 +155,19 @@ export class TransactionService {
         throw new Error('Failed to delete transaction')
       }
 
-      const updateAccount = await this.drizzle.db.execute(sql`
-          UPDATE "Accounts"
-          SET "balance" = ${balance}
-          WHERE "id" = ${accountId}
-      `)
+      const [updatedAccount] = await this.drizzle.db
+        .update(databaseSchema.account)
+        .set({ balance: newBalance })
+        .where(eq(databaseSchema.account.id, accountId))
+        .returning()
 
-      if (updateAccount.rowCount === 0) {
+      if (!updatedAccount) {
         await tx.rollback()
         throw new Error('Failed to update account balance')
       }
-      return 'Transaction deleted successfully'
     })
+
+    return 'Transaction deleted successfully'
   }
 
   async getIncome(userId: string) {

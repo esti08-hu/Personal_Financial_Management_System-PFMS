@@ -7,7 +7,7 @@ import type { EditAccount, NewAccount } from "@/app/types/acc";
 
 type Account = {
   id: number;
-  userId: number;
+  userId: string;
   type: string;
   balance: number;
   title: string;

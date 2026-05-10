@@ -12,6 +12,8 @@ import {
   Response,
   UseGuards,
 } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
+import { Throttle } from '@nestjs/throttler'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { EmailConfirmationService } from 'src/emailConfirmation/emailConfirmation.service'
 import { Permissions, Roles } from 'src/permissions/permissions.decorators'
@@ -34,10 +36,12 @@ export class AuthController {
     private emailConfirmationService: EmailConfirmationService,
     private usersService: UsersService,
     private passwordService: PasswordService,
+    private configService: ConfigService,
   ) {}
 
   @Post('login')
   @Public()
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   async singIn(
     @Body() signInDto: AuthDto,
     @Response({ passthrough: true }) res,
@@ -59,13 +63,12 @@ export class AuthController {
       ))
     }
     res.cookie('refresh_token', refreshToken, {
-      maxAge: parseInt(process.env.JWT_REFRESH_TOKEN_EXPIRATION_TIME), // 15 days or env var
+      maxAge: parseInt(this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_TIME')),
       httpOnly: true,
     })
-    // Use environment variable for access token expiration
-    const accessTokenExpiration = parseInt(process.env.JWT_ACCESS_TOKEN_EXPIRATION_TIME || '3600') * 1000
+    const accessTokenExpiration = parseInt(this.configService.get('JWT_ACCESS_TOKEN_EXPIRATION_TIME') ?? '3600') * 1000
     res.cookie('access_token', accessToken, {
-      maxAge: rememberMe ? 1000 * 60 * 60 * 24 * 7 : accessTokenExpiration, // Use env var or 7 days if rememberMe
+      maxAge: rememberMe ? 1000 * 60 * 60 * 24 * 7 : accessTokenExpiration,
       httpOnly: true,
     })
     return { accessToken, refreshToken }
@@ -73,6 +76,7 @@ export class AuthController {
 
   @Post('register')
   @Public()
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   async register(@Body() registerBody: RegisterUserDto): Promise<any> {
     const { success } =
       await this.emailConfirmationService.sendVerificationLink(
@@ -98,8 +102,7 @@ export class AuthController {
     if (!cookies.access_token) {
       const accessToken = await this.authService.updateAccessToken(refreshToken)
 
-      // Use environment variable for access token expiration
-      const accessTokenExpiration = parseInt(process.env.JWT_ACCESS_TOKEN_EXPIRATION_TIME || '3600') * 1000
+      const accessTokenExpiration = parseInt(this.configService.get('JWT_ACCESS_TOKEN_EXPIRATION_TIME') ?? '3600') * 1000
       res.cookie('access_token', accessToken, {
         maxAge: accessTokenExpiration, // Use env var
         httpOnly: true,
@@ -131,6 +134,7 @@ export class AuthController {
 
   @Public()
   @Post('forgot-password')
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   async forgotPasseord(@Body('email') email: string) {
     await this.authService.sendResetLink(email)
     return { message: 'Password reset link sent successfully!' }
@@ -138,6 +142,7 @@ export class AuthController {
 
   @Public()
   @Post('reset-password')
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   async resetPassword(
     @Query('token') token: string,
     @Body('newPassword') newPassword: string,

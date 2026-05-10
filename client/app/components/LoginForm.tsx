@@ -9,8 +9,6 @@ import type { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -102,7 +100,6 @@ const LoginForm = () => {
 
       if (data.rememberMe) {
         // Handle remember me functionality
-        console.log("Remember me is checked");
       }
 
       toast.success("Logged in successfully!");

@@ -5,16 +5,16 @@ export interface NewAccount {
 };
 
 export interface Account {
-  userId: number;
+  userId: string;
   title: string;
   balance: number;
-  id: number;
+  id: string;
 };
 
 export type Transaction = {
-  id: number;
-  userId?: number;
-  accountId: number;
+  id: string;
+  userId?: string;
+  accountId: string;
   account: Account;
   type: string;
   amount: number;
@@ -27,15 +27,15 @@ export type NewTransaction = {
   type: string;
   amount: number;
   balance: number;
-  accountId: number;
+  accountId: string;
   createdAt: string;
   description: string;
 };
 
 export type EditTransaction = {
-  id: number;
+  id: string;
   account: {
-    id: number;
+    id: string;
     title: string;
     balance: number;
   };
@@ -48,7 +48,7 @@ export type EditTransaction = {
 
 
 export type EditAccount = {
-  id: number;
+  id: string;
   type: string;
   balance: number;
   title: string;
@@ -56,7 +56,7 @@ export type EditAccount = {
 };
 
 export type EditBudget = {
-  id: number;
+  id: string;
   createdAt: string;
   type: string;
   amount: number;

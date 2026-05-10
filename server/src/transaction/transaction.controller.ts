@@ -1,10 +1,8 @@
 // src/transaction/transaction.controller.ts
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common'
+import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put } from '@nestjs/common'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
-import { Public } from 'src/auth/guards/auth.decorators'
 import {
   CreateTransactionDto,
-  DeleteTransactionDto,
   UpdateTransactionDto,
 } from './transaction.dto'
 import { TransactionService } from './transaction.service'
@@ -29,7 +27,6 @@ export class TransactionController {
   }
 
   @Get('income/:id')
-  @Public()
   async getIncome(@Param('id') userId: string) {
     return await this.transactionService.getIncome(userId)
   }
@@ -39,26 +36,23 @@ export class TransactionController {
   }
 
   @Get('count/:id')
-  @Public()
   async getUserTransactionCount(@Param('id') id: string) {
     return await this.transactionService.getUserTransactionsCount(id)
   }
   @Get('recent/:id')
-  @Public()
-  async getResent(@Param('id') userId: string) {
-    return this.transactionService.getResentTransactions(userId)
+  async getRecent(@Param('id') userId: string) {
+    return this.transactionService.getRecentTransactions(userId)
   }
 
   @Get('user/:id')
-  @Public()
   async getUserTransactions(@Param('id') userId: string) {
     return this.transactionService.getUserTransactions(userId)
   }
 
   @Post('add-transaction')
+  @HttpCode(201)
   async create(@Body() createTransactionDto: CreateTransactionDto) {
-    const result =
-      await this.transactionService.createTransaction(createTransactionDto)
+    return await this.transactionService.createTransaction(createTransactionDto)
   }
 
   @Put(':id')
@@ -73,7 +67,7 @@ export class TransactionController {
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: string, @Body() data: DeleteTransactionDto) {
-    return await this.transactionService.deleteTransaction(data, id)
+  async remove(@Param('id') id: string) {
+    return await this.transactionService.deleteTransaction(id)
   }
 }

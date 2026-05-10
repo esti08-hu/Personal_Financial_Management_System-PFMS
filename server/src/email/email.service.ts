@@ -21,6 +21,7 @@ export default class EmailService {
 
   // Function to validate email using Hunter.io API
   private async validateEmailWithHunter(email: string): Promise<boolean> {
+    
     const apiKey = process.env.HUNTER_API_KEY
 
     try {
@@ -53,7 +54,7 @@ export default class EmailService {
   ): Promise<{ success: boolean; message: string }> {
     const email = options.to as string
     const isValidEmail = await this.validateEmailWithHunter(email) // Validate recipient email before sending using Hunter.io
-
+    
     if (!isValidEmail) {
       throw new BadRequestException(
         'Email address is invalid or not deliverable.',

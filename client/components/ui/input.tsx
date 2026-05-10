@@ -26,7 +26,7 @@ const inputVariants = cva(
   }
 )
 
-interface InputProps extends React.ComponentProps<"input">, VariantProps<typeof inputVariants> {
+interface InputProps extends Omit<React.ComponentProps<"input">, "size">, VariantProps<typeof inputVariants> {
   startIcon?: React.ReactNode
   endIcon?: React.ReactNode
 }

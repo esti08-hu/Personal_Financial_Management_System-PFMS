@@ -13,7 +13,6 @@ import { z } from "zod";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Password from "antd/es/input/Password";
 import Loader from "../common/Loader";
 
 const SetNewPasswordForm = () => {

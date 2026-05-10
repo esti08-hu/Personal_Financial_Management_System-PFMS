@@ -15,10 +15,10 @@ interface TransactionState {
   transactions: Transaction[];
   addTransaction: (
     transaction: NewTransaction,
-    userId: number
+    userId: string
   ) => Promise<void>;
   editTransaction: (transaction: EditTransaction) => Promise<void>;
-  deleteTransaction: (id: number) => Promise<void>;
+  deleteTransaction: (id: string) => Promise<void>;
   fetchTransactions: () => Promise<void>;
 }
 
@@ -71,7 +71,7 @@ export const useTransactionStore = create<TransactionState>((set) => ({
     }
   },
 
-  deleteTransaction: async (id: number) => {
+  deleteTransaction: async (id: string) => {
     Modal.confirm({
       title: "Are you sure you want to delete this transaction?",
       content: "This action cannot be undone.",
@@ -80,30 +80,14 @@ export const useTransactionStore = create<TransactionState>((set) => ({
       cancelText: "No, cancel",
       async onOk() {
         try {
-          const transactionResponse = await apiClient.get(`/transaction/${id}`);
-          const transaction = transactionResponse.data;
-          const { type, amount, accountId } = transaction;
+          await apiClient.delete(`/transaction/${id}`);
 
-          let updatedBalance = transaction.account.balance;
-
-          if (type === "Deposit") {
-            updatedBalance -= amount;
-          } else if (type === "Withdrawal" || type === "Transfer") {
-            updatedBalance += amount;
-          }
           set((state) => ({
             transactions: state.transactions.filter((t) => t.id !== id),
           }));
 
-          await apiClient.delete(`/transaction/${id}`, {
-            data: { balance: updatedBalance, accountId: accountId },
-          });
-
           message.success("Transaction deleted successfully");
         } catch (error) {
-          set((state) => ({
-            transactions: [...state.transactions],
-          }));
           message.error("An error occurred while deleting the transaction.");
           console.error("Delete Transaction Error:", error);
         }

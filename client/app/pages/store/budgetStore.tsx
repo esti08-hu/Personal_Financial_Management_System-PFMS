@@ -7,7 +7,7 @@ import type { EditBudget, NewBudget } from "@/app/types/acc";
 
 type Budget = {
   id: number;
-  userId: number;
+  userId: string;
   title: string;
   type: string;
   date: string;

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { count, desc, eq, sql } from 'drizzle-orm'
+import { count, desc, eq } from 'drizzle-orm'
 import { CreateBudgetDto, UpdateBudgetDto } from 'src/budget/budget.dto'
 import { databaseSchema } from 'src/database/database-schema'
 import { DrizzleService } from 'src/database/drizzle.service'
@@ -16,23 +16,24 @@ export class BudgetService {
       .orderBy(desc(databaseSchema.budget.createdAt))
   }
   async createBudget(createBudgetDto: CreateBudgetDto) {
-    const { userId, title, type, amount, date } = createBudgetDto
+    const { userId, title, type, amount } = createBudgetDto
 
-    const result = await this.drizzle.db.execute(sql`
-          INSERT INTO "Budgets" ("user_id", "type", "amount", "createdAt", "title")
-          VALUES (${userId}, ${type}, ${amount}, ${new Date(date).toISOString()}, ${title});
-      `)
-    return result[0]
+    const [created] = await this.drizzle.db
+      .insert(databaseSchema.budget)
+      .values({ userId, title, type, amount })
+      .returning()
+    return created
   }
 
   async updateBudget(id: string, updateBudgetDto: UpdateBudgetDto) {
-    const { type, amount, date, title } = updateBudgetDto
-    const result = await this.drizzle.db.execute(sql`
-        UPDATE "Budgets" 
-        SET "type" = ${type}, "amount" = ${amount}, "date" = ${new Date(date).toISOString()}, "title" = ${title}
-        WHERE id = ${id}
-      `)
-    return result[0]
+    const { type, amount, title } = updateBudgetDto
+
+    const [updated] = await this.drizzle.db
+      .update(databaseSchema.budget)
+      .set({ type, amount, title })
+      .where(eq(databaseSchema.budget.id, id))
+      .returning()
+    return updated
   }
 
   async deleteBudget(id: string) {

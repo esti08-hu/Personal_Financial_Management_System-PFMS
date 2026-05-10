@@ -1,7 +1,6 @@
 // src/transaction/transaction.controller.ts
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
-import { Public } from 'src/auth/guards/auth.decorators'
 import { CreateBudgetDto, UpdateBudgetDto } from './budget.dto'
 import { BudgetService } from './budget.service'
 
@@ -15,7 +14,6 @@ export class BudgetController {
     return await this.budgetService.getUserBudgetCount(id)
   }
   @Get(':id')
-  @Public()
   async getUserBudgets(@Param('id') userId: string) {
     return this.budgetService.getUserBudgets(userId)
   }

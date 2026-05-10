@@ -27,19 +27,19 @@ export class AccountService {
   async createAccount(createAccountDto: CreateAccountDto) {
     const { userId, title, type, balance } = createAccountDto
 
-    const result = await this.drizzle.db.execute(sql`
-          INSERT INTO "Accounts" ("user_id", "type", "balance", "title")
-          VALUES (${userId}, ${type}, ${balance}, ${title});
-      `)
-    return result[0]
+    const [created] = await this.drizzle.db
+      .insert(databaseSchema.account)
+      .values({ userId, title, type, balance })
+      .returning()
+    return created
   }
 
   async updateAccount(id: string, updateAccountDto: UpdateAccountDto) {
     const { type, date, balance, title } = updateAccountDto
 
     const result = await this.drizzle.db.execute(sql`
-        UPDATE "Accounts" 
-        SET "type" = ${type}, "balance" = ${balance}, "title" = ${title}, "date" = ${date}
+        UPDATE "Accounts"
+        SET "type" = ${type}, "balance" = ${balance}, "title" = ${title}
         WHERE id = ${id}
       `)
     return result[0]

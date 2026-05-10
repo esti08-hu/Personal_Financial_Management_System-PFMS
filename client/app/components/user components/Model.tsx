@@ -35,7 +35,7 @@ const Model: React.FC<ModelProps> = ({ isEditing, setIsEditing, handleUpdate, ha
   const [newBalance, setNewBalance] = useState(Number(editTransactionData.account.balance))
   const [isSaveDisabled, setIsSaveDisabled] = useState<boolean>(true)
 
-  const fetchAccounts = async (userId: number) => {
+  const fetchAccounts = async (userId: string) => {
     try {
       const response = await apiClient.get(`/account/${userId}`)
       const data = response.data

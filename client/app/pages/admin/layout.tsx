@@ -1,5 +1,5 @@
 "use client";
-import "../../css/satoshi.css";
+// import "../../css/satoshi.css"; // Commented out - missing font files
 import "../../css/style.css";
 import React, { useEffect, useState } from "react";
 import Loader from "../../common/Loader";

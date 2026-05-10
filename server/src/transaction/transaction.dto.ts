@@ -6,8 +6,8 @@ export class CreateTransactionDto {
   userId: string
   @IsNumber()
   balance: number
-  @IsNumber()
-  accountId: number
+  @IsString()
+  accountId: string
   @IsString()
   type: string
   @IsNumber()
@@ -22,9 +22,8 @@ export class UpdateTransactionDto {
   @IsString()
   type: string
 
-  @Transform(({ value }) => Number(value))
-  @IsNumber()
-  accountId: number
+  @IsString()
+  accountId: string
 
   @Transform(({ value }) => Number(value))
   @IsNumber()
@@ -39,11 +38,4 @@ export class UpdateTransactionDto {
   @Transform(({ value }) => Number(value))
   @IsNumber()
   balance: number
-}
-
-export class DeleteTransactionDto {
-  @IsNumber()
-  balance: number
-  @IsNumber()
-  accountId: number
 }

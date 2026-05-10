@@ -30,11 +30,14 @@ export class GoogleAuthenticationController {
     @Request() req,
   ) {
     const isSignup = req.body.endpoint
-    const { accessToken, refreshToken, user } =
-      await this.googleAuthenticationService.authenticate(
-        tokenData.token,
-        isSignup,
-      )
+    const {
+      accessToken,
+      refreshToken,
+      user: _user,
+    } = await this.googleAuthenticationService.authenticate(
+      tokenData.token,
+      isSignup,
+    )
     // Set cookies
     res.cookie('refresh_token', refreshToken, {
       maxAge: 1000 * 60 * 60 * 7, // 7 days
@@ -62,11 +65,14 @@ export class GoogleAuthenticationController {
     @Request() req,
   ) {
     const isSignup = req.body.endpoint
-    const { accessToken, refreshToken, user } =
-      await this.googleAuthenticationService.authenticate(
-        tokenData.token,
-        isSignup,
-      )
+    const {
+      accessToken,
+      refreshToken,
+      user: _user,
+    } = await this.googleAuthenticationService.authenticate(
+      tokenData.token,
+      isSignup,
+    )
     res.cookie('refresh_token', refreshToken, {
       maxAge: 1000 * 60 * 60 * 7, // 7 days
       httpOnly: true,

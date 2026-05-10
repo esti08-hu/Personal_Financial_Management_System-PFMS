@@ -14,14 +14,45 @@ import { GoogleAuthenticationModule } from './googleAuth/googleAuth.module'
 import { PermissionsModule } from './permissions/permissions.module'
 import { TransactionModule } from './transaction/transaction.module'
 import { AiModule } from './ai'
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler'
+import { APP_GUARD } from '@nestjs/core'
 
 @Module({
   imports: [
+    ThrottlerModule.forRoot([{ ttl: 60000, limit: 10 }]),
     ConfigModule.forRoot({
       validationSchema: Joi.object({
+        PORT: Joi.number().integer().required(),
+        CORS_ORIGINS: Joi.string().default('http://localhost:3000'),
+
+        POSTGRES_HOST: Joi.string().required(),
+        POSTGRES_PORT: Joi.number().integer().required(),
+        POSTGRES_USER: Joi.string().required(),
+        POSTGRES_PASSWORD: Joi.string().required(),
+        POSTGRES_DB: Joi.string().required(),
+
+        JWT_ACCESS_TOKEN_SECRET: Joi.string().required(),
+        JWT_REFRESH_TOKEN_SECRET: Joi.string().required(),
+        JWT_ACCESS_TOKEN_EXPIRATION_TIME: Joi.number().integer().required(),
+        JWT_REFRESH_TOKEN_EXPIRATION_TIME: Joi.number().integer().required(),
+
+        EMAIL_SERVICE: Joi.string().required(),
+        EMAIL_USER: Joi.string().required(),
+        EMAIL_PASSWORD: Joi.string().required(),
+
+        HUNTER_API_KEY: Joi.string().required(),
+
+        EMAIL_VERIFICATION_SECRET: Joi.string().required(),
+        EMAIL_VERIFICATION_SECRET_EXPIRATION: Joi.number().integer().required(),
+        EMAIL_CONFIRMATION_URL: Joi.string().required(),
+
         GOOGLE_AUTH_CLIENT_ID: Joi.string().required(),
         GOOGLE_AUTH_CLIENT_SECRET: Joi.string().required(),
-        // ...
+
+        GEMINI_API_KEY: Joi.string().required(),
+        GEMINI_MODEL: Joi.string().required(),
+
+        GOOGLE_API_KEY: Joi.string().required(),
       }),
       isGlobal: true,
     }),
@@ -47,6 +78,9 @@ import { AiModule } from './ai'
     }),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
+  ],
 })
 export class AppModule {}

@@ -67,9 +67,10 @@ export const EnhancedCard = React.forwardRef<HTMLDivElement, EnhancedCardProps>(
 EnhancedCard.displayName = "EnhancedCard"
 
 // Unified input component with enhanced styling
-interface EnhancedInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+interface EnhancedInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'> {
   label?: string
   error?: string
+  size?: 'sm' | 'default' | 'lg'
 }
 
 export const EnhancedInput = React.forwardRef<HTMLInputElement, EnhancedInputProps>(

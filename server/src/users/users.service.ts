@@ -11,6 +11,10 @@ import { DrizzleService } from 'src/database/drizzle.service'
 import { Role } from 'src/permissions/role.emum'
 import { UpdateAdminDto, UpdateUserDto } from './users.dto'
 
+type UserRecord = typeof databaseSchema.user.$inferSelect
+type AdminRecord = typeof databaseSchema.admin.$inferSelect
+type SafeUser = Omit<UserRecord, 'id' | 'password' | 'passwordResetToken' | 'refreshToken' | 'profilePicture' | 'deletedAt'>
+
 @Injectable()
 export class UsersService {
   constructor(private drizzle: DrizzleService) {}
@@ -27,7 +31,7 @@ export class UsersService {
   `)
   }
 
-  async deletedAccounts(): Promise<any> {
+  async deletedAccounts(): Promise<{ data: Omit<UserRecord, 'id' | 'password' | 'passwordResetToken' | 'refreshToken'>[] }> {
     const result = await this.drizzle.db
       .select()
       .from(databaseSchema.user)
@@ -36,7 +40,6 @@ export class UsersService {
       const {
         id,
         password,
-        passwordInit,
         passwordResetToken,
         refreshToken,
         ...userdata
@@ -47,7 +50,7 @@ export class UsersService {
     return { data }
   }
 
-  async adminFromUser(pid): Promise<any> {
+  async adminFromUser(pid: string): Promise<string> {
     const userData = await this.getUserByPid(pid)
     if (!userData) {
       throw new NotFoundException('User not found')
@@ -115,7 +118,7 @@ export class UsersService {
     if (isAdmin) throw new BadRequestException()
 
     if (user.deletedAt) {
-      const restoreUser = await this.drizzle.db.execute(sql`
+      await this.drizzle.db.execute(sql`
         UPDATE "Users"
         SET "deletedAt" = NULL
         WHERE "pid" = ${pid} AND "deletedAt" IS NOT NULL
@@ -154,13 +157,13 @@ export class UsersService {
     `)
   }
 
-  async findUserByEmail(email: string): Promise<any> {
+  async findUserByEmail(email: string): Promise<UserRecord | undefined> {
     return this.drizzle.db.query.user.findFirst({
       where: eq(databaseSchema.user.email, email),
     })
   }
 
-  async getUserByEmail(email: string, roles: Role[]): Promise<any> {
+  async getUserByEmail(email: string, roles: Role[]): Promise<UserRecord | AdminRecord | undefined> {
     if (roles.includes(Role.ADMIN)) {
       return this.drizzle.db.query.admin.findFirst({
         where: eq(databaseSchema.admin.email, email),
@@ -172,25 +175,25 @@ export class UsersService {
     }
   }
 
-  async getUserByPhone(phone: string): Promise<any> {
+  async getUserByPhone(phone: string): Promise<UserRecord | undefined> {
     return this.drizzle.db.query.user.findFirst({
       where: eq(databaseSchema.user.phone, phone),
     })
   }
 
-  async getUserByPid(pid: string): Promise<any> {
+  async getUserByPid(pid: string): Promise<UserRecord | undefined> {
     return this.drizzle.db.query.user.findFirst({
       where: eq(databaseSchema.user.pid, pid),
     })
   }
 
-  async getAdminByPid(pid: string): Promise<any> {
+  async getAdminByPid(pid: string): Promise<AdminRecord | undefined> {
     return this.drizzle.db.query.admin.findFirst({
       where: eq(databaseSchema.admin.pid, pid),
     })
   }
 
-  async getAdminByEmail(email: string): Promise<any> {
+  async getAdminByEmail(email: string): Promise<AdminRecord | undefined> {
     return this.drizzle.db.query.admin.findFirst({
       where: eq(databaseSchema.admin.email, email),
     })
@@ -245,7 +248,7 @@ export class UsersService {
     return user
   }
 
-  async getAllUsers(): Promise<any> {
+  async getAllUsers(): Promise<{ data: SafeUser[] }> {
     const allUsers = await this.drizzle.db
       .select()
       .from(databaseSchema.user)
@@ -256,7 +259,6 @@ export class UsersService {
       const {
         id,
         password,
-        passwordInit,
         passwordResetToken,
         profilePicture,
         refreshToken,
@@ -269,7 +271,7 @@ export class UsersService {
     return { data }
   }
 
-  async getUnverifiedAccounts(): Promise<any> {
+  async getUnverifiedAccounts(): Promise<{ data: SafeUser[] }> {
     const unverifiedUsers = await this.drizzle.db
       .select()
       .from(databaseSchema.user)
@@ -283,7 +285,6 @@ export class UsersService {
       const {
         id,
         password,
-        passwordInit,
         passwordResetToken,
         profilePicture,
         refreshToken,
@@ -296,7 +297,7 @@ export class UsersService {
     return { data }
   }
 
-  async getLockedAccounts(): Promise<any> {
+  async getLockedAccounts(): Promise<{ data: SafeUser[] }> {
     const unverifiedUsers = await this.drizzle.db
       .select()
       .from(databaseSchema.user)
@@ -310,7 +311,6 @@ export class UsersService {
       const {
         id,
         password,
-        passwordInit,
         passwordResetToken,
         profilePicture,
         refreshToken,
@@ -323,7 +323,7 @@ export class UsersService {
     return { data }
   }
 
-  async getNewUsers(): Promise<any> {
+  async getNewUsers(): Promise<{ data: SafeUser[] }> {
     const newUsers = await this.drizzle.db
       .select()
       .from(databaseSchema.user)
@@ -333,7 +333,6 @@ export class UsersService {
       const {
         id,
         password,
-        passwordInit,
         passwordResetToken,
         profilePicture,
         refreshToken,
@@ -345,7 +344,7 @@ export class UsersService {
     return { data }
   }
 
-  async getActiveAccountsCount(): Promise<any> {
+  async getActiveAccountsCount(): Promise<number> {
     const result = await this.drizzle.db
       .select({ count: count() })
       .from(databaseSchema.user)
@@ -360,7 +359,7 @@ export class UsersService {
     return result[0]?.count || 0
   }
 
-  async getInActiveAccountsCount(): Promise<any> {
+  async getInActiveAccountsCount(): Promise<number> {
     const result = await this.drizzle.db
       .select({ count: count() })
       .from(databaseSchema.user)
@@ -377,7 +376,7 @@ export class UsersService {
     return result[0]?.count || 0
   }
 
-  async getUnverifiedAccountsCount(): Promise<any> {
+  async getUnverifiedAccountsCount(): Promise<number> {
     const result = await this.drizzle.db
       .select({ count: count() })
       .from(databaseSchema.user)
@@ -386,7 +385,7 @@ export class UsersService {
     return result[0]?.count || 0
   }
 
-  async getLockedUsersCount(): Promise<any> {
+  async getLockedUsersCount(): Promise<number> {
     const result = await this.drizzle.db
       .select({ count: count() })
       .from(databaseSchema.user)
@@ -395,7 +394,7 @@ export class UsersService {
     return result[0]?.count || 0
   }
 
-  async totalAccountsCount(): Promise<any> {
+  async totalAccountsCount(): Promise<number> {
     const result = await this.drizzle.db
       .select({ count: count() })
       .from(databaseSchema.user)

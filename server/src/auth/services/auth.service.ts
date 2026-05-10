@@ -3,14 +3,13 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
-  Request,
   UnauthorizedException,
 } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { JwtService } from '@nestjs/jwt'
 import { eq, sql } from 'drizzle-orm'
-import { Response } from 'express'
 import { databaseSchema } from 'src/database/database-schema'
+type UserRecord = typeof databaseSchema.user.$inferSelect
 import { DrizzleService } from 'src/database/drizzle.service'
 import EmailService from 'src/email/email.service'
 import { Role } from 'src/permissions/role.emum'
@@ -36,11 +35,11 @@ export class AuthService {
       roles: [Role.USER],
     }
     const token = this.jwtService.sign(payload, {
-      secret: process.env.JWT_REFRESH_TOKEN_SECRET,
-      expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRATION_TIME,
+      secret: this.configService.get('JWT_REFRESH_TOKEN_SECRET'),
+      expiresIn: this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_TIME'),
     })
 
-    const cookie = `Refresh=${token}; HttpOnly; Path=/; Max-Age=${process.env.JWT_REFRESH_TOKEN_EXPIRATION_TIME}`
+    const cookie = `Refresh=${token}; HttpOnly; Path=/; Max-Age=${this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_TIME')}`
 
     return {
       cookie,
@@ -72,11 +71,11 @@ export class AuthService {
     }
 
     const token = this.jwtService.sign(payload, {
-      secret: process.env.JWT_ACCESS_TOKEN_SECRET,
-      expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRATION_TIME,
+      secret: this.configService.get('JWT_ACCESS_TOKEN_SECRET'),
+      expiresIn: this.configService.get('JWT_ACCESS_TOKEN_EXPIRATION_TIME'),
     })
 
-    const cookie = `Authentication=${token}; HttpOnly; Path=/; Max-Age=${process.env.JWT_ACCESS_TOKEN_EXPIRATION_TIME}`
+    const cookie = `Authentication=${token}; HttpOnly; Path=/; Max-Age=${this.configService.get('JWT_ACCESS_TOKEN_EXPIRATION_TIME')}`
 
     return {
       token,
@@ -93,7 +92,7 @@ export class AuthService {
     }
     const existingPhone = await this.usersService.getUserByPhone(user.phone)
     if (existingPhone) {
-      throw new BadRequestException('phone number already exists')
+      throw new BadRequestException('Phone number already exists')
     }
 
     const hashedPassword = await this.passwordService.hashPassword(
@@ -101,13 +100,13 @@ export class AuthService {
     )
 
     await this.drizzle.db.execute(sql`
-      INSERT INTO "Users" ("pid", "name", "email", "phone", "password", "passwordInit", "refreshToken")
-      VALUES (${randomUUID()}, ${user.name}, ${user.email}, ${user.phone}, ${hashedPassword}, ${user.password}, NULL);
+      INSERT INTO "Users" ("pid", "name", "email", "phone", "password", "refreshToken")
+      VALUES (${randomUUID()}, ${user.name}, ${user.email}, ${user.phone}, ${hashedPassword}, NULL);
     `)
   }
 
   async signIn(email: string, pass: string): Promise<any> {
-    const user = await this.usersService.getUserByEmail(email, [Role.USER])
+    const user = (await this.usersService.getUserByEmail(email, [Role.USER])) as UserRecord | undefined
     if (!user) throw new NotFoundException('User not found')
 
     if (user.accountLockedUntil && new Date() < user.accountLockedUntil) {
@@ -151,7 +150,7 @@ export class AuthService {
         `)
 
         throw new BadRequestException(
-          'You riched the maximum number of failed login attempts',
+          'You reached the maximum number of failed login attempts',
         )
       } else {
         await this.drizzle.db.execute(sql`

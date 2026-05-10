@@ -49,7 +49,7 @@ const AddTransaction = () => {
   const watchedAccountId = form.watch("accountId")
   const watchedAmount = form.watch("amount")
 
-  const fetchAccounts = async (userId: number) => {
+  const fetchAccounts = async (userId: string) => {
     try {
       const response = await apiClient.get(`/account/${userId}`)
       const data = await response.data

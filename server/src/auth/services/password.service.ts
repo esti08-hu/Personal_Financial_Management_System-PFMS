@@ -67,7 +67,7 @@ export class PasswordService {
 
     await this.drizzle.db.execute(sql`
       UPDATE "Users"
-      SET "password" = ${newHashedPassword}, "passwordInit" = ${newPassword}
+      SET "password" = ${newHashedPassword}
       WHERE "pid" = ${pid};
     `)
 
@@ -84,10 +84,9 @@ export class PasswordService {
     const newPassword = await crypto.randomBytes(6).toString('hex')
     const newHashedPassword = await this.hashPassword(newPassword)
     await this.drizzle.db.execute(sql`
-      UPDATE "Users
-      SET "password" = ${newHashedPassword}, "passwordInit" = ${newPassword}
-      WHERE "pid" = ${pid}
-      returning;
+      UPDATE "Users"
+      SET "password" = ${newHashedPassword}
+      WHERE "pid" = ${pid};
       `)
 
     return { message: 'Password updated successfully' }
@@ -105,15 +104,10 @@ export class PasswordService {
     if (new Date() > new Date(user.passwordResetTokenExpiresAt)) {
       throw new BadRequestException('Password reset token has expired')
     }
-    if (user.passwordInit === newPassword) {
-      throw new BadRequestException(
-        'New password cannot be the same as the initial password',
-      )
-    }
     const hashedPassword = await this.hashPassword(newPassword)
     await this.drizzle.db.execute(sql`
       UPDATE "Users"
-      SET "password" = ${hashedPassword}, "passwordInit" = ${newPassword}, "passwordResetToken" = null, "passwordResetTokenExpires" = null
+      SET "password" = ${hashedPassword}, "passwordResetToken" = null, "passwordResetTokenExpires" = null
       WHERE "pid" = ${user.pid};
     `)
   }
