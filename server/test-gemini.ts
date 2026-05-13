@@ -6,7 +6,7 @@ async function testGeminiAPI() {
   const configService = {
     get: (key: string, defaultValue?: any) => {
       const envVars: Record<string, string | number> = {
-        'GEMINI_API_KEY': 'AIzaSyBQSTG-whb455C18y_-4noeJCE1aBOqU3w',
+        'GEMINI_API_KEY': '<GEMINI_API_KEY>',
         'GEMINI_MODEL': 'gemini-2.0-flash',
         'GEMINI_TEMPERATURE': 0.7,
         'GEMINI_MAX_TOKENS': 2048,
