@@ -3,6 +3,7 @@ import apiClient from "@/app/lib/axiosConfig";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { message, Modal } from "antd";
+import { getStoredUserId } from "@/app/pages/store/authStore";
 import type { EditBudget, NewBudget } from "@/app/types/acc";
 
 type Budget = {
@@ -28,11 +29,8 @@ export const useBudgetStore = create<budgetState>((set) => ({
 
   setBudget: async (budget) => {
     try {
-      const userIdResponse = await apiClient.get("user/userId");
-
-      const userId = userIdResponse.data;
-
-      const budgetWithUserId = { ...budget, userId };
+      const userId = await getStoredUserId()
+      const budgetWithUserId = { ...budget, userId }
 
       const response = await apiClient.post(
         "/budget/set-budget",
@@ -91,14 +89,12 @@ export const useBudgetStore = create<budgetState>((set) => ({
 
   fetchBudget: async () => {
     try {
-      const userIdResponse = await apiClient.get("/user/userId");
-      const userId = userIdResponse.data;
-
-      const response = await apiClient.get(`/budget/${userId}`);
-      set({ budget: response.data });
+      const userId = await getStoredUserId()
+      const response = await apiClient.get(`/budget/${userId}`)
+      set({ budget: response.data })
     } catch (error) {
-      console.error("Failed to fetch budget", error);
-      toast.error("Failed to fetch budgets");
+      console.error("Failed to fetch budget", error)
+      toast.error("Failed to fetch budgets")
     }
   },
 }));

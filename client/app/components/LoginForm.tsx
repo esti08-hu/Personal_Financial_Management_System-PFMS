@@ -24,11 +24,13 @@ import { EnhancedButton, EnhancedInput } from "./ui/design-system";
 import GoogleLoginButton from "./GoogleLoginButton";
 import { signinSchema } from "../common/validationSchema";
 import Loader from "../common/Loader";
+import { useAuthStore } from "@/app/pages/store/authStore";
 
 type FormData = z.infer<typeof signinSchema>;
 
 const LoginForm = () => {
   const router = useRouter();
+  const setUserId = useAuthStore((state) => state.setUserId);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
@@ -102,11 +104,15 @@ const LoginForm = () => {
         // Handle remember me functionality
       }
 
+      if (response.data?.userId) {
+        setUserId(response.data.userId)
+      }
+
       toast.success("Logged in successfully!");
 
       setTimeout(() => {
         if (response.status === 201) {
-          router.push("/pages/user");
+          router.push("/pages/user")
         }
       }, 1000);
     } catch (err) {

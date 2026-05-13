@@ -1,9 +1,11 @@
-import { ValidationPipe } from '@nestjs/common'
+import { ValidationPipe, VersioningType } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { NestFactory } from '@nestjs/core'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
-import * as cookieParser from 'cookie-parser'
+import cookieParser from 'cookie-parser'
 import { AppModule } from './app.module'
+import { TransformInterceptor } from './common/interceptors/transform.interceptor'
+import { AllExceptionsFilter } from './common/filters/all-exceptions.filter'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
@@ -12,6 +14,16 @@ async function bootstrap() {
     .split(',')
     .map((origin) => origin.trim())
     .filter(Boolean)
+
+  app.setGlobalPrefix('api/v1')
+  app.enableVersioning({
+    type: VersioningType.HEADER,
+    header: 'X-API-Version',
+    defaultVersion: '1',
+  })
+
+  app.useGlobalInterceptors(new TransformInterceptor())
+  app.useGlobalFilters(new AllExceptionsFilter())
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -33,14 +45,14 @@ async function bootstrap() {
 
   // Swagger setup
   const swaggerConfig = new DocumentBuilder()
-    .setTitle('NestJS API')
-    .setDescription('The NestJS API description')
+    .setTitle('PFMS API')
+    .setDescription('Personal Financial Management System API')
     .setVersion('1.0')
     .addBearerAuth()
     .build()
 
   const document = SwaggerModule.createDocument(app, swaggerConfig)
-  SwaggerModule.setup('api', app, document, {
+  SwaggerModule.setup('api/docs', app, document, {
     swaggerOptions: {
       persistAuthorization: true,
     },

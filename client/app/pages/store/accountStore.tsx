@@ -3,6 +3,7 @@ import apiClient from "@/app/lib/axiosConfig";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { message, Modal } from "antd";
+import { getStoredUserId } from "@/app/pages/store/authStore";
 import type { EditAccount, NewAccount } from "@/app/types/acc";
 
 type Account = {
@@ -27,15 +28,13 @@ export const useAccountStore = create<AccountState>((set) => ({
 
   addAccount: async (account) => {
     try {
-      const userIdResponse = await apiClient.get("/user/userId");
-      const userId = userIdResponse.data;
-
-      const accountWithUserId = { ...account, userId };
+      const userId = await getStoredUserId()
+      const accountWithUserId = { ...account, userId }
 
       const response = await apiClient.post(
         "/account/add-account",
-        accountWithUserId
-      );
+        accountWithUserId,
+      )
 
       toast.success("Account added successfully");
 
@@ -89,15 +88,13 @@ export const useAccountStore = create<AccountState>((set) => ({
 
   fetchAccounts: async () => {
     try {
-      const userIdResponse = await apiClient.get("/user/userId");
-      const userId = userIdResponse.data;
-
-      const response = await apiClient.get(`/account/${userId}`);
-      console.log(response.data);
-      set({ accounts: response.data });
+      const userId = await getStoredUserId()
+      const response = await apiClient.get(`/account/${userId}`)
+      console.log(response.data)
+      set({ accounts: response.data })
     } catch (error) {
-      console.error("Failed to fetch Accounts", error);
-      toast.error("Failed to fetch accounts");
+      console.error("Failed to fetch Accounts", error)
+      toast.error("Failed to fetch accounts")
     }
   },
 }));

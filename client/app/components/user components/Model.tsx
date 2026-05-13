@@ -108,8 +108,7 @@ const Model: React.FC<ModelProps> = ({ isEditing, setIsEditing, handleUpdate, ha
   useEffect(() => {
     const fetchUserIdAndAccounts = async () => {
       try {
-        const userIdResponse = await apiClient.get("/user/userId")
-        const userId = userIdResponse.data
+        const userId = await getStoredUserId()
         fetchAccounts(userId)
       } catch (error) {
         console.error("Failed to fetch user ID", error)

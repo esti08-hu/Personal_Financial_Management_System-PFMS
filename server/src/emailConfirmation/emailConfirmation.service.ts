@@ -6,10 +6,10 @@ import {
 import { ConfigService } from '@nestjs/config'
 import { JwtService } from '@nestjs/jwt'
 import { eq, sql } from 'drizzle-orm'
-import { databaseSchema } from 'src/database/database-schema'
-import { DrizzleService } from 'src/database/drizzle.service'
-import EmailService from 'src/email/email.service'
-import { UsersService } from 'src/users/users.service'
+import { databaseSchema } from '../database/database-schema'
+import { DrizzleService } from '../database/drizzle.service'
+import EmailService from '../email/email.service'
+import { UsersService } from '../users/users.service'
 import VerificationTokenPayload from './emailVerification.interface'
 
 @Injectable()

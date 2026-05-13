@@ -20,21 +20,33 @@ const refreshAccessToken = async (): Promise<string | null> => {
 };
 
 apiClient.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    const responseData = response.data
+    if (
+      responseData &&
+      typeof responseData === 'object' &&
+      'data' in responseData &&
+      'meta' in responseData &&
+      'status' in responseData
+    ) {
+      return { ...response, data: responseData.data }
+    }
+    return response
+  },
   async (error) => {
     const originalRequest = error.config as AxiosRequestConfig & {
       _retry?: boolean;
-    };
-
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-      await refreshAccessToken(); // Attempt to refresh the access token
-
-      return apiClient(originalRequest); // Retry the original request
     }
 
-    return Promise.reject(error);
-  }
-);
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true
+      await refreshAccessToken() // Attempt to refresh the access token
+
+      return apiClient(originalRequest) // Retry the original request
+    }
+
+    return Promise.reject(error)
+  },
+)
 
 export default apiClient;

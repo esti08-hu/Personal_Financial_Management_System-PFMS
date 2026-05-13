@@ -9,8 +9,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
-import { Public } from 'src/auth/guards/auth.decorators'
-import { ConfirmEmailDto } from './confirmEmail.dto'
+import { Public } from '../auth/guards/auth.decorators'
 import { EmailConfirmationService } from './emailConfirmation.service'
 
 @Controller('email-confirmation')

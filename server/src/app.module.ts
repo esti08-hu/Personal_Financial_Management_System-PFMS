@@ -2,26 +2,31 @@ import { Module } from '@nestjs/common'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
-import { AuthModule } from './auth/auth.module'
+import { AuthModule } from './modules/auth/auth.module'
 import { DatabaseModule } from './database/database.module'
-import { UsersModule } from './users/users.module'
+import { UsersModule } from './modules/users/users.module'
 import 'dotenv/config'
 import * as Joi from '@hapi/joi'
-import { AccountModule } from './account/account.module'
-import { BudgetModule } from './budget/budget.module'
+import { AccountModule } from './modules/accounts/account.module'
+import { BudgetModule } from './modules/budgets/budget.module'
 import { EmailConfirmationModule } from './emailConfirmation/emailConfirmation.module'
-import { GoogleAuthenticationModule } from './googleAuth/googleAuth.module'
+import { GoogleAuthenticationModule } from './modules/auth/googleAuth/googleAuth.module'
 import { PermissionsModule } from './permissions/permissions.module'
-import { TransactionModule } from './transaction/transaction.module'
-import { AiModule } from './ai'
+import { TransactionModule } from './modules/transactions/transaction.module'
+import { AiModule } from './modules/ai'
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler'
 import { APP_GUARD } from '@nestjs/core'
+import { TerminusModule } from '@nestjs/terminus'
+import { HealthModule } from './health/health.module'
 
 @Module({
   imports: [
     ThrottlerModule.forRoot([{ ttl: 60000, limit: 10 }]),
     ConfigModule.forRoot({
       validationSchema: Joi.object({
+        NODE_ENV: Joi.string()
+          .valid('development', 'production', 'test')
+          .default('development'),
         PORT: Joi.number().integer().required(),
         CORS_ORIGINS: Joi.string().default('http://localhost:3000'),
 
@@ -35,16 +40,18 @@ import { APP_GUARD } from '@nestjs/core'
         JWT_REFRESH_TOKEN_SECRET: Joi.string().required(),
         JWT_ACCESS_TOKEN_EXPIRATION_TIME: Joi.number().integer().required(),
         JWT_REFRESH_TOKEN_EXPIRATION_TIME: Joi.number().integer().required(),
+        JWT_COOKIE_SECURE: Joi.boolean().default(false),
 
         EMAIL_SERVICE: Joi.string().required(),
         EMAIL_USER: Joi.string().required(),
         EMAIL_PASSWORD: Joi.string().required(),
+        EMAIL_FROM: Joi.string().email().optional(),
 
         HUNTER_API_KEY: Joi.string().required(),
 
         EMAIL_VERIFICATION_SECRET: Joi.string().required(),
         EMAIL_VERIFICATION_SECRET_EXPIRATION: Joi.number().integer().required(),
-        EMAIL_CONFIRMATION_URL: Joi.string().required(),
+        EMAIL_CONFIRMATION_URL: Joi.string().uri().required(),
 
         GOOGLE_AUTH_CLIENT_ID: Joi.string().required(),
         GOOGLE_AUTH_CLIENT_SECRET: Joi.string().required(),
@@ -65,6 +72,8 @@ import { APP_GUARD } from '@nestjs/core'
     AccountModule,
     BudgetModule,
     AiModule,
+    TerminusModule,
+    HealthModule,
     DatabaseModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

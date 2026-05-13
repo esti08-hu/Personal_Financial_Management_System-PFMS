@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { toast } from "sonner"
 import apiClient from "@/app/lib/axiosConfig"
+import { getStoredUserId } from "@/app/pages/store/authStore"
 import type { Account, NewTransaction } from "@/app/types/acc"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
@@ -62,8 +63,7 @@ const AddTransaction = () => {
 
   const fetchUserIdAndAccounts = async () => {
     try {
-      const userIdResponse = await apiClient.get("/user/userId")
-      const userId = userIdResponse.data
+      const userId = await getStoredUserId()
       fetchAccounts(userId)
     } catch (error) {
       console.error("Failed to fetch user ID", error)

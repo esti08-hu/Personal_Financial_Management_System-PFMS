@@ -4,6 +4,7 @@ import apiClient from "@/app/lib/axiosConfig";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { message, Modal } from "antd";
+import { getStoredUserId } from "@/app/pages/store/authStore";
 import type {
   EditTransaction,
   NewTransaction,
@@ -13,10 +14,7 @@ import { create } from "zustand";
 
 interface TransactionState {
   transactions: Transaction[];
-  addTransaction: (
-    transaction: NewTransaction,
-    userId: string
-  ) => Promise<void>;
+  addTransaction: (transaction: NewTransaction) => Promise<void>;
   editTransaction: (transaction: EditTransaction) => Promise<void>;
   deleteTransaction: (id: string) => Promise<void>;
   fetchTransactions: () => Promise<void>;
@@ -27,11 +25,8 @@ export const useTransactionStore = create<TransactionState>((set) => ({
 
   addTransaction: async (transaction) => {
     try {
-      const userIdResponse = await apiClient.get("/user/userId");
-
-      const userId = userIdResponse.data;
-
-      const transactionWithUserId = { ...transaction, userId };
+      const userId = await getStoredUserId()
+      const transactionWithUserId = { ...transaction, userId }
 
       const response = await apiClient.post(
         "/transaction/add-transaction",
@@ -97,13 +92,12 @@ export const useTransactionStore = create<TransactionState>((set) => ({
 
   fetchTransactions: async () => {
     try {
-      const userIdResponse = await apiClient.get("/user/userId");
-      const userId = userIdResponse.data;
-      const response = await apiClient.get(`/transaction/user/${userId}`);
-      set({ transactions: response.data });
+      const userId = await getStoredUserId()
+      const response = await apiClient.get(`/transaction/user/${userId}`)
+      set({ transactions: response.data })
     } catch (error) {
-      console.error("Failed to fetch transactions", error);
-      toast.error("Failed to fetch transactions");
+      console.error("Failed to fetch transactions", error)
+      toast.error("Failed to fetch transactions")
     }
   },
 }));
