@@ -67,8 +67,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
           disabled={disabled}
           aria-label="Type your message"
           className={cn(
-            "min-h-[40px] max-h-[120px] resize-none pr-12",
-            "focus-visible:ring-2 focus-visible:ring-primary/20",
+            "min-h-[44px] max-h-[120px] resize-none pr-12 rounded-xl bg-slate-100/80 dark:bg-[#070b14]/80 border-sky-400/20 text-slate-800 dark:text-slate-100 placeholder:text-slate-400 focus-visible:ring-sky-500/30 focus-visible:border-sky-400/50 transition-all text-xs sm:text-sm",
             !isValidMessage && message.length > 0 && "border-destructive focus-visible:ring-destructive/20"
           )}
           rows={1}
@@ -89,13 +88,13 @@ const MessageInput: React.FC<MessageInputProps> = ({
         type="submit"
         disabled={disabled || !isValidMessage}
         size="sm"
-        className="h-10 w-10 p-0 flex-shrink-0"
+        className="h-10 w-10 p-0 flex-shrink-0 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-500 text-white shadow-[0_4px_15px_rgba(14,165,233,0.3)] hover:from-sky-400 hover:to-indigo-400 border-none transition-all hover:scale-105 active:scale-95 disabled:opacity-40"
         aria-label="Send message"
       >
         {disabled ? (
-          <Loader2 className="h-4 w-4 animate-spin" />
+          <Loader2 className="h-4 w-4 animate-spin text-white" />
         ) : (
-          <Send className="h-4 w-4" />
+          <Send className="h-4 w-4 text-white" />
         )}
       </Button>
     </form>

@@ -50,9 +50,14 @@ const MessageList: React.FC<MessageListProps> = ({ messages, isLoading, classNam
     <ScrollArea ref={scrollAreaRef} className={cn("flex-1 p-4", className)}>
       <div className="space-y-4">
         {messages.length === 0 && !isLoading && (
-          <div className="text-center text-muted-foreground py-8">
-            <p className="text-sm">👋 Hi! I'm your AI financial assistant.</p>
-            <p className="text-xs mt-2">Ask me anything about your finances!</p>
+          <div className="text-center text-slate-500 dark:text-slate-400 py-10 px-4">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-sky-400 to-indigo-500 p-[1px] mx-auto mb-3 shadow-[0_0_20px_rgba(56,189,248,0.3)]">
+              <div className="w-full h-full bg-slate-100 dark:bg-[#0d1322] rounded-[15px] flex items-center justify-center">
+                <span className="text-xl">✨</span>
+              </div>
+            </div>
+            <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">👋 Hi! I'm MoneyMaster AI</p>
+            <p className="text-xs mt-1 text-slate-500 dark:text-slate-400">Ask me anything about your budgets, transactions, or financial goals!</p>
           </div>
         )}
 
@@ -66,24 +71,24 @@ const MessageList: React.FC<MessageListProps> = ({ messages, isLoading, classNam
           >
             {/* Avatar */}
             <div className={cn(
-              "flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium",
+              "flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shadow-sm",
               message.role === 'user'
-                ? 'bg-primary text-primary-foreground'
-                : 'bg-muted text-muted-foreground'
+                ? 'bg-gradient-to-r from-sky-500 to-indigo-500 text-white'
+                : 'bg-gradient-to-br from-sky-400 to-sky-600 text-slate-950 font-extrabold'
             )}>
-              {message.role === 'user' ? 'U' : 'AI'}
+              {message.role === 'user' ? 'U' : 'MM'}
             </div>
 
             {/* Message Content */}
             <div className={cn(
-              "flex-1 space-y-2",
+              "flex-1 space-y-1.5",
               message.role === 'user' ? 'items-end' : 'items-start'
             )}>
               <div className={cn(
-                "rounded-lg px-3 py-2 text-sm break-words",
+                "rounded-2xl px-4 py-3 text-sm break-words shadow-sm",
                 message.role === 'user'
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted'
+                  ? 'bg-gradient-to-r from-sky-500 to-indigo-500 text-white rounded-tr-xs'
+                  : 'bg-white dark:bg-[#131b2e] border border-sky-400/20 text-slate-800 dark:text-slate-100 rounded-tl-xs'
               )}>
                 {message.role === 'assistant' ? (
                   <div className="prose prose-sm dark:prose-invert max-w-none">

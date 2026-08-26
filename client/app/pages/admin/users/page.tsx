@@ -3,14 +3,17 @@
 import { useState, useEffect } from "react";
 import Breadcrumb from "../../../common/Breadcrumbs/Breadcrumb";
 import TableThree from "../../../components/admin components/Tables/TableThree";
-import DefaultLayout from "../../../components/admin components/Layouts/DefaultLayout";
 import apiClient from "@/app/lib/axiosConfig";
-import { Select } from "antd";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const TablesPage = () => {
   const [users, setUsers] = useState([]);
-
-
   const [filter, setFilter] = useState("all");
 
   const fetchUsers = async (endpoint: string) => {
@@ -38,24 +41,26 @@ const TablesPage = () => {
     }
   }, [filter]);
 
-  const handleFilterChange = (value: string) => {
-    setFilter(value);
-  };
-
-
   return (
-    <DefaultLayout>
+    <>
       <Breadcrumb pageName="Users" />
       <div className="flex flex-col gap-8">
-        <Select className="max-w-35"  defaultValue="all" onChange={handleFilterChange}>
-          <Select.Option value="all">All Users</Select.Option>
-          <Select.Option value="locked">Locked Users</Select.Option>
-          <Select.Option value="unverified">Unverified Users</Select.Option>
-          <Select.Option value="deleted">Deleted Users</Select.Option>
-        </Select>
+        <div className="w-[200px]">
+          <Select value={filter} onValueChange={setFilter}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select filter" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Users</SelectItem>
+              <SelectItem value="locked">Locked Users</SelectItem>
+              <SelectItem value="unverified">Unverified Users</SelectItem>
+              <SelectItem value="deleted">Deleted Users</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
         <TableThree users={users} fetchUsers={() => fetchUsers("/user/users")} />
       </div>
-    </DefaultLayout>
+    </>
   );
 };
 

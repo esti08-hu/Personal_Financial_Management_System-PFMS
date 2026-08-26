@@ -22,19 +22,19 @@ interface AccountData {
 const chartConfig = {
   active: {
     label: "Active",
-    color: "hsl(var(--chart-1))",
+    color: "hsl(var(--color-chart-1))",
   },
   unverified: {
     label: "Unverified",
-    color: "hsl(var(--chart-2))",
+    color: "hsl(var(--color-chart-2))",
   },
   locked: {
     label: "Locked",
-    color: "hsl(var(--chart-3))",
+    color: "hsl(var(--color-chart-3))",
   },
   inactive: {
     label: "Inactive",
-    color: "hsl(var(--chart-4))",
+    color: "hsl(var(--color-chart-4))",
   },
 }
 
@@ -60,25 +60,25 @@ const ChartThree = () => {
               name: "active",
               value: activeRes.data,
               percentage: (activeRes.data / total) * 100,
-              color: "hsl(var(--chart-1))",
+              color: "hsl(var(--color-chart-1))",
             },
             {
               name: "unverified",
               value: unverifiedRes.data,
               percentage: (unverifiedRes.data / total) * 100,
-              color: "hsl(var(--chart-2))",
+              color: "hsl(var(--color-chart-2))",
             },
             {
               name: "locked",
               value: lockedRes.data,
               percentage: (lockedRes.data / total) * 100,
-              color: "hsl(var(--chart-3))",
+              color: "hsl(var(--color-chart-3))",
             },
             {
               name: "inactive",
               value: inactiveRes.data,
               percentage: (inactiveRes.data / total) * 100,
-              color: "hsl(var(--chart-4))",
+              color: "hsl(var(--color-chart-4))",
             },
           ]
           setData(accountData)

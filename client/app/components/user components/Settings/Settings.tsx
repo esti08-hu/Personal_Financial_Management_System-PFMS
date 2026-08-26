@@ -3,11 +3,10 @@
 import { HiOutlineUser, HiOutlineMail } from "react-icons/hi";
 import { useEffect, useState } from "react";
 import apiClient from "@/app/lib/axiosConfig";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "sonner";
 import Breadcrumb from "../../../common/Breadcrumbs/Breadcrumb";
 import ChangePasswordModal from "@/app/components/ChangePassword";
-import { Button } from "antd";
+import { Button } from "@/components/ui/button";
 import type { User } from "@/app/types/user";
 import {AxiosError } from "axios";
 
@@ -112,33 +111,33 @@ const Settings = () => {
   };
 
   return (
-    <div className="mx-auto max-w-242.5">
+    <div className="mx-auto w-full max-w-5xl px-4 py-8 animate-fade-in relative z-10">
       <Breadcrumb pageName="Settings" />
 
-      <div className="gap-8 max-w-5xl p-4 w-full flex justify-center">
-        <div className="col-span-5 w-full xl:col-span-3">
-          <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-            <div className="border-b border-stroke px-7 py-4 dark:border-strokedark">
-              <h3 className="font-medium text-black dark:text-white">
+      <div className="mt-8 flex justify-center w-full">
+        <div className="w-full">
+          <div className="glass-surface-elevated rounded-3xl border border-sky-400/20 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.4),0_0_45px_rgba(125,211,252,0.12)] backdrop-blur-2xl overflow-hidden">
+            <div className="border-b border-sky-400/10 bg-slate-50/50 dark:bg-[#0a0e1a]/50 py-6 px-8">
+              <h3 className="text-xl font-bold text-slate-800 dark:text-white">
                 Personal Information
               </h3>
             </div>
-            <div className="p-7">
-              <form onSubmit={(e) => e.preventDefault()}>
-                <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
+            <div className="p-8">
+              <form onSubmit={(e) => e.preventDefault()} className="space-y-6">
+                <div className="flex flex-col gap-6 sm:flex-row">
                   <div className="w-full sm:w-1/2">
                     <label
-                      className="mb-3 block text-sm font-medium text-black dark:text-white"
+                      className="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-300"
                       htmlFor="name"
                     >
                       Full Name
                     </label>
                     <div className="relative">
-                      <span className="absolute left-4.5 top-4">
-                        <HiOutlineUser className="text-xl" />
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2">
+                        <HiOutlineUser className="text-xl text-sky-500" />
                       </span>
                       <input
-                        className="w-full rounded border border-stroke bg-gray-2 py-3 pl-11.5 pr-4.5 text-black focus:border-[#00ABCD] focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-[#00ABCD]"
+                        className="glass-input h-12 w-full rounded-xl pl-12 pr-4 border-sky-400/20 text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-sky-500/50"
                         type="text"
                         name="name"
                         id="name"
@@ -151,13 +150,13 @@ const Settings = () => {
 
                   <div className="w-full sm:w-1/2">
                     <label
-                      className="mb-3 block text-sm font-medium text-black dark:text-white"
+                      className="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-300"
                       htmlFor="phone"
                     >
                       Phone Number
                     </label>
                     <input
-                      className="w-full rounded border border-stroke bg-gray-2 px-4.5 py-3 text-black focus:border-[#00ABCD] focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-[#00ABCD]"
+                      className="glass-input h-12 w-full rounded-xl px-4 border-sky-400/20 text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-sky-500/50"
                       type="tel"
                       name="phone"
                       id="phone"
@@ -168,19 +167,19 @@ const Settings = () => {
                   </div>
                 </div>
 
-                <div className="mb-5.5">
+                <div>
                   <label
-                    className="mb-3 block text-sm font-medium text-black dark:text-white"
+                    className="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-300"
                     htmlFor="email"
                   >
                     Email Address
                   </label>
                   <div className="relative">
-                    <span className="absolute left-4.5 top-4">
-                      <HiOutlineMail className="text-xl" />
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2">
+                      <HiOutlineMail className="text-xl text-sky-500" />
                     </span>
                     <input
-                      className="w-full rounded border border-stroke bg-gray-2 py-3 pl-11.5 pr-4.5 text-black focus:border-[#00ABCD] focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-[#00ABCD]"
+                      className="glass-input h-12 w-full rounded-xl pl-12 pr-4 border-sky-400/20 text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-sky-500/50"
                       type="email"
                       name="email"
                       id="email"
@@ -191,18 +190,13 @@ const Settings = () => {
                   </div>
                 </div>
 
-                <div className="flex justify-end gap-4.5">
+                <div className="flex justify-end gap-4 mt-8">
                   <button
                     onClick={handleEditAdmin}
-                    className={`flex justify-center rounded px-6 py-2 font-medium text-white ${
-                      isFormChanged
-                        ? "bg-[#00ABCD] hover:bg-opacity-90"
-                        : "bg-gray cursor-not-allowed"
-                    }`}
-                    type="submit"
                     disabled={!isFormChanged}
+                    className="flex items-center justify-center h-12 px-8 rounded-xl glass-pill-btn font-semibold text-sm transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Save
+                    Save Changes
                   </button>
                 </div>
               </form>
@@ -210,14 +204,13 @@ const Settings = () => {
           </div>
         </div>
       </div>
-      <div className="mt-5">
-        <Button
-          type="primary"
-          className="w-full sm:w-1/3 bg-[#00ABCD] hover:!bg-[#2dc6e5]"
+      <div className="mt-6 flex justify-center sm:justify-start w-full">
+        <button
+          className="flex items-center justify-center h-12 px-8 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 font-semibold text-sm transition-all border border-slate-300 dark:border-slate-700 shadow-sm"
           onClick={toggleChangePasswordModal}
         >
           Change Password
-        </Button>
+        </button>
       </div>
       <ChangePasswordModal
         isVisible={isChangePasswordModalVisible}

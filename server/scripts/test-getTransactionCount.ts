@@ -3,8 +3,8 @@ import { ConfigService } from '@nestjs/config'
 import { Pool } from 'pg'
 import { drizzle } from 'drizzle-orm/node-postgres'
 import { DrizzleService } from '../src/database/drizzle.service'
-import { AggregationService } from '../src/ai/aggregation/aggregation.service'
 import { databaseSchema } from '../src/database/database-schema'
+import { AggregationService } from 'src/modules/ai'
 
 async function main() {
   const config = new ConfigService()

@@ -1,13 +1,11 @@
 import { create } from "zustand";
 import apiClient from "@/app/lib/axiosConfig";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { message, Modal } from "antd";
+import { toast } from "sonner";
 import { getStoredUserId } from "@/app/pages/store/authStore";
 import type { EditAccount, NewAccount } from "@/app/types/acc";
 
 type Account = {
-  id: number;
+  id: string;
   userId: string;
   type: string;
   balance: number;
@@ -19,7 +17,7 @@ interface AccountState {
   accounts: Account[];
   addAccount: (account: NewAccount) => Promise<void>;
   editAccount: (account: EditAccount) => Promise<void>;
-  deleteAccount: (id: number) => Promise<void>;
+  deleteAccount: (id: string) => Promise<void>;
   fetchAccounts: () => Promise<void>;
 }
 
@@ -49,12 +47,13 @@ export const useAccountStore = create<AccountState>((set) => ({
 
   editAccount: async (account) => {
     try {
-      const response = await apiClient.put(`/account/${account.id}`, account);
-      set((state) => ({
-        accounts: state.accounts.map((a) =>
-          a.id === account.id ? response.data : a
-        ),
-      }));
+      const payload = {
+        title: account.title,
+        type: account.type,
+        balance: Number(account.balance),
+        date: new Date(account.createdAt).toISOString()
+      };
+      const response = await apiClient.put(`/account/${account.id}`, payload);
       toast.success("Account edited successfully");
     } catch (error) {
       console.error("Failed to edit account", error);
@@ -62,36 +61,26 @@ export const useAccountStore = create<AccountState>((set) => ({
     }
   },
 
-  deleteAccount: async (id: number) => {
-    Modal.confirm({
-      title: "Are you sure you want to delete this account?",
-      content: "This action cannot be undone.",
-      okText: "Yes, delete",
-      okType: "danger",
-      cancelText: "No, cancel",
-      async onOk() {
-        try {
-          await apiClient.delete(`/account/${id}`);
+  deleteAccount: async (id: string) => {
+    if (window.confirm("Are you sure you want to delete this account? This action cannot be undone.")) {
+      try {
+        await apiClient.delete(`/account/${id}`);
         set((state) => ({
           accounts: state.accounts.filter((a) => a.id !== id),
         }));
-        message.success("Account deleted successfully");
-
-        } catch (error) {
-          console.error("Failed to delete account", error);
-          message.error("Failed to delete account");
-        }
-      },
-    });
-
+        toast.success("Account deleted successfully");
+      } catch (error) {
+        console.error("Failed to delete account", error);
+        toast.error("Failed to delete account");
+      }
+    }
   },
 
   fetchAccounts: async () => {
     try {
       const userId = await getStoredUserId()
       const response = await apiClient.get(`/account/${userId}`)
-      console.log(response.data)
-      set({ accounts: response.data })
+      set({ accounts: Array.isArray(response.data) ? response.data : response.data?.items || response.data?.data || [] })
     } catch (error) {
       console.error("Failed to fetch Accounts", error)
       toast.error("Failed to fetch accounts")

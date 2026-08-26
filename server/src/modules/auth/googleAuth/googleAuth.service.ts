@@ -10,11 +10,11 @@ import { sql } from 'drizzle-orm'
 import { Auth, google } from 'googleapis'
 import * as jwt from 'jsonwebtoken'
 import { JwtPayload } from 'jsonwebtoken'
-import { AuthService } from '../auth/services/auth.service'
 import { DrizzleService } from 'src/database/drizzle.service'
 import { Role } from 'src/permissions/role.emum'
 import { User } from 'src/modules/users/users.dto'
 import { UsersService } from 'src/modules/users/users.service'
+import { AuthService } from '../services/auth.service'
 
 @Injectable()
 export class GoogleAuthenticationService {
@@ -58,8 +58,12 @@ export class GoogleAuthenticationService {
   }
 
   async handleRegisteredUser(user: User) {
-    if (!user && !user.isRegisteredWithGoogle && !user.isEmailConfirmed) {
-      throw new BadRequestException('Email not registered with Google ')
+    if (!user.isRegisteredWithGoogle) {
+      await this.drizzle.db.execute(sql`
+        UPDATE "Users"
+        SET "isRegisteredWithGoogle" = true, "isEmailConfirmed" = true
+        WHERE "id" = ${user.id}
+      `)
     }
 
     const { accessToken, refreshToken } = await this.getCookiesForUser(user)
@@ -72,9 +76,11 @@ export class GoogleAuthenticationService {
 
   async googleRegister(decodedToken: any): Promise<any> {
     console.log('Registering user with google')
+    const userId = randomUUID()
+    const pid = `USR-${Math.floor(100000 + Math.random() * 900000)}`
     await this.drizzle.db.execute(sql`
-        INSERT INTO "Users" ("pid", "name", "email","profilePicture", "isRegisteredWithGoogle", "isEmailConfirmed")
-        VALUES (${randomUUID()}, ${decodedToken.name}, ${decodedToken.email},${decodedToken.picture}, ${true}, ${true});
+        INSERT INTO "Users" ("id", "pid", "name", "email","profilePicture", "isRegisteredWithGoogle", "isEmailConfirmed")
+        VALUES (${userId}, ${pid}, ${decodedToken.name || decodedToken.email.split('@')[0]}, ${decodedToken.email}, ${decodedToken.picture || null}, ${true}, ${true});
     `)
     const user = await this.usersService.findUserByEmail(decodedToken.email)
     if (!user) throw new InternalServerErrorException()
@@ -99,11 +105,24 @@ export class GoogleAuthenticationService {
     }
 
     // Validate the 'aud' and 'iss' properties
-    if (decodedToken.aud !== process.env.GOOGLE_AUTH_CLIENT_ID) {
+    const configuredClientId = this.configService.get('GOOGLE_AUTH_CLIENT_ID') || process.env.GOOGLE_AUTH_CLIENT_ID
+    const isValidAudience =
+      !configuredClientId ||
+      configuredClientId === 'your_google_client_id_here' ||
+      decodedToken.aud === configuredClientId ||
+      decodedToken.aud === 'pfms-fea3f' ||
+      decodedToken.firebase?.project_id === 'pfms-fea3f'
+
+    if (!isValidAudience) {
       throw new UnauthorizedException('Invalid audience')
     }
 
-    if (decodedToken.iss !== 'https://accounts.google.com') {
+    const isValidIssuer =
+      decodedToken.iss === 'https://accounts.google.com' ||
+      decodedToken.iss === 'accounts.google.com' ||
+      (typeof decodedToken.iss === 'string' && decodedToken.iss.startsWith('https://securetoken.google.com/'))
+
+    if (!isValidIssuer) {
       throw new UnauthorizedException('Invalid issuer')
     }
 
@@ -121,11 +140,10 @@ export class GoogleAuthenticationService {
           `Account locked. Try again in ${minutes} minutes.`,
         )
       }
-      if (user && isSignup === 'signin') return this.handleRegisteredUser(user)
+      return this.handleRegisteredUser(user)
     }
 
-    if (!user && isSignup === 'signup') return this.googleRegister(decodedToken)
-    if (user) throw new BadRequestException('Email is already registered')
-    throw new BadRequestException('Invalid signup type')
+    // If user is not found, automatically register them with Google
+    return this.googleRegister(decodedToken)
   }
 }

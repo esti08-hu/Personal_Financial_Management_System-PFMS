@@ -8,9 +8,9 @@ import {
   UseInterceptors,
 } from '@nestjs/common'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
-import { Public } from '../auth/guards/auth.decorators'
 import { GoogleAuthenticationService } from './googleAuth.service'
 import TokenVerificationDto from './tokenValidatation'
+import { Public } from '../guards/auth.decorators'
 
 @Controller('google')
 @ApiBearerAuth()
@@ -28,7 +28,7 @@ export class GoogleAuthenticationController {
     @Response({ passthrough: true }) res,
     @Request() req,
   ) {
-    const isSignup = req.body.endpoint
+    const isSignup = req.body.endpoint || 'signin'
     const {
       accessToken,
       refreshToken,
@@ -63,7 +63,7 @@ export class GoogleAuthenticationController {
     @Response({ passthrough: true }) res,
     @Request() req,
   ) {
-    const isSignup = req.body.endpoint
+    const isSignup = req.body.endpoint || 'signup'
     const {
       accessToken,
       refreshToken,

@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import apiClient from "@/app/lib/axiosConfig";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { getStoredUserId } from "@/app/pages/store/authStore";
 
 interface ReportData {

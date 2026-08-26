@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import axios, { AxiosError } from "axios";
+import apiClient from "../lib/axiosConfig";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -8,8 +9,9 @@ import { Eye, EyeOff } from "lucide-react";
 import type { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Card,
   CardContent,
@@ -20,7 +22,6 @@ import {
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { EnhancedButton, EnhancedInput } from "./ui/design-system";
 import GoogleLoginButton from "./GoogleLoginButton";
 import { signinSchema } from "../common/validationSchema";
 import Loader from "../common/Loader";
@@ -74,10 +75,9 @@ const LoginForm = () => {
   const handleResendConfirmation = async () => {
     try {
       const email = getValues("email");
-      await axios.post(
-        "http://localhost:3001/email-confirmation/resend-confirmation-link",
-        { email },
-        { withCredentials: true }
+      await apiClient.post(
+        "/email-confirmation/resend-confirmation-link",
+        { email }
       );
       toast.success("Confirmation link resent!");
       setShowConfirmDialog(false);
@@ -92,12 +92,9 @@ const LoginForm = () => {
     setIsLoading(true);
 
     try {
-      const response = await axios.post(
-        "http://localhost:3001/auth/login",
-        data,
-        {
-          withCredentials: true,
-        }
+      const response = await apiClient.post(
+        "/auth/login",
+        data
       );
 
       if (data.rememberMe) {
@@ -135,170 +132,156 @@ const LoginForm = () => {
   };
 
   return (
-    <div
-      style={{ background: "hsl(var(--color-primary) / 0.06)" }}
-      className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8"
-    >
-      <div className="max-w-4xl !min-w-4xl w-full flex items-center gap-8">
-        <Card className="w-full max-w-md mx-auto bg-primary-foreground">
-          <CardHeader className="space-y-1">
-            <div className="flex justify-center mb-4">
-              <Link href="/">
-                <Image
-                  src="/images/logo/moneymaster.png"
-                  width={120}
-                  height={120}
-                  alt="Money Master Logo"
-                />
-              </Link>
-            </div>
-            <CardTitle className="text-2xl font-bold text-center text-[#22577A]">
-              Sign In
-            </CardTitle>
-            <CardDescription className="text-center text-[#6C7278]">
-              Fill your information below or signin using your social account.
-            </CardDescription>
-          </CardHeader>
-
-          <CardContent className="space-y-4">
-            {showConfirmDialog && (
-              <Alert>
-                <AlertDescription>
-                  Please confirm your email first to login.
-                  <div className="flex gap-2 mt-2">
-                    <Button size="sm" onClick={handleResendConfirmation}>
-                      Resend
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setShowConfirmDialog(false)}
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                </AlertDescription>
-              </Alert>
-            )}
-
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">
-                  Email <span className="text-red-500">*</span>
-                </Label>
-                <EnhancedInput
-                  id="email"
-                  type="email"
-                  placeholder="Enter email"
-                  {...register("email")}
-                  error={errors.email?.message}
-                />
-                {errors.email && (
-                  <p className="text-sm text-red-500">{errors.email.message}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="password">
-                  Password <span className="text-red-500">*</span>
-                </Label>
-                <div className="relative">
-                  <EnhancedInput
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Enter password"
-                    {...register("password")}
-                    error={errors.password?.message}
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4 text-gray-400" />
-                    ) : (
-                      <Eye className="h-4 w-4 text-gray-400" />
-                    )}
-                  </Button>
-                </div>
-                {errors.password && (
-                  <p className="text-sm text-red-500">
-                    {errors.password.message}
-                  </p>
-                )}
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="rememberMe"
-                    {...register("rememberMe")}
-                  />
-                  <Label htmlFor="rememberMe" className="text-sm">
-                    Remember me
-                  </Label>
-                </div>
-                <Link
-                  href="/pages/forgotpassword"
-                  className="text-sm text-[#37a5bb] hover:text-[#24869a] hover:underline"
-                >
-                  Forgot password?
-                </Link>
-              </div>
-
-              <EnhancedButton
-                type="submit"
-                className="w-full"
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <>
-                    <Loader />
-                    <span className="ml-2">Signing in...</span>
-                  </>
-                ) : (
-                  "Sign In"
-                )}
-              </EnhancedButton>
-
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-white px-2 text-muted-foreground">
-                    or Sign In with
-                  </span>
+    <div className="w-full max-w-md mx-auto animate-fade-in relative z-10">
+      <div className="p-8 sm:p-10 rounded-3xl glass-surface-elevated border border-sky-400/20 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.7),0_0_45px_rgba(125,211,252,0.12)] backdrop-blur-2xl">
+        <div className="space-y-2 mb-8">
+          <div className="flex justify-center mb-6">
+            <Link href="/" aria-label="Go to Home">
+              <div className="relative w-14 h-14 rounded-2xl bg-gradient-to-br from-sky-400 to-sky-600 p-[1px] shadow-[0_0_15px_rgba(125,211,252,0.4)] group hover:scale-105 transition-transform duration-300">
+                <div className="w-full h-full bg-slate-100 dark:bg-[#0d1322] rounded-[15px] flex items-center justify-center">
+                  <div className="w-6 h-6 rounded-[6px] bg-gradient-to-tr from-sky-400 via-sky-300 to-indigo-300 rotate-45 group-hover:rotate-90 transition-transform duration-500" />
                 </div>
               </div>
-
-              <GoogleLoginButton />
-
-              <p className="text-center text-sm text-gray-600">
-                Don't have an account?{" "}
-                <Link
-                  href="/pages/signup"
-                  className="text-[#00ABCD] font-semibold hover:underline"
-                >
-                  Sign Up
-                </Link>
-              </p>
-            </form>
-          </CardContent>
-        </Card>
-
-        <div className="hidden lg:block flex-1">
-          <Image
-            width={500}
-            height={500}
-            src="/images/login.png"
-            alt="Login illustration"
-            className="object-cover rounded-lg shadow-lg"
-          />
+            </Link>
+          </div>
+          <h2 className="text-2xl font-bold text-center text-slate-900 dark:text-white tracking-tight">
+            Welcome Back
+          </h2>
+          <p className="text-center text-sm text-slate-600 dark:text-slate-400">
+            Enter your credentials to access your account
+          </p>
         </div>
+
+        {showConfirmDialog && (
+          <Alert className="mb-6 bg-sky-500/10 border-sky-400/30 text-sky-800 dark:text-sky-200">
+            <AlertDescription className="text-sm">
+              Please confirm your email first to login.
+              <div className="flex gap-3 mt-3">
+                <button
+                  type="button"
+                  onClick={handleResendConfirmation}
+                  className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-sky-500 hover:bg-sky-600 text-white transition-colors"
+                >
+                  Resend Link
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmDialog(false)}
+                  className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-transparent border border-sky-400/30 hover:bg-sky-500/10 transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </AlertDescription>
+          </Alert>
+        )}
+
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+          <div className="space-y-1.5">
+            <Label htmlFor="email" className="text-sm font-medium text-slate-700 dark:text-slate-300">
+              Email Address <span className="text-sky-500">*</span>
+            </Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="name@example.com"
+              className="glass-input h-11 w-full rounded-xl px-4"
+              {...register("email")}
+            />
+            {errors.email && (
+              <p className="text-xs text-red-500 font-medium mt-1">{errors.email.message}</p>
+            )}
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="password" className="text-sm font-medium text-slate-700 dark:text-slate-300">
+              Password <span className="text-sky-500">*</span>
+            </Label>
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter your password"
+                className="glass-input h-11 w-full rounded-xl pl-4 pr-10"
+                {...register("password")}
+              />
+              <button
+                type="button"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-sky-500 transition-colors focus:outline-none"
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
+              </button>
+            </div>
+            {errors.password && (
+              <p className="text-xs text-red-500 font-medium mt-1">
+                {errors.password.message}
+              </p>
+            )}
+          </div>
+
+          <div className="flex items-center justify-between pt-1">
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="rememberMe"
+                {...register("rememberMe")}
+                className="border-sky-400/40 data-[state=checked]:bg-sky-500 data-[state=checked]:text-white rounded-[4px]"
+              />
+              <Label htmlFor="rememberMe" className="text-sm font-medium text-slate-600 dark:text-slate-400 cursor-pointer">
+                Remember me
+              </Label>
+            </div>
+            <Link
+              href="/pages/forgotpassword"
+              className="text-sm font-semibold text-sky-600 dark:text-sky-400 hover:text-sky-500 transition-colors"
+            >
+              Forgot password?
+            </Link>
+          </div>
+
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full flex items-center justify-center gap-2 h-11 mt-6 rounded-xl glass-pill-btn font-semibold text-sm transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
+          >
+            {isLoading ? (
+              <>
+                <Loader />
+                <span>Signing in...</span>
+              </>
+            ) : (
+              "Sign In"
+            )}
+          </button>
+
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-slate-300 dark:border-slate-700/50" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-[#f0f6fc] dark:bg-[#0f1524] px-3 text-slate-500 dark:text-slate-400 font-semibold rounded-full border border-slate-300/50 dark:border-slate-700/50">
+                Or continue with
+              </span>
+            </div>
+          </div>
+
+          <GoogleLoginButton />
+
+          <p className="text-center text-sm text-slate-600 dark:text-slate-400 mt-6">
+            Don't have an account?{" "}
+            <Link
+              href="/pages/signup"
+              className="text-sky-600 dark:text-sky-400 font-semibold hover:text-sky-500 transition-colors"
+            >
+              Sign Up
+            </Link>
+          </p>
+        </form>
       </div>
     </div>
   );

@@ -20,26 +20,26 @@ const ContactInfo = () => {
           </div>
 
       <div className=" max-w-sm p-6 rounded-lg  dark:border-gray-700 flex flex-col gap-4 justify-center">
-        <h5 className="mb-2 text-xl text-center font-bold tracking-tight text-[#22577A]">
+        <h5 className="mb-2 text-xl text-center font-bold tracking-tight text-primary">
           About Us
         </h5>
 
-        <p className="font-normal text-[#857E7E] dark:text-gray-400">
+        <p className="font-normal text-muted-foreground">
           A project by Estifanos Ameha
         </p>
-        <p className="font-normal text-[#857E7E] dark:text-gray-400">
+        <p className="font-normal text-muted-foreground">
           Department of Software Engineering 
         </p>
-        <p className="font-normal text-[#857E7E] dark:text-gray-400">
+        <p className="font-normal text-muted-foreground">
           Adama Science and Technology University
         </p>
       </div>
 
       <div className="block max-w-sm p-6 rounded-lg  dark:border-gray-700 text-center">
-        <h5 className=" text-xl font-bold tracking-tight text-[#00ABCD]  mb-5">
+        <h5 className=" text-xl font-bold tracking-tight text-primary  mb-5">
           Stay Connected On
         </h5>
-        <div className="font-normal text-[#857E7E] dark:text-gray-400">
+        <div className="font-normal text-muted-foreground">
           <ul className="flex justify-between gap-6">
             <li>
               <a href="#" className="">

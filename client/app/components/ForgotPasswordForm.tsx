@@ -2,14 +2,14 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
+import apiClient from "../lib/axiosConfig";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { forgotPasswordSchema } from "../common/validationSchema";
 import { z } from "zod";
 import { motion, AnimatePresence } from "framer-motion";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "sonner";
 import Loader from "../common/Loader";
 
 const ForgotPasswordForm = () => {
@@ -30,12 +30,9 @@ const ForgotPasswordForm = () => {
 
     try {
       const parsedData = forgotPasswordSchema.parse(formData);
-      const response = await axios.post(
-        "http://localhost:3001/auth/forgot-password",
-        parsedData,
-        {
-          withCredentials: true,
-        }
+      const response = await apiClient.post(
+        "/auth/forgot-password",
+        parsedData
       );
       const { message } = response.data;
       toast.success(message);
@@ -164,7 +161,7 @@ const ForgotPasswordForm = () => {
           <label className="text-center">
             <p className="mt-6">
               Remember Password?{" "}
-              <span className="text-[#00ABCD] font-black hover:underline">
+              <span className="text-primary font-black hover:underline">
                 <Link href={"/pages/login"}>Sign In</Link>
               </span>
             </p>

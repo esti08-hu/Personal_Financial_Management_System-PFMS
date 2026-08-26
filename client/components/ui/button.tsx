@@ -12,7 +12,7 @@ const buttonVariants = cva(
         default:
           "bg-primary text-primary-foreground shadow-sm hover:bg-primary/90 hover:shadow-md hover:shadow-primary/25 focus-visible:ring-primary",
         destructive:
-          "bg-danger-500 text-white shadow-sm hover:bg-danger-600 hover:shadow-md hover:shadow-danger-500/25 focus-visible:ring-danger-500",
+          "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90 hover:shadow-md focus-visible:ring-destructive",
         outline:
           "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground hover:border-accent focus-visible:ring-ring",
         secondary:
@@ -21,11 +21,11 @@ const buttonVariants = cva(
           "hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring",
         link: "text-primary underline-offset-4 hover:underline focus-visible:ring-primary",
         success:
-          "bg-success-500 text-white shadow-sm hover:bg-success-600 hover:shadow-md hover:shadow-success-500/25 focus-visible:ring-success-500",
+          "bg-success text-success-foreground shadow-sm hover:bg-success/90 hover:shadow-md focus-visible:ring-success",
         warning:
-          "bg-warning-500 text-white shadow-sm hover:bg-warning-600 hover:shadow-md hover:shadow-warning-500/25 focus-visible:ring-warning-500",
+          "bg-warning text-warning-foreground shadow-sm hover:bg-warning/90 hover:shadow-md focus-visible:ring-warning",
         info:
-          "bg-info-500 text-white shadow-sm hover:bg-info-600 hover:shadow-md hover:shadow-info-500/25 focus-visible:ring-info-500",
+          "bg-info text-info-foreground shadow-sm hover:bg-info/90 hover:shadow-md focus-visible:ring-info",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",

@@ -34,7 +34,7 @@ export class AccountController {
     @Param('id') id: string,
     @Body() updateAccountDto: UpdateAccountDto,
   ) {
-    await this.accountService.updateAccount(id, updateAccountDto)
+    return await this.accountService.updateAccount(id, updateAccountDto)
   }
 
   @Delete(':id')

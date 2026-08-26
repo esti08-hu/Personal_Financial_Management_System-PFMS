@@ -1,4 +1,4 @@
-import { GeminiClient } from './src/ai/gemini/gemini-client.service';
+import { GeminiClient } from 'src/modules/ai';
 import { ConfigService } from '@nestjs/config';
 
 async function testGeminiAPI() {

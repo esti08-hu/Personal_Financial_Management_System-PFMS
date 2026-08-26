@@ -26,7 +26,7 @@ export class BudgetController {
 
   @Post('set-budget')
   async create(@Body() CreateBudgetDto: CreateBudgetDto) {
-    await this.budgetService.createBudget(CreateBudgetDto)
+    return await this.budgetService.createBudget(CreateBudgetDto)
   }
 
   @Put(':id')
@@ -34,7 +34,7 @@ export class BudgetController {
     @Param('id') id: string,
     @Body() updateBudgetDto: UpdateBudgetDto,
   ) {
-    await this.budgetService.updateBudget(id, updateBudgetDto)
+    return await this.budgetService.updateBudget(id, updateBudgetDto)
   }
 
   @Delete(':id')

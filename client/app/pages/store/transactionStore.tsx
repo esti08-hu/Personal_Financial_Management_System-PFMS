@@ -1,9 +1,7 @@
 "use client";
 
 import apiClient from "@/app/lib/axiosConfig";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { message, Modal } from "antd";
+import { toast } from "sonner";
 import { getStoredUserId } from "@/app/pages/store/authStore";
 import type {
   EditTransaction,
@@ -45,20 +43,20 @@ export const useTransactionStore = create<TransactionState>((set) => ({
   },
 
   editTransaction: async (transaction) => {
-    const { account, ...transactionData } = transaction;
-
     try {
+      const payload = {
+        type: transaction.type,
+        accountId: transaction.account?.id || (transaction as any).accountId,
+        amount: Number(transaction.amount),
+        createdAt: new Date(transaction.createdAt).toISOString(),
+        description: transaction.description,
+        balance: Number((transaction as any).balance || transaction.account?.balance || 0),
+      };
+
       const response = await apiClient.put(
         `/transaction/${transaction.id}`,
-        transactionData
+        payload
       );
-
-      set((state) => ({
-        transactions: state.transactions.map((t) =>
-          t.id === transaction.id ? response.data : t
-        ),
-      }));
-
       toast.success("Transaction edited successfully");
     } catch (error) {
       console.error("Failed to edit transaction", error);
@@ -67,34 +65,27 @@ export const useTransactionStore = create<TransactionState>((set) => ({
   },
 
   deleteTransaction: async (id: string) => {
-    Modal.confirm({
-      title: "Are you sure you want to delete this transaction?",
-      content: "This action cannot be undone.",
-      okText: "Yes, delete",
-      okType: "danger",
-      cancelText: "No, cancel",
-      async onOk() {
-        try {
-          await apiClient.delete(`/transaction/${id}`);
+    if (window.confirm("Are you sure you want to delete this transaction? This action cannot be undone.")) {
+      try {
+        await apiClient.delete(`/transaction/${id}`);
 
-          set((state) => ({
-            transactions: state.transactions.filter((t) => t.id !== id),
-          }));
+        set((state) => ({
+          transactions: state.transactions.filter((t) => t.id !== id),
+        }));
 
-          message.success("Transaction deleted successfully");
-        } catch (error) {
-          message.error("An error occurred while deleting the transaction.");
-          console.error("Delete Transaction Error:", error);
-        }
-      },
-    });
+        toast.success("Transaction deleted successfully");
+      } catch (error) {
+        toast.error("An error occurred while deleting the transaction.");
+        console.error("Delete Transaction Error:", error);
+      }
+    }
   },
 
   fetchTransactions: async () => {
     try {
       const userId = await getStoredUserId()
       const response = await apiClient.get(`/transaction/user/${userId}`)
-      set({ transactions: response.data })
+      set({ transactions: Array.isArray(response.data) ? response.data : response.data?.items || response.data?.data || [] })
     } catch (error) {
       console.error("Failed to fetch transactions", error)
       toast.error("Failed to fetch transactions")

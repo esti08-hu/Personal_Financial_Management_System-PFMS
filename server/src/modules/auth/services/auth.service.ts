@@ -2,6 +2,7 @@ import { randomUUID } from 'crypto'
 import {
   BadRequestException,
   Injectable,
+  Logger,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common'
@@ -98,7 +99,6 @@ export class AuthService {
     const hashedPassword = await this.passwordService.hashPassword(
       user.password,
     )
-
     await this.drizzle.db.execute(sql`
       INSERT INTO "Users" ("pid", "name", "email", "phone", "password", "refreshToken")
       VALUES (${randomUUID()}, ${user.name}, ${user.email}, ${user.phone}, ${hashedPassword}, NULL);

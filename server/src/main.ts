@@ -1,14 +1,19 @@
-import { ValidationPipe, VersioningType } from '@nestjs/common'
+import { Logger, ValidationPipe } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { NestFactory } from '@nestjs/core'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
-import cookieParser from 'cookie-parser'
+import * as cookieParser from 'cookie-parser'
 import { AppModule } from './app.module'
 import { TransformInterceptor } from './common/interceptors/transform.interceptor'
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter'
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule)
+  const app = await NestFactory.create(AppModule, {
+    logger: process.env.NODE_ENV === 'production'
+      ? ['log', 'error', 'warn']
+      : ['log', 'error', 'warn', 'debug', 'verbose'],
+  })
+  const logger = new Logger('Bootstrap')
   const configService = app.get(ConfigService)
   const corsOrigins = (configService.get<string>('CORS_ORIGINS') ?? 'http://localhost:3000')
     .split(',')
@@ -16,11 +21,6 @@ async function bootstrap() {
     .filter(Boolean)
 
   app.setGlobalPrefix('api/v1')
-  app.enableVersioning({
-    type: VersioningType.HEADER,
-    header: 'X-API-Version',
-    defaultVersion: '1',
-  })
 
   app.useGlobalInterceptors(new TransformInterceptor())
   app.useGlobalFilters(new AllExceptionsFilter())
@@ -58,7 +58,9 @@ async function bootstrap() {
     },
   })
   app.use(cookieParser())
-  await app.listen(3001)
+  const port = configService.get<number>('PORT') ?? 3001
+  await app.listen(port)
+  logger.log(`Server listening on port ${port}`)
 }
 
 bootstrap()

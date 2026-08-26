@@ -1,0 +1,33 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Server: build",
+			"type": "shell",
+			"command": "pnpm",
+			"args": [
+				"-C",
+				"server",
+				"run",
+				"build"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Server: build",
+			"type": "shell",
+			"command": "pnpm",
+			"args": [
+				"-C",
+				"server",
+				"run",
+				"build"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		}
+	]
+}

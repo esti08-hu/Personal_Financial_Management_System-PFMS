@@ -1,10 +1,10 @@
 import {
-  BadGatewayException,
   BadRequestException,
   Body,
   Controller,
   Get,
   HttpCode,
+  ServiceUnavailableException,
   Post,
   Query,
   Req,
@@ -84,11 +84,17 @@ export class AuthController {
   @Throttle({ default: { limit: 5, ttl: 60000 } })
   async register(@Body() registerBody: RegisterUserDto): Promise<any> {
     const { success } =
-      await this.emailConfirmationService.sendVerificationLink(
-        registerBody.email,
-      )
+    await this.emailConfirmationService.sendVerificationLink(
+      registerBody.email,
+    )
 
-    if (success) await this.authService.register(registerBody)
+    if (!success) {
+      throw new ServiceUnavailableException(
+        'Unable to send verification email. Please try again later.',
+      )
+    }
+
+    await this.authService.register(registerBody)
 
     return {
       message:

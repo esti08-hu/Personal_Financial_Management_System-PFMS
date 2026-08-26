@@ -71,6 +71,10 @@ const config: Config = {
           DEFAULT: 'hsl(var(--color-budget))',
           foreground: 'hsl(var(--color-budget-foreground))',
         },
+        neon: {
+          cyan: '#00f3ff',
+          blue: '#1a5bff',
+        }
       },
       borderRadius: {
         lg: 'var(--radius)',
@@ -78,9 +82,17 @@ const config: Config = {
         sm: 'calc(var(--radius) - 4px)',
       },
       fontFamily: {
-        display: ['var(--font-satoshi)', 'system-ui', 'sans-serif'],
-        sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
+        display: ['var(--font-geist-sans)', 'system-ui', 'sans-serif'],
+        sans: ['var(--font-geist-sans)', 'system-ui', 'sans-serif'],
       },
+      boxShadow: {
+        'neon': '0 0 10px rgba(0, 243, 255, 0.3), inset 0 0 10px rgba(0, 243, 255, 0.1)',
+        'neon-strong': '0 0 20px rgba(0, 243, 255, 0.6), inset 0 0 15px rgba(0, 243, 255, 0.2)',
+        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
+      },
+      dropShadow: {
+        'neon': '0 0 8px rgba(0, 243, 255, 0.8)',
+      }
     },
   },
   plugins: [],

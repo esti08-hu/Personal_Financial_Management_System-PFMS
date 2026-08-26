@@ -1,177 +1,177 @@
-"use client";
-import { useState, useEffect } from "react";
-import Image from "next/image";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { ChevronLeft, ChevronRight, Star, Quote } from "lucide-react";
+"use client"
+
+import React, { useState } from "react"
+import { ChevronLeft, ChevronRight, Quote, Star } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
 
 const testimonials = [
   {
-    id: 1,
-    name: "Sarah, Retail Manager",
-    image: "/images/testimonial1.png",
-    text: "Using this personal financial system has been a game-changer for me. I can now track my expenses, set budgets, and monitor my financial goals with ease. The intuitive interface makes managing my finances a breeze!",
+    id: '1',
+    name: 'Michael Chen',
+    role: 'Small Business Owner',
+    rating: 5.0,
+    quote: 'As a small business owner, I was struggling to keep track of all my business and personal finances. This personal financial system has been a lifesaver.',
+    highlight: 'Reduced monthly expense tracking time by 75%'
   },
   {
-    id: 2,
-    name: "Michael, Small Business Owner",
-    image: "/images/testimonial2.png",
-    text: "As a small business owner, I was struggling to keep track of my business expenses and personal finances separately. This system has helped me organize everything efficiently and make informed financial decisions.",
+    id: '2',
+    name: 'Sarah Williams',
+    role: 'Freelance Designer',
+    rating: 5.0,
+    quote: 'The budgeting tools are incredibly intuitive. I finally feel in control of my finances and can plan for the future with real confidence.',
+    highlight: 'Reached 12-month emergency goal 3 months early'
   },
   {
-    id: 3,
-    name: "Jenna, Marketing Coordinator",
-    image: "/images/testimonial3.png",
-    text: "This personal financial system has been a game-changer for my family's financial well-being. The budgeting tools and expense tracking features have helped us save more and spend wisely.",
-  },
-];
+    id: '3',
+    name: 'David Kim',
+    role: 'Independent Tech Consultant',
+    rating: 5.0,
+    quote: 'The milestone forecasting engine is unmatched. Having confidence in how each daily transaction impacts my 5-year outlook transformed my savings habits.',
+    highlight: 'Increased annual savings rate from 14% to 32%'
+  }
+]
 
 const Testimonial = () => {
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const [direction, setDirection] = useState(0)
 
-  // Auto-advance testimonials
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) =>
-        prevIndex === testimonials.length - 1 ? 0 : prevIndex + 1
-      );
-    }, 5000);
+  const nextTestimonial = () => {
+    setDirection(1)
+    setCurrentIndex((prev) => (prev + 1) % testimonials.length)
+  }
 
-    return () => clearInterval(interval);
-  }, []);
+  const prevTestimonial = () => {
+    setDirection(-1)
+    setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length)
+  }
 
-  const goToPrevious = () => {
-    setCurrentIndex(
-      currentIndex === 0 ? testimonials.length - 1 : currentIndex - 1
-    );
-  };
-
-  const goToNext = () => {
-    setCurrentIndex(
-      currentIndex === testimonials.length - 1 ? 0 : currentIndex + 1
-    );
-  };
+  const current = testimonials[currentIndex]
 
   return (
-    <section
-      id="testimonials"
-      className="py-16 px-4 bg-gradient-to-br from-primary/10 to-primary/20"
-    >
-      <div className="container mx-auto max-w-6xl">
-        {/* Section Header */}
-        <div className="text-center mb-12">
-          <p className="text-sm font-medium text-muted-foreground tracking-wider uppercase mb-2">
-            Testimonials
-          </p>
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-            What Our Users Say
-          </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Discover how MoneyMaster has transformed the financial lives of
-            thousands of users
-          </p>
-        </div>
+    <section id="testimonials-section" className="relative w-full px-4 sm:px-6 lg:px-12 py-20 overflow-hidden">
+      {/* Background Soft Glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-sky-500/10 blur-[130px] rounded-full pointer-events-none -z-10" />
 
-        {/* Testimonial Carousel */}
-        <div className="relative max-w-4xl mx-auto">
-          <Card
-            style={{ background: "hsl(var(--color-primary) / 0.06)" }}
-            className="bg-white shadow-lg border-0"
+      <div className="max-w-5xl mx-auto text-center">
+        {/* Subtitle */}
+        <p className="text-xs sm:text-sm font-semibold tracking-widest text-sky-600 dark:text-sky-400/90 uppercase mb-8">
+          -- TESTIMONIALS --
+        </p>
+
+        {/* Outer Frosted Glass Container */}
+        <div
+          id="testimonial-carousel-container"
+          className="relative rounded-3xl glass-surface-elevated border border-sky-400/20 p-6 sm:p-12 lg:p-14 shadow-[0_20px_50px_rgba(0,0,0,0.4),0_0_35px_rgba(125,211,252,0.1)] backdrop-blur-2xl"
+        >
+          {/* Left Arrow */}
+          <button
+            id="testimonial-prev-btn"
+            onClick={prevTestimonial}
+            className="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full glass-surface border border-sky-400/30 flex items-center justify-center text-sky-600 dark:text-sky-300 hover:text-sky-900 dark:hover:text-white hover:border-sky-300 hover:scale-110 shadow-[0_0_15px_rgba(125,211,252,0.25)] transition-all z-20 cursor-pointer"
+            aria-label="Previous Testimonial"
           >
-            <CardContent className="p-8 md:p-12">
-              <div className="flex flex-col md:flex-row items-center gap-8">
-                {/* User Image */}
-                <div className="flex-shrink-0">
-                  <div className="relative w-24 h-24 md:w-32 md:h-32 rounded-full bg-gradient-to-br from-primary to-primary/80 p-1">
-                    <div className="w-full h-full rounded-full bg-white p-2 flex items-center justify-center">
-                      <Image
-                        src={
-                          testimonials[currentIndex].image || "/placeholder.svg"
-                        }
-                        alt={`${testimonials[currentIndex].name} testimonial`}
-                        width={100}
-                        height={100}
-                        className="rounded-full object-cover"
-                      />
-                    </div>
-                  </div>
-                </div>
+            <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+          </button>
 
-                {/* Testimonial Content */}
-                <div className="flex-1 text-center md:text-left">
-                  {/* Quote Icon */}
-                  <div className="mb-4">
-                    <Quote className="w-8 h-8 text-primary mx-auto md:mx-0" />
-                  </div>
+          {/* Right Arrow */}
+          <button
+            id="testimonial-next-btn"
+            onClick={nextTestimonial}
+            className="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full glass-surface border border-sky-400/30 flex items-center justify-center text-sky-600 dark:text-sky-300 hover:text-sky-900 dark:hover:text-white hover:border-sky-300 hover:scale-110 shadow-[0_0_15px_rgba(125,211,252,0.25)] transition-all z-20 cursor-pointer"
+            aria-label="Next Testimonial"
+          >
+            <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
+          </button>
 
-                  {/* Testimonial Text */}
-                  <blockquote className="text-lg md:text-xl text-muted-foreground leading-relaxed mb-6">
-                    "{testimonials[currentIndex].text}"
-                  </blockquote>
-
-                  {/* User Info and Rating */}
-                  <div className="space-y-3">
-                    <h4 className="text-xl font-semibold text-foreground">
-                      {testimonials[currentIndex].name}
-                    </h4>
-
-                    {/* Star Rating */}
-                    <div className="flex items-center justify-center md:justify-start gap-2">
-                      <div className="flex items-center">
-                        {[...Array(5)].map((_, index) => (
-                          <Star
-                            key={index}
-                            className="w-5 h-5 fill-yellow-400 text-yellow-400"
-                          />
-                        ))}
+          {/* Animated Testimonial Card */}
+          <div className="max-w-2xl mx-auto px-6 sm:px-12">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={current.id}
+                initial={{ opacity: 0, x: direction > 0 ? 30 : -30 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: direction > 0 ? -30 : 30 }}
+                transition={{ duration: 0.35, ease: "easeOut" }}
+                className="flex flex-col items-center"
+              >
+                {/* Header: Avatar, Name/Role, Quote Icon */}
+                <div className="w-full flex items-center justify-between gap-4 pb-6 border-b border-sky-400/15 dark:border-sky-400/10">
+                  {/* Avatar */}
+                  <div className="flex items-center gap-3.5 sm:gap-4 text-left">
+                    <div className="relative">
+                      <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full p-[2px] bg-gradient-to-tr from-sky-400 via-sky-200 to-indigo-400 shadow-[0_0_20px_rgba(125,211,252,0.5)]">
+                        <div className="w-full h-full rounded-full bg-slate-700 flex items-center justify-center text-sky-200 font-bold text-lg">
+                          {current.name.charAt(0)}
+                        </div>
                       </div>
-                      <span className="text-sm font-medium text-muted-foreground">
-                        5.0
-                      </span>
+                      <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-sky-500 border-2 border-white dark:border-[#0f1524] flex items-center justify-center">
+                        <span className="w-1.5 h-1.5 rounded-full bg-white" />
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white tracking-tight">
+                        {current.name}
+                      </h4>
+                      <p className="text-xs sm:text-sm text-sky-600 dark:text-sky-300 font-medium">
+                        {current.role}
+                      </p>
                     </div>
                   </div>
+
+                  {/* Quote Icon */}
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl glass-surface border border-sky-400/40 flex items-center justify-center text-sky-600 dark:text-sky-300 shadow-[0_0_18px_rgba(125,211,252,0.35)] shrink-0">
+                    <Quote className="w-5 h-5 sm:w-6 sm:h-6 rotate-180 fill-sky-400/20 text-sky-600 dark:text-sky-300" />
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
 
-          {/* Navigation Buttons */}
-          <div className="flex items-center justify-center gap-4 mt-8">
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={goToPrevious}
-              className="rounded-full"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </Button>
+                {/* Star Rating */}
+                <div className="my-5 flex items-center gap-2">
+                  <div className="flex items-center gap-1 text-amber-400">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="w-4 h-4 fill-amber-400 filter drop-shadow-[0_0_4px_rgba(251,191,36,0.6)]" />
+                    ))}
+                  </div>
+                  <span className="text-xs font-bold text-slate-700 dark:text-slate-200 ml-1">
+                    {current.rating.toFixed(1)}
+                  </span>
+                </div>
 
-            {/* Dots Indicator */}
-            <div className="flex items-center gap-2">
-              {testimonials.map((_, index) => (
+                {/* Quote Text */}
+                <p className="text-sm sm:text-base text-slate-700 dark:text-slate-200 font-normal leading-relaxed italic mb-4">
+                  &ldquo;{current.quote}&rdquo;
+                </p>
+
+                {/* Outcome Pill */}
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-400/20 text-[11px] font-mono text-sky-700 dark:text-sky-300 font-medium">
+                  <span>✦ Outcome: {current.highlight}</span>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+
+            {/* Pagination Dots */}
+            <div className="mt-8 flex items-center justify-center gap-2">
+              {testimonials.map((t, idx) => (
                 <button
-                  key={index}
-                  onClick={() => setCurrentIndex(index)}
-                  className={`w-2 h-2 rounded-full transition-colors ${
-                    index === currentIndex ? "bg-primary" : "bg-muted"
+                  key={t.id}
+                  onClick={() => {
+                    setDirection(idx > currentIndex ? 1 : -1)
+                    setCurrentIndex(idx)
+                  }}
+                  className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                    idx === currentIndex
+                      ? 'w-7 bg-sky-400 shadow-[0_0_10px_#38bdf8]'
+                      : 'w-2 bg-slate-300 hover:bg-slate-400 dark:bg-slate-600 dark:hover:bg-slate-500'
                   }`}
+                  aria-label={`Go to slide ${idx + 1}`}
                 />
               ))}
             </div>
-
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={goToNext}
-              className="rounded-full"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </Button>
           </div>
         </div>
       </div>
     </section>
-  );
-};
+  )
+}
 
-export default Testimonial;
+export default Testimonial

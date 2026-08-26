@@ -16,8 +16,10 @@ import { TransactionModule } from './modules/transactions/transaction.module'
 import { AiModule } from './modules/ai'
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler'
 import { APP_GUARD } from '@nestjs/core'
+import { MiddlewareConsumer, NestModule } from '@nestjs/common'
 import { TerminusModule } from '@nestjs/terminus'
 import { HealthModule } from './health/health.module'
+import { RequestLoggingMiddleware } from './common/middleware/request-logging.middleware'
 
 @Module({
   imports: [
@@ -92,4 +94,8 @@ import { HealthModule } from './health/health.module'
     { provide: APP_GUARD, useClass: ThrottlerGuard },
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(RequestLoggingMiddleware).forRoutes('*')
+  }
+}

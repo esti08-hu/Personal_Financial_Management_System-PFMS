@@ -17,7 +17,7 @@ type ModelProps = {
   handleUpdate: (e: React.FormEvent<HTMLFormElement>) => void
   handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void
   editAccountData: {
-    id: number
+    id: string
     type: string
     balance: number
     title: string

@@ -1,23 +1,24 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import ClickOutside from "../ClickOutside";
-import {
-  HiChevronDown,
-  HiOutlineUserCircle,
-  HiOutlineCog,
-  HiOutlineLogout,
-} from "react-icons/hi";
+import { UserCircle, Settings, LogOut, ChevronDown } from "lucide-react";
 import apiClient from "@/app/lib/axiosConfig";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import type { Admin } from "@/app/types/user";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 
 const DropdownUser = () => {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [admin, setAdmin] = useState<Admin | null>(null);
   const router = useRouter();
+  const [admin, setAdmin] = useState<Admin | null>(null);
 
   useEffect(() => {
     const fetchAdminData = async () => {
@@ -26,10 +27,8 @@ const DropdownUser = () => {
         setAdmin(response.data);
       } catch (error) {
         toast.error("An error occurred while fetching user data.");
-      } finally {
       }
     };
-
     fetchAdminData();
   }, []);
 
@@ -38,7 +37,7 @@ const DropdownUser = () => {
       const response = await apiClient.post("/auth/logout");
       if (response.status === 200) {
         toast.success("Logout successful!");
-        setTimeout(() => router.push("/pages/admin/auth/signin"), 2000);
+        setTimeout(() => router.push("/pages/admin/auth/signin"), 1500);
       }
     } catch (err) {
       toast.error("An error occurred during logout.");
@@ -46,83 +45,51 @@ const DropdownUser = () => {
   };
 
   return (
-    <ClickOutside onClick={() => setDropdownOpen(false)} className="relative">
-      <Link
-        onClick={() => setDropdownOpen(!dropdownOpen)}
-        className="flex items-center gap-4"
-        href="#"
-      >
-        <span className="hidden text-right lg:block">
-          <span className="block text-sm font-medium text-black dark:text-white">
-            {admin?.name}
-          </span>
-          <span className="block text-xs">{admin?.role}</span>
-        </span>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="flex items-center gap-4 h-14 hover:bg-transparent">
+          <div className="hidden text-right lg:block">
+            <span className="block text-sm font-medium text-foreground">
+              {admin?.name || "Admin User"}
+            </span>
+            <span className="block text-xs text-muted-foreground">{admin?.role || "Admin"}</span>
+          </div>
 
-        <span className="h-12 w-12 rounded-full">
-          <Image
-            width={112}
-            height={112}
-            src={admin?.profilePicture || "/images/user/user.png"}
-            style={{
-              width: "auto",
-              height: "auto",
-            }}
-            alt="User"
-          />
-        </span>
+          <div className="h-10 w-10 overflow-hidden rounded-full border border-border bg-background">
+            <Image
+              width={40}
+              height={40}
+              src={admin?.profilePicture || "/images/user/user.png"}
+              alt="User"
+              className="h-full w-full object-cover"
+            />
+          </div>
+          <ChevronDown className="h-4 w-4 text-muted-foreground" />
+        </Button>
+      </DropdownMenuTrigger>
 
-        <HiChevronDown className="text-xl" />
-      </Link>
-
-      {/* <!-- Dropdown Start --> */}
-      {dropdownOpen && (
-        <div
-          className={
-            "absolute right-0 mt-4 flex w-62.5 flex-col rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdar"
-          }
-        >
-          <ul className="flex flex-col gap-5 border-b border-stroke px-6 py-7.5 dark:border-strokedark">
-            <li>
-              <Link
-                href="/pages/admin/profile"
-                className="flex items-center gap-3.5 text-sm font-medium duration-300 ease-in-out hover:text-[#00ABCD] lg:text-base"
-              >
-                <HiOutlineUserCircle className="text-2xl" />
-                My Profile
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/pages/admin/settings"
-                className="flex items-center gap-3.5 text-sm font-medium duration-300 ease-in-out hover:text-[#00ABCD] lg:text-base"
-              >
-                <HiOutlineCog className="text-2xl" />
-                Account Settings
-              </Link>
-            </li>
-          </ul>
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="flex items-center gap-3.5 px-6 py-4 text-sm font-medium duration-300 ease-in-out hover:text-[#00ABCD] lg:text-base"
-          >
-            <HiOutlineLogout className="text-2xl" />
-            Log Out
-          </button>
-        </div>
-      )}
-      {/* <!-- Dropdown End --> */}
-      <ToastContainer
-        position="top-center"
-        autoClose={5000}
-        hideProgressBar={false}
-        closeOnClick
-        pauseOnHover
-        draggable
-        pauseOnFocusLoss
-      />
-    </ClickOutside>
+      <DropdownMenuContent align="end" className="w-56">
+        <DropdownMenuLabel>My Account</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link href="/pages/admin/profile" className="flex cursor-pointer items-center">
+            <UserCircle className="mr-2 h-4 w-4" />
+            <span>My Profile</span>
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href="/pages/admin/settings" className="flex cursor-pointer items-center">
+            <Settings className="mr-2 h-4 w-4" />
+            <span>Account Settings</span>
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive">
+          <LogOut className="mr-2 h-4 w-4" />
+          <span>Log Out</span>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 

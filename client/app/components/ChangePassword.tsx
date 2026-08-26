@@ -1,9 +1,12 @@
 import React, { useState } from "react";
-import { Modal, Form, Input, Button } from "antd";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { changePasswordSchema } from "../common/validationSchema";
 import { z } from "zod";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "sonner";
+import { Eye, EyeOff } from "lucide-react";
 
 interface ChangePasswordModalProps {
   isVisible: boolean;
@@ -13,7 +16,7 @@ interface ChangePasswordModalProps {
 interface ChangePasswordValues {
   currentPassword: string;
   newPassword: string;
-  confirmPassword: string;
+  confirmPassword?: string;
 }
 
 const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
@@ -21,10 +24,13 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
   toggleModal,
   handleChangePassword,
 }) => {
-  const [form] = Form.useForm();
-  const [isPasswordValid, setIsPasswordValid] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [isPasswordValid, setIsPasswordValid] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
 
   // Validate password using the schema or custom logic
   const validatePassword = (password: string) => {
@@ -46,95 +52,102 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
     }
   };
 
-  // Handle form submission
-  const onFinish = (values: ChangePasswordValues) => {
-    handleChangePassword(values);
+  const onFinish = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!currentPassword) {
+      setErrors((prev) => ({ ...prev, currentPassword: "Required" }));
+      return;
+    }
+    handleChangePassword({ currentPassword, newPassword });
+    setCurrentPassword("");
+    setNewPassword("");
   };
 
   return (
-    <Modal
-      title="Change Password"
-      open={isVisible}
-      onCancel={toggleModal}
-      footer={null}
-    >
-      <Form layout="vertical" onFinish={onFinish} form={form}>
-        {/* Current Password */}
-        <Form.Item
-          label="Current Password"
-          name="currentPassword"
-          rules={[
-            {
-              required: true,
-              message: "Please input your current password!",
-            },
-          ]}
-        >
-          <Input.Password
-            placeholder="Enter your current password"
-            className="hover:!border-[#00ABCD] focus:!border-[#00ABCD]"
-          />
-        </Form.Item>
-
-        {/* New Password with Validation */}
-        <Form.Item
-          label="New Password"
-          name="newPassword"
-          rules={[
-            {
-              required: true,
-            },
-          ]}
-        >
-          <Input.Password
-            placeholder="Enter your current password"
-            className={`hover:!border-[#00ABCD] focus:!border-[#00ABCD] ${
-              errors.newPassword
-                ? "border-2 border-red-500"
-                : "border border-gray-300"
-            }`}
-            // value={newPassword}
-            onChange={(e) => {
-              const password = e.target.value;
-              setNewPassword(e.target.value);
-              form.setFieldsValue({ newPassword: password });
-              validatePassword(e.target.value);
-            }}
-          />
-
-          <div className="min-h-[24px] mt-1">
-            {newPassword.length > 0 && (
-              <>
-                {errors?.newPassword && (
-                  <p className="text-red text-sm">{errors.newPassword}</p>
+    <Dialog open={isVisible} onOpenChange={toggleModal}>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Change Password</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={onFinish} className="space-y-4 py-4">
+          <div className="space-y-2">
+            <Label htmlFor="currentPassword">Current Password</Label>
+            <div className="relative">
+              <Input
+                id="currentPassword"
+                type={showCurrentPassword ? "text" : "password"}
+                placeholder="Enter your current password"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+              >
+                {showCurrentPassword ? (
+                  <EyeOff className="h-4 w-4 text-muted-foreground" />
+                ) : (
+                  <Eye className="h-4 w-4 text-muted-foreground" />
                 )}
-                {isPasswordValid && !errors?.newPassword && (
-                  <p className="text-green-500 text-sm">Password is valid</p>
-                )}
-              </>
-            )}
+              </Button>
+            </div>
+            {errors.currentPassword && <p className="text-destructive text-sm">{errors.currentPassword}</p>}
           </div>
-        </Form.Item>
 
-        {/* Form Actions */}
-        <Form.Item>
-          <Button
-            className="bg-[#00ABCD] text-white hover:!bg-[#2dc6e5] hover:!text-white"
-            htmlType="submit"
-            disabled={!isPasswordValid}
-          >
-            Submit
-          </Button>
-          <Button
-            type="default"
-            onClick={toggleModal}
-            className="ml-2 hover:!border-[#00ABCD] hover:!text-[#00ABCD]"
-          >
-            Cancel
-          </Button>
-        </Form.Item>
-      </Form>
-    </Modal>
+          <div className="space-y-2">
+            <Label htmlFor="newPassword">New Password</Label>
+            <div className="relative">
+              <Input
+                id="newPassword"
+                type={showNewPassword ? "text" : "password"}
+                placeholder="Enter new password"
+                value={newPassword}
+                onChange={(e) => {
+                  setNewPassword(e.target.value);
+                  validatePassword(e.target.value);
+                }}
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                onClick={() => setShowNewPassword(!showNewPassword)}
+              >
+                {showNewPassword ? (
+                  <EyeOff className="h-4 w-4 text-muted-foreground" />
+                ) : (
+                  <Eye className="h-4 w-4 text-muted-foreground" />
+                )}
+              </Button>
+            </div>
+            <div className="min-h-[24px] mt-1">
+              {newPassword.length > 0 && (
+                <>
+                  {errors?.newPassword && (
+                    <p className="text-destructive text-sm">{errors.newPassword}</p>
+                  )}
+                  {isPasswordValid && !errors?.newPassword && (
+                    <p className="text-emerald-500 text-sm">Password is valid</p>
+                  )}
+                </>
+              )}
+            </div>
+          </div>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={toggleModal}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={!isPasswordValid || !currentPassword}>
+              Submit
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 };
 

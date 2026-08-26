@@ -68,7 +68,7 @@ export class TransactionController {
     @Param('id') id: string,
     @Body() updateTransactionDto: UpdateTransactionDto,
   ) {
-    await this.transactionService.updateTransaction(
+    return await this.transactionService.updateTransaction(
       id,
       updateTransactionDto,
     )

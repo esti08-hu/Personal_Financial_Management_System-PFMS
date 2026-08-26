@@ -1,6 +1,7 @@
 "use client"
 import { useAccountStore } from "@/app/pages/store/accountStore"
 import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
@@ -26,6 +27,7 @@ type AccountFormData = z.infer<typeof accountSchema>
 const AddAccount = () => {
   const [isClient, setIsClient] = useState(false)
   const addAccount = useAccountStore((state) => state.addAccount)
+  const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
@@ -54,6 +56,7 @@ const AddAccount = () => {
       await addAccount(newAccount)
       toast.success("Account created successfully!")
       form.reset()
+      router.push("/pages/user/account/manageAccount")
     } catch (error) {
       toast.error("Failed to create account")
     } finally {
@@ -77,14 +80,16 @@ const AddAccount = () => {
   if (!isClient) return null
 
   return (
-    <div className="min-h-fit flex items-center justify-center px-4">
-      <Card className="w-full max-w-2xl">
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <Plus className="h-6 w-6 text-primary" />
-            <CardTitle className="text-2xl font-bold text-primary">Add New Account</CardTitle>
+    <div className="min-h-fit flex flex-col items-center justify-center px-4 py-8 animate-fade-in relative z-10 w-full">
+      <Card className="w-full max-w-2xl glass-surface-elevated rounded-3xl border border-sky-400/20 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.4),0_0_45px_rgba(125,211,252,0.12)] backdrop-blur-2xl">
+        <CardHeader className="border-b border-sky-400/10 pb-6 mb-6">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 bg-sky-500/10 border border-sky-500/20 rounded-xl shadow-[0_0_15px_rgba(14,165,233,0.15)]">
+              <Plus className="h-6 w-6 text-sky-500" />
+            </div>
+            <CardTitle className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Add New Account</CardTitle>
           </div>
-          <CardDescription>
+          <CardDescription className="text-sm text-slate-600 dark:text-slate-400 font-medium pt-2">
             Create a new financial account to track your money. Required fields are marked with *
           </CardDescription>
         </CardHeader>
@@ -97,9 +102,9 @@ const AddAccount = () => {
                 name="title"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Account Title *</FormLabel>
+                    <FormLabel className="text-sm font-semibold text-slate-700 dark:text-slate-300">Account Title <span className="text-sky-500">*</span></FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g., Main Checking, Emergency Fund" {...field} />
+                      <Input placeholder="e.g., Main Checking, Emergency Fund" className="glass-input h-12 w-full rounded-xl px-4 border-sky-400/20" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -111,38 +116,38 @@ const AddAccount = () => {
                 name="type"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Account Type *</FormLabel>
+                    <FormLabel className="text-sm font-semibold text-slate-700 dark:text-slate-300">Account Type <span className="text-sky-500">*</span></FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger className="glass-input h-12 w-full rounded-xl px-4 border-sky-400/20">
                           <SelectValue placeholder="Select account type" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent>
-                        <SelectItem value="Checking">
+                      <SelectContent className="bg-white dark:bg-[#0d1322] border-sky-400/20 shadow-2xl rounded-xl z-50 text-slate-800 dark:text-slate-100">
+                        <SelectItem value="Checking" className="cursor-pointer focus:bg-sky-500/15 focus:text-sky-500">
                           <div className="flex items-center gap-2">
-                            <CreditCard className="h-4 w-4" />
+                            <CreditCard className="h-4 w-4 text-sky-500" />
                             <div className="flex flex-col">
-                              <span>Checking Account</span>
-                              <span className="text-xs text-muted-foreground">For daily transactions</span>
+                              <span className="font-semibold">Checking Account</span>
+                              <span className="text-xs text-slate-400">For daily transactions</span>
                             </div>
                           </div>
                         </SelectItem>
-                        <SelectItem value="Saving">
+                        <SelectItem value="Saving" className="cursor-pointer focus:bg-sky-500/15 focus:text-sky-500">
                           <div className="flex items-center gap-2">
-                            <PiggyBank className="h-4 w-4" />
+                            <PiggyBank className="h-4 w-4 text-sky-500" />
                             <div className="flex flex-col">
-                              <span>Savings Account</span>
-                              <span className="text-xs text-muted-foreground">For long-term savings</span>
+                              <span className="font-semibold">Savings Account</span>
+                              <span className="text-xs text-slate-400">For long-term savings</span>
                             </div>
                           </div>
                         </SelectItem>
-                        <SelectItem value="Business">
+                        <SelectItem value="Business" className="cursor-pointer focus:bg-sky-500/15 focus:text-sky-500">
                           <div className="flex items-center gap-2">
-                            <Building className="h-4 w-4" />
+                            <Building className="h-4 w-4 text-sky-500" />
                             <div className="flex flex-col">
-                              <span>Business Account</span>
-                              <span className="text-xs text-muted-foreground">For business expenses</span>
+                              <span className="font-semibold">Business Account</span>
+                              <span className="text-xs text-slate-400">For business expenses</span>
                             </div>
                           </div>
                         </SelectItem>
@@ -158,13 +163,14 @@ const AddAccount = () => {
                 name="balance"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Initial Balance *</FormLabel>
+                    <FormLabel className="text-sm font-semibold text-slate-700 dark:text-slate-300">Initial Balance <span className="text-sky-500">*</span></FormLabel>
                     <FormControl>
                       <Input
                         type="number"
                         min={0}
                         step="0.01"
                         placeholder="0.00"
+                        className="glass-input h-12 w-full rounded-xl px-4 border-sky-400/20"
                         {...field}
                         onChange={(e) => field.onChange(Number(e.target.value))}
                       />
@@ -174,10 +180,14 @@ const AddAccount = () => {
                 )}
               />
 
-              <Button type="submit" disabled={isLoading} className="w-full" size="lg">
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full flex items-center justify-center gap-2 h-12 mt-8 rounded-xl glass-pill-btn font-semibold text-sm transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
+              >
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {isLoading ? "Creating Account..." : "Create Account"}
-              </Button>
+                {isLoading ? "Processing..." : "Create Account"}
+              </button>
             </form>
           </Form>
         </CardContent>
