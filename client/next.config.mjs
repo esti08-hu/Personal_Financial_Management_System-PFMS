@@ -1,8 +1,18 @@
 // next.config.js
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    output: 'standalone',
     images: {
-        domains: ['lh3.googleusercontent.com'], // Add the domain here
+        remotePatterns: [
+            {
+                protocol: 'https',
+                hostname: 'lh3.googleusercontent.com',
+            },
+            {
+                protocol: 'https',
+                hostname: 'cloudflare-ipfs.com',
+            },
+        ],
     },
     reactStrictMode: true,
 };

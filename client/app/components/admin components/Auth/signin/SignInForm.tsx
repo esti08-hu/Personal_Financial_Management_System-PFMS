@@ -1,18 +1,19 @@
 "use client";
 
-import { Icon } from "react-icons-kit";
-import { eyeOff } from "react-icons-kit/feather/eyeOff";
-import { eye } from "react-icons-kit/feather/eye";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useState } from "react";
 import axios from "axios";
+import apiClient from "@/app/lib/axiosConfig";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { z } from "zod";
 import { motion, AnimatePresence } from "framer-motion";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "sonner";
 import { adminSigninSchema } from "@/app/common/validationSchema";
-import Loader from "../../../../common/Loader";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 const AdminSignInForm = () => {
   const router = useRouter();
@@ -23,23 +24,12 @@ const AdminSignInForm = () => {
     password: "",
     isAdmin: true,
   });
-  const [type, setType] = useState("password");
-  const [icon, setIcon] = useState(eyeOff);
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-  };
-
-  const handleToggle = () => {
-    if (type === "password") {
-      setIcon(eye);
-      setType("text");
-    } else {
-      setIcon(eyeOff);
-      setType("password");
-    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -48,19 +38,15 @@ const AdminSignInForm = () => {
 
     try {
       const parsedData = adminSigninSchema.parse(formData); 
-      const response = await axios.post(
-        "http://localhost:3001/auth/login",
-        parsedData,
-        {
-          withCredentials: true,
-        }
+      const response = await apiClient.post(
+        "/auth/login",
+        parsedData
       );
 
-      if (response.status === 201) {
-        // Status should be 200
+      if (response.status === 201 || response.status === 200) {
         toast.success("Logged in successfully!");
         setTimeout(() => {
-          router.push("/pages/admin/dashboard"); // Redirect to admin dashboard
+          router.push("/pages/admin/dashboard");
         }, 1000);
       }
     } catch (err) {
@@ -89,140 +75,98 @@ const AdminSignInForm = () => {
         visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
       }}
       exit={{ opacity: 0 }}
-      className="container border-none max-w-fit h-auto flex justify-center items-center p-8 border-2 bg-white rounded-lg shadow-lg m-10"
+      className="container border-none max-w-fit h-auto flex justify-center items-center p-8 mx-auto my-10"
     >
-      <AnimatePresence>
-        {isLoading && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="absolute w-full h-full flex justify-center items-center z-50"
-            style={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
-          >
-            <Loader />
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <div>
-        <div className="max-w-fit mb-8">
-          <Image
-            src="/images/logo/moneymaster.png"
-            width={150}
-            height={150}
-            alt="Money Master Logo"
-          />
-        </div>
-        <h1 className="text-2xl font-black text-[#22577A] mb-6">
-          Admin Sign In
-        </h1>
-        <p className="w-[450px] mb-10 text-[#6C7278]">
-          Enter your admin credentials to sign in.
-        </p>
-
-        <form onSubmit={handleSubmit} className="w-full">
-          <div className="mb-6">
-            <label
-              htmlFor="email"
-              className="block mb-2 text-md font-medium text-black"
-            >
-              Email <span className="text-red">*</span>
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className={`shadow-sm bg-gray-50 text-black text-sm rounded-lg block w-full p-2.5 pr-10 transition-all duration-300 focus:ring-2 focus:ring-[#37a5bb] ${
-                errors.email ? "border-2 border-red" : "border border-gray"
-              }`}
-              placeholder="Enter admin email"
-              required
+      <Card className="w-full max-w-md mx-auto shadow-lg">
+        <CardHeader className="space-y-1">
+          <div className="flex justify-center mb-4">
+            <Image
+              src="/images/logo/moneymaster.png"
+              width={150}
+              height={150}
+              alt="Money Master Logo"
             />
-            <div className="min-h-[24px] mt-1">
-              {errors.email && (
-                <p className="text-red text-sm">{errors.email}</p>
-              )}
-            </div>
           </div>
+          <CardTitle className="text-2xl font-bold text-center text-foreground">
+            Admin Sign In
+          </CardTitle>
+          <CardDescription className="text-center text-muted-foreground">
+            Enter your admin credentials to sign in.
+          </CardDescription>
+        </CardHeader>
 
-          {/* Password */}
-          <div className="mb-6">
-            <label
-              htmlFor="password"
-              className="block mb-2 text-md font-medium text-black"
-            >
-              Password <span className="text-red">*</span>
-            </label>
-            <div className="relative">
-              <input
-                type={type}
-                name="password"
-                id="password"
-                value={formData.password}
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-2">
+              <Label htmlFor="email">
+                Email <span className="text-destructive">*</span>
+              </Label>
+              <Input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
                 onChange={handleChange}
-                placeholder="Enter password"
-                className={`shadow-sm bg-gray-50 text-sm text-black rounded-lg block w-full p-2.5 pr-10 transition-all duration-300 focus:ring-2 focus:ring-[#37a5bb] ${
-                  errors.password ? "border-2 border-red" : "border border-gray"
-                }`}
+                className={errors.email ? "border-destructive focus-visible:ring-destructive" : ""}
+                placeholder="Enter admin email"
                 required
               />
-              <button
-                type="button"
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray focus:outline-none"
-                onClick={handleToggle}
-              >
-                <Icon
-                  className={icon === eye ? "text-[#00ABCD]" : ""}
-                  icon={icon}
-                  size={20}
-                />
-              </button>
-            </div>
-
-            <div className="min-h-[24px] mt-1">
-              {errors.password && (
-                <p className="text-red text-sm">{errors.password}</p>
+              {errors.email && (
+                <p className="text-destructive text-sm">{errors.email}</p>
               )}
             </div>
-          </div>
 
-          <motion.button
-            whileTap="tap"
-            whileHover="hover"
-            type="submit"
-            disabled={isLoading}
-            className="w-full flex justify-center text-white bg-[#00ABCD] hover:bg-[#37a5bb] focus:ring-4 focus:outline-none focus:ring-blue-300 font-bold text-md px-5 py-2.5 text-center rounded-full transition-all duration-300 mb-6"
-          >
-            {isLoading ? (
-              <svg
-                className="animate-spin h-5 w-5 mr-3 text-white"
-                viewBox="0 0 24 24"
-                aria-labelledby="loadingTitle"
-              >
-                <title id="loadingTitle">Loading...</title>
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
+            <div className="space-y-2">
+              <Label htmlFor="password">
+                Password <span className="text-destructive">*</span>
+              </Label>
+              <div className="relative">
+                <Input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  id="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="Enter password"
+                  className={`pr-10 ${errors.password ? "border-destructive focus-visible:ring-destructive" : ""}`}
+                  required
                 />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                />
-              </svg>
-            ) : (
-              "Sign In"
-            )}
-          </motion.button>
-        </form>
-      </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4 text-muted-foreground" />
+                  ) : (
+                    <Eye className="h-4 w-4 text-muted-foreground" />
+                  )}
+                </Button>
+              </div>
+              {errors.password && (
+                <p className="text-destructive text-sm">{errors.password}</p>
+              )}
+            </div>
+
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="w-full rounded-full"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Signing In...
+                </>
+              ) : (
+                "Sign In"
+              )}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
     </motion.div>
   );
 };

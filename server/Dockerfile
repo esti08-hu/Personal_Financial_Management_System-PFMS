@@ -1,21 +1,34 @@
-FROM node:20.9 as base
+# ---- Stage 1: Install dependencies & build ----
+FROM node:22-alpine AS builder
+
+RUN corepack enable && corepack prepare pnpm@9.15.4 --activate
 
 WORKDIR /app
-COPY --chown=node:node package*.json ./
-COPY --chown=node:node pnpm-lock.yaml ./
-COPY --chown=node:node docker-entrypoint.sh /app/
 
-# Ensure the script is executable
-RUN chmod +x /app/docker-entrypoint.sh
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
 
-# Install pnpm globally is not recommanded. instead install it locally  `npm install -D pnpm`
-RUN npm install -g pnpm 
+COPY . .
+RUN pnpm run build
 
-RUN pnpm install
+# ---- Stage 2: Production image ----
+FROM node:22-alpine AS production
 
-COPY --chown=node:node . .
+RUN corepack enable && corepack prepare pnpm@9.15.4 --activate
 
-EXPOSE ${PORT}
+WORKDIR /app
 
-FROM base AS dev
-CMD ["sh" , "docker-entrypoint.sh", "dev"]
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile --prod
+
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/drizzle ./drizzle
+COPY drizzle.config.ts ./
+COPY docker-entrypoint.sh ./
+RUN chmod +x docker-entrypoint.sh
+
+USER node
+
+EXPOSE 3001
+
+CMD ["sh", "docker-entrypoint.sh", "prod"]

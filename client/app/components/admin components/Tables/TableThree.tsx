@@ -1,12 +1,31 @@
 import { useState } from "react";
-import { Form, message, Modal, Pagination, Select } from "antd";
-import {
-  HiOutlineArrowCircleUp,
-  HiOutlinePencilAlt,
-  HiOutlineTrash,
-} from "react-icons/hi";
+import { ArrowUpCircle, PencilLine, Trash2 } from "lucide-react";
 import type { User } from "@/app/types/user";
 import apiClient from "@/app/lib/axiosConfig";
+import { toast } from "sonner";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 
 const TableThree: React.FC<{ users: User[]; fetchUsers: () => void }> = ({
   users,
@@ -16,246 +35,226 @@ const TableThree: React.FC<{ users: User[]; fetchUsers: () => void }> = ({
   const [pageSize, setPageSize] = useState(10);
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [editUser, setEditUser] = useState<User | null>(null);
-  const [form] = Form.useForm();
-  const [isFormChanged, setIsFormChanged] = useState(false);
-  const [initialValues, setInitialValues] = useState<{ role: string }>({
-    role: "",
-  });
+  const [selectedRole, setSelectedRole] = useState<string>("");
 
-  // Calculate the start and end index for slicing the users array
   const startIndex = (currentPage - 1) * pageSize;
   const endIndex = startIndex + pageSize;
   const paginatedUsers = users.slice(startIndex, endIndex);
+  const totalPages = Math.ceil(users.length / pageSize);
 
   const handleDelete = async (user: User) => {
-    Modal.confirm({
-      title: "Are you sure you want to delete this user?",
-      content: "This action cannot be undone.",
-      okText: "Yes, delete",
-      okType: "danger",
-      cancelText: "No, cancel",
-      async onOk() {
-        try {
-          const response = await apiClient.delete(
-            `/user/deleteUser${user.pid}`
-          );
-          if (response.status === 200) {
-            message.success(`User ${user.name} deleted successfully`);
-            fetchUsers();
-          } else {
-            message.error("Failed to delete user.");
-          }
-        } catch (error) {
-          message.error("An error occurred while deleting the user.");
+    if (confirm("Are you sure you want to delete this user? This action cannot be undone.")) {
+      try {
+        const response = await apiClient.delete(`/user/deleteUser${user.pid}`);
+        if (response.status === 200) {
+          toast.success(`User ${user.name} deleted successfully`);
+          fetchUsers();
+        } else {
+          toast.error("Failed to delete user.");
         }
-      },
-    });
+      } catch (error) {
+        toast.error("An error occurred while deleting the user.");
+      }
+    }
   };
 
-  const handleRestore = (user: User) => {
-    Modal.confirm({
-      title: "Are you sure you want to restore this user?",
-      content: "This action cannot be undone.",
-      okText: "Yes, restore",
-      okType: "primary",
-      cancelText: "No, cancel",
-  okButtonProps:{style: {backgroundColor: "hsl(var(--color-primary))", color: "#fff", borderColor: "hsl(var(--color-primary))"}},
-      async onOk() {
-        try {
-          const response = await apiClient.post(`/user/restore${user.pid}`);
-          if (response.status === 201) {
-            message.success(`User ${user.name} restored successfully`);
-            fetchUsers();
-          } else {
-            message.error("Failed to restore user.");
-          }
-        } catch (error) {
-          message.error("An error occurred while restoring the user.");
+  const handleRestore = async (user: User) => {
+    if (confirm("Are you sure you want to restore this user?")) {
+      try {
+        const response = await apiClient.post(`/user/restore${user.pid}`);
+        if (response.status === 201) {
+          toast.success(`User ${user.name} restored successfully`);
+          fetchUsers();
+        } else {
+          toast.error("Failed to restore user.");
         }
-      },
-    });
+      } catch (error) {
+        toast.error("An error occurred while restoring the user.");
+      }
+    }
   };
 
   const handleEdit = (user: User) => {
     setEditUser(user);
-    const initialFormValues = { role: user.role };
-    setInitialValues(initialFormValues);
+    setSelectedRole(user.role);
     setEditModalVisible(true);
-    form.setFieldsValue({
-      role: user.role,
-    });
-    setIsFormChanged(false);
   };
 
-  const handleEditSubmit = async (values: { role: string }) => {
-    if (editUser) {
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (editUser && selectedRole !== editUser.role) {
       try {
         const response = await apiClient.put(
           `/user/update-role${editUser.pid}`,
-          {
-            role: values.role,
-          }
+          { role: selectedRole }
         );
         if (response.status === 200) {
-          message.success(`User ${editUser.name}'s role updated successfully`);
+          toast.success(`User ${editUser.name}'s role updated successfully`);
           setEditModalVisible(false);
           fetchUsers();
         } else {
-          message.error("Failed to update user role.");
+          toast.error("Failed to update user role.");
         }
       } catch (error) {
-        message.error("An error occurred while updating the user.");
+        toast.error("An error occurred while updating the user.");
       }
+    } else {
+      setEditModalVisible(false);
     }
-    setIsFormChanged(false);
-  };
-
-  const handleValuesChange = () => {
-    const currentValues = form.getFieldsValue();
-    setIsFormChanged(
-      JSON.stringify(currentValues) !== JSON.stringify(initialValues)
-    );
-  };
-
-  const handlePageChange = (page: number, pageSize: number) => {
-    setCurrentPage(page);
-    setPageSize(pageSize);
   };
 
   return (
-    <div className="rounded-sm border border-stroke bg-white px-5 pb-2.5 pt-6 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
+    <div className="rounded-lg border border-border bg-card shadow-sm">
       <div className="max-w-full overflow-x-auto">
-        <table className="w-full table-auto">
-          <thead>
-            <tr className="bg-gray-2 text-left dark:bg-meta-4">
-              <th className="min-w-[220px] px-4 py-4 font-medium text-black dark:text-white xl:pl-11">
-                Name
-              </th>
-              <th className="min-w-[150px] px-4 py-4 font-medium text-black dark:text-white">
-                Email
-              </th>
-              <th className="min-w-[150px] px-4 py-4 font-medium text-black dark:text-white">
-                Status
-              </th>
-              <th className="min-w-[120px] px-4 py-4 font-medium text-black dark:text-white">
-                Role
-              </th>
-              <th className="px-4 py-4 font-medium text-black dark:text-white">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="min-w-[220px]">Name</TableHead>
+              <TableHead className="min-w-[150px]">Email</TableHead>
+              <TableHead className="min-w-[150px]">Status</TableHead>
+              <TableHead className="min-w-[120px]">Role</TableHead>
+              <TableHead>Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {paginatedUsers.map((user) => (
-              <tr key={user.pid} className="hover:bg-gray-100 dark:hover:bg-meta-4">
-                <td className="border-b border-[#eee] px-4 py-5 pl-9 dark:border-strokedark xl:pl-11">
-                  <h5 className="font-medium text-black dark:text-white">
-                    {user.name}
-                  </h5>
-                </td>
-                <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
-                  <p className="text-black dark:text-white">{user.email}</p>
-                </td>
-                <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
+              <TableRow key={user.pid}>
+                <TableCell className="font-medium text-foreground">
+                  {user.name}
+                </TableCell>
+                <TableCell className="text-muted-foreground">{user.email}</TableCell>
+                <TableCell>
                   <p
-                    className={`inline-flex rounded-full bg-opacity-10 px-3 py-1 text-sm font-medium ${
+                    className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${
                       !user.accountLockedUntil
-                        ? "bg-success text-success"
-                        : "bg-warning text-warning"
+                        ? "bg-emerald-500/10 text-emerald-500"
+                        : "bg-destructive/10 text-destructive"
                     }`}
                   >
                     {!user.accountLockedUntil ? "Active" : "Locked"}
                   </p>
-                </td>
-                <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
-                  <p className="text-black dark:text-white">{user.role}</p>
-                </td>
-                <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
+                </TableCell>
+                <TableCell className="text-foreground">{user.role}</TableCell>
+                <TableCell>
                   <div className="flex items-center space-x-3.5">
                     {user.deletedAt ? (
-                      // Render Restore Button for Deleted Users
-                      <button
-                        type="button"
+                      <Button
+                        variant="secondary"
+                        size="sm"
                         onClick={() => handleRestore(user)}
-                        className="flex items-center px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold rounded-md shadow-md hover:text-white transition duration-300 ease-in-out"
+                        className="bg-yellow-500/10 text-yellow-600 hover:bg-yellow-500/20"
                       >
-                        <HiOutlineArrowCircleUp className="text-xl mr-2" />
-                        <span className="text-sm">Restore</span>
-                      </button>
+                        <ArrowUpCircle className="mr-2 h-4 w-4" />
+                        Restore
+                      </Button>
                     ) : (
                       <>
-                        {/* Edit Button for non-deleted users */}
-                        <button
-                          type="button"
+                        <Button
+                          variant="ghost"
+                          size="icon"
                           onClick={() => handleEdit(user)}
-                          className="hover:text-[#00ABCD]"
+                          className="hover:text-primary"
                         >
-                          <HiOutlinePencilAlt className="text-2xl" />
-                        </button>
-                        {/* Delete Button for non-deleted users */}
-                        <button
-                          type="button"
+                          <PencilLine className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
                           onClick={() => handleDelete(user)}
-                          className="hover:text-danger"
+                          className="hover:text-destructive"
                         >
-                          <HiOutlineTrash className="text-2xl" />
-                        </button>
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
                       </>
                     )}
                   </div>
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
 
-      {/* Edit User Modal */}
-      <Modal
-        open={editModalVisible}
-        title="Edit User"
-        onCancel={() => setEditModalVisible(false)}
-        onOk={form.submit}
-        className="!w-[400px]"
-        okButtonProps={{
-          disabled: !isFormChanged,
-            style: {
-            backgroundColor: isFormChanged ? "hsl(var(--color-primary))" : "#f5f5f5",
-            color: isFormChanged ? "#fff" : "#d9d9d9",
-            borderColor: isFormChanged ? "hsl(var(--color-primary))" : "#f5f5f5",
-          },
-        }}
-        cancelButtonProps={{
-          style: {
-            borderColor: "hsl(var(--color-primary))",
-            color: "hsl(var(--color-primary))",
-          },
-        }}
-      >
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={handleEditSubmit}
-          onValuesChange={handleValuesChange}
-        >
-          <p>Promote User to Admin role.</p>
-          <Form.Item label="Role" name="role" rules={[{ required: true }]}>
-            <Select>
-              <Select.Option value="ADMIN">ADMIN</Select.Option>
-              <Select.Option value="USER">USER</Select.Option>
-            </Select>
-          </Form.Item>
-        </Form>
-      </Modal>
+      <Dialog open={editModalVisible} onOpenChange={setEditModalVisible}>
+        <DialogContent className="sm:max-w-[400px]">
+          <form onSubmit={handleEditSubmit}>
+            <DialogHeader>
+              <DialogTitle>Edit User Role</DialogTitle>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <p className="text-sm text-muted-foreground">Change the role for {editUser?.name}.</p>
+              <Select value={selectedRole} onValueChange={setSelectedRole}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a role" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ADMIN">ADMIN</SelectItem>
+                  <SelectItem value="USER">USER</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setEditModalVisible(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={editUser?.role === selectedRole}>
+                Save changes
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
 
-      {/* Pagination Component */}
-      <Pagination
-        current={currentPage}
-        pageSize={pageSize}
-        total={users.length}
-        onChange={handlePageChange}
-        showSizeChanger
-      />
+      {/* Basic Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between border-t border-border px-4 py-3 sm:px-6">
+          <div className="flex flex-1 justify-between sm:hidden">
+            <Button
+              variant="outline"
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </Button>
+          </div>
+          <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+            <div>
+              <p className="text-sm text-muted-foreground">
+                Showing <span className="font-medium">{startIndex + 1}</span> to{" "}
+                <span className="font-medium">{Math.min(endIndex, users.length)}</span> of{" "}
+                <span className="font-medium">{users.length}</span> results
+              </p>
+            </div>
+            <div>
+              <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+                <Button
+                  variant="outline"
+                  className="rounded-r-none"
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                >
+                  Previous
+                </Button>
+                <Button
+                  variant="outline"
+                  className="rounded-l-none"
+                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                </Button>
+              </nav>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

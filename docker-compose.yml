@@ -1,19 +1,26 @@
 services:
- # PostgreSQL database service
+  # PostgreSQL database service
   db:
-    image: postgres:16
+    image: postgres:16-alpine
     restart: always
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: admin
       POSTGRES_DB: full_stack_auth_db
     container_name: postgres
+    shm_size: 128mb
     volumes:
       - postgres-data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"  # Expose PostgreSQL
+      - "5432:5432"
     networks:
       - app-network
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
     profiles: ['dev']
 
   # Backend service (Nest.js)
@@ -21,44 +28,51 @@ services:
     build:
       context: ./server
       dockerfile: Dockerfile
+      target: production
     container_name: pfms-api
     ports:
-      - "3001:3001"  # Expose port 3001 for the Nest.js server
+      - "3001:3001"
     depends_on:
       - db
     networks:
       - app-network
-    environment:
-      - PORT=${PORT}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DB}
-      - POSTGRES_PORT=${POSTGRES_PORT}
-      - POSTGRES_HOST=${POSTGRES_HOST}
-      - JWT_ACCESS_TOKEN_SECRET=${JWT_ACCESS_TOKEN_SECRET}
+    env_file:
+      - docker.env
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
     profiles: ['dev']
 
   # Frontend service (Next.js)
   client:
     build:
-      context: ./client 
+      context: ./client
       dockerfile: Dockerfile
+      target: production
     container_name: pfms-client
     ports:
-      - "3000:3000"  # Expose port 3000 for Next.js
+      - "3000:3000"
     depends_on:
       - server
     networks:
       - app-network
     environment:
       NEXT_PUBLIC_API_URL: http://localhost:3001
+      HOSTNAME: "0.0.0.0"
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
     profiles: ['dev']
 
-# Volumes for data persistence
 volumes:
   postgres-data:
 
-# Network for inter-service communication
 networks:
   app-network:
     driver: bridge

@@ -5,11 +5,11 @@ import TableOne from "../Tables/TableOne";
 import CardDataStats from "../CardDataStats";
 import TableTwo from "../Tables/TableTwo";
 import {
-  HiOutlineUsers,
-  HiOutlineClipboardList,
-  HiOutlineLockClosed,
-} from "react-icons/hi";
-import { toast } from "react-toastify";
+  Users,
+  ClipboardList,
+  Lock,
+} from "lucide-react";
+import { toast } from "sonner";
 import apiClient from "@/app/lib/axiosConfig";
 
 const ChartThree = dynamic(() => import("../Charts/ChartThree"), {
@@ -53,17 +53,17 @@ const AdminDashboard: React.FC = () => {
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-3 2xl:gap-7.5">
         <div className="enhanced-card">
           <CardDataStats title="Total Users" total={totalAccounts}>
-            <HiOutlineUsers className="text-[#00ABCD] text-2xl dark:text-white" />
+            <Users className="text-primary h-6 w-6 dark:text-white" />
           </CardDataStats>
         </div>
         <div className="enhanced-card">
           <CardDataStats title="Total Transactions" total={totalTransactions}>
-            <HiOutlineClipboardList className="text-[#00ABCD] text-2xl dark:text-white" />
+            <ClipboardList className="text-primary h-6 w-6 dark:text-white" />
           </CardDataStats>
         </div>
         <div className="enhanced-card">
           <CardDataStats title="Locked Accounts" total={lockedAccounts}>
-            <HiOutlineLockClosed className="text-[#00ABCD] text-2xl dark:text-white" />
+            <Lock className="text-primary h-6 w-6 dark:text-white" />
           </CardDataStats>
         </div>
       </div>

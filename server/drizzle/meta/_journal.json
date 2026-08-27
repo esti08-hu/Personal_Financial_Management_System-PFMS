@@ -127,6 +127,48 @@
       "when": 1727699539596,
       "tag": "0017_friendly_tomas",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1759766658571,
+      "tag": "0018_lowly_ogun",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1760683356785,
+      "tag": "0019_great_talos",
+      "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1760683739195,
+      "tag": "0020_modern_franklin_storm",
+      "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1760684058407,
+      "tag": "0021_oval_excalibur",
+      "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1760684376380,
+      "tag": "0022_third_scarlet_witch",
+      "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1760771543949,
+      "tag": "0023_ambiguous_mantis",
+      "breakpoints": true
     }
   ]
 }

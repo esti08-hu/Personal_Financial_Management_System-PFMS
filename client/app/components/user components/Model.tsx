@@ -4,8 +4,9 @@ import type React from "react"
 
 import apiClient from "@/app/lib/axiosConfig"
 import type { Account, EditTransaction } from "@/app/types/acc"
+import { getStoredUserId } from "@/app/pages/store/authStore"
 import { useEffect, useState } from "react"
-import { toast } from "react-toastify"
+import { toast } from "sonner"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -26,7 +27,7 @@ type ModelProps = {
 }
 
 const Model: React.FC<ModelProps> = ({ isEditing, setIsEditing, handleUpdate, handleChange, editTransactionData }) => {
-  const [accountId, setAccountId] = useState<number>(editTransactionData.account.id)
+  const [accountId, setAccountId] = useState<string>(editTransactionData.account.id)
   const [accounts, setAccounts] = useState<Account[]>([])
   const [error, setError] = useState<string>("")
   const [originalAmount, setOriginalAmount] = useState<number>(editTransactionData.amount)
@@ -35,11 +36,11 @@ const Model: React.FC<ModelProps> = ({ isEditing, setIsEditing, handleUpdate, ha
   const [newBalance, setNewBalance] = useState(Number(editTransactionData.account.balance))
   const [isSaveDisabled, setIsSaveDisabled] = useState<boolean>(true)
 
-  const fetchAccounts = async (userId: number) => {
+  const fetchAccounts = async (userId: string) => {
     try {
       const response = await apiClient.get(`/account/${userId}`)
-      const data = response.data
-      setAccounts(data)
+      const accountList = response.data?.items || response.data?.data || (Array.isArray(response.data) ? response.data : [])
+      setAccounts(accountList)
     } catch (error) {
       console.error("Failed to fetch accounts", error)
       toast.error("Failed to fetch accounts")
@@ -87,8 +88,8 @@ const Model: React.FC<ModelProps> = ({ isEditing, setIsEditing, handleUpdate, ha
   }
 
   const handleAccountChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedAccountId = Number(e.target.value)
-    setAccountId(Number(e.target.value))
+    const selectedAccountId = e.target.value
+    setAccountId(selectedAccountId)
     const selectedAccount = accounts.find((acc) => acc.id === selectedAccountId)
 
     if (selectedAccount) {
@@ -97,7 +98,7 @@ const Model: React.FC<ModelProps> = ({ isEditing, setIsEditing, handleUpdate, ha
         target: {
           ...e.target,
           name: "accountId",
-          value: selectedAccount.id.toString(),
+          value: selectedAccount.id,
         },
       })
 
@@ -108,8 +109,7 @@ const Model: React.FC<ModelProps> = ({ isEditing, setIsEditing, handleUpdate, ha
   useEffect(() => {
     const fetchUserIdAndAccounts = async () => {
       try {
-        const userIdResponse = await apiClient.get("/user/userId")
-        const userId = userIdResponse.data
+        const userId = await getStoredUserId()
         fetchAccounts(userId)
       } catch (error) {
         console.error("Failed to fetch user ID", error)

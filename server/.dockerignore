@@ -1,0 +1,10 @@
+node_modules
+dist
+.env
+.env.test
+*.log
+.git
+.gitignore
+test-*.ts
+coverage
+pnpm-workspace.yaml

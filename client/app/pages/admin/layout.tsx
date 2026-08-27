@@ -1,30 +1,32 @@
-"use client";
-import "../../css/satoshi.css";
-import "../../css/style.css";
-import React, { useEffect, useState } from "react";
-import Loader from "../../common/Loader";
+"use client"
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [loading, setLoading] = useState<boolean>(true);
+import type React from "react"
+import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
+import { AdminSidebar } from "@/app/components/admin components/AdminSidebar"
+import DropdownUser from "@/app/components/admin components/Header/DropdownUser"
 
-  // const pathname = usePathname();
+interface AdminLayoutProps {
+  children: React.ReactNode
+}
 
-  useEffect(() => {
-    setTimeout(() => setLoading(false), 1000);
-  }, []);
-
+export default function AdminLayout({ children }: AdminLayoutProps) {
   return (
-    <html lang="en">
-      <body suppressHydrationWarning={true}>
-        <div className="dark:bg-boxdark-2 dark:text-bodydark">
-          {loading ? <Loader /> : children}
-        </div>
-      </body>
-    </html>
-  );
+    <SidebarProvider>
+      <AdminSidebar />
+      <SidebarInset>
+        <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between border-b bg-background/80 backdrop-blur px-4">
+          <div className="flex items-center gap-2">
+            <SidebarTrigger className="-ml-1" />
+          </div>
+          <div className="flex items-center gap-4">
+            <DropdownUser />
+          </div>
+        </header>
+
+        <main className="flex-1 bg-background-secondary p-4 md:p-6 lg:p-8">
+          <div className="mx-auto max-w-7xl">{children}</div>
+        </main>
+      </SidebarInset>
+    </SidebarProvider>
+  )
 }

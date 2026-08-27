@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import apiClient from "@/app/lib/axiosConfig";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
+import { getStoredUserId } from "@/app/pages/store/authStore";
 
 interface ReportData {
   income: number;
@@ -24,8 +25,7 @@ export const useReportStore = create<ReportStore>((set) => ({
   fetchData: async () => {
     try {
       set({ loading: true, error: null });
-      const userIdResponse = await apiClient.get("/user/userId");
-      const userId = userIdResponse.data;
+      const userId = await getStoredUserId()
 
       const expenceResponse = await apiClient.get(
         `/transaction/expense/${userId}`

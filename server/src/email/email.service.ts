@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common'
+import { BadRequestException, Inject, Injectable, Logger } from '@nestjs/common'
 import axios from 'axios'
 import { createTransport } from 'nodemailer'
 import Mail from 'nodemailer/lib/mailer'
@@ -7,6 +7,7 @@ import EmailOptions from './emailOptions.interface'
 
 @Injectable()
 export default class EmailService {
+  private readonly logger = new Logger(EmailService.name)
   private nodemailerTransport: Mail
 
   constructor(@Inject(EMAIL_CONFIG_OPTIONS) private options: EmailOptions) {
@@ -21,8 +22,8 @@ export default class EmailService {
 
   // Function to validate email using Hunter.io API
   private async validateEmailWithHunter(email: string): Promise<boolean> {
+    
     const apiKey = process.env.HUNTER_API_KEY
-
     try {
       const response = await axios.get(
         'https://api.hunter.io/v2/email-verifier',
@@ -36,7 +37,6 @@ export default class EmailService {
 
       // Hunter.io response data
       const { data } = response
-
       // Check the verification result
       if (data && data.data && data.data.result === 'deliverable') {
         return true
@@ -53,7 +53,7 @@ export default class EmailService {
   ): Promise<{ success: boolean; message: string }> {
     const email = options.to as string
     const isValidEmail = await this.validateEmailWithHunter(email) // Validate recipient email before sending using Hunter.io
-
+    
     if (!isValidEmail) {
       throw new BadRequestException(
         'Email address is invalid or not deliverable.',
@@ -63,7 +63,6 @@ export default class EmailService {
     try {
       // Attempt to send the email
       const info = await this.nodemailerTransport.sendMail(options)
-
       // Inspect the SMTP response for clues about delivery issues
       if (info.rejected.length > 0) {
         return {
@@ -73,9 +72,22 @@ export default class EmailService {
       }
       return { success: true, message: 'Email sent successfully.' }
     } catch (error) {
+      const mailError = error as {
+        code?: string
+        command?: string
+        response?: string
+        message?: string
+      }
+      this.logger.error('Failed to send email', {
+        code: mailError.code,
+        command: mailError.command,
+        response: mailError.response,
+        message: mailError.message,
+      })
+
       return {
         success: false,
-        message: `Failed to send email: ${error.message}`,
+        message: `Failed to send email: ${mailError.message ?? 'Unknown email error'}`,
       }
     }
   }

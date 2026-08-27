@@ -1,3 +1,6 @@
+packages:
+  - "."
+
 ignoredBuiltDependencies:
   - '@biomejs/biome'
   - '@nestjs/core'

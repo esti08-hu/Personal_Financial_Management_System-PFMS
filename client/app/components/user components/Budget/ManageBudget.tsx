@@ -21,7 +21,7 @@ const ManageBudget = () => {
   const { budget, fetchBudget, editBudget, deleteBudget } = useBudgetStore()
   const [isEditing, setIsEditing] = useState<boolean>(false)
   const [editBudgetData, setEditBudgetData] = useState<EditBudget>({
-    id: 0,
+    id: "",
     createdAt: "",
     type: "",
     amount: 0,
@@ -49,7 +49,7 @@ const ManageBudget = () => {
     setEditBudgetData(budget)
   }
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     await deleteBudget(id)
   }
 
@@ -59,7 +59,7 @@ const ManageBudget = () => {
     await fetchBudget()
     setIsEditing(false)
     setEditBudgetData({
-      id: 0,
+      id: "",
       createdAt: "",
       type: "",
       amount: 0,
@@ -135,88 +135,89 @@ const ManageBudget = () => {
   const totalPages = Math.ceil(budget.length / pageSize)
 
   return (
-    <Card className="w-full">
-      <CardHeader>
+    <Card className="glass-surface-elevated rounded-3xl border border-sky-400/20 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.4),0_0_45px_rgba(125,211,252,0.12)] backdrop-blur-2xl overflow-hidden mt-8">
+      <CardHeader className="border-b border-sky-400/10 bg-slate-50/50 dark:bg-[#0a0e1a]/50 py-6 px-8">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Target className="h-5 w-5" />
+          <div className="flex items-center space-x-3">
+            <div className="p-2.5 bg-sky-500/10 border border-sky-500/20 rounded-xl shadow-[0_0_15px_rgba(14,165,233,0.15)]">
+              <Target className="h-5 w-5 text-sky-500" />
+            </div>
             <div>
-              <CardTitle>Budget Management</CardTitle>
-              <CardDescription>
+              <CardTitle className="text-xl font-bold text-slate-800 dark:text-white">Budget Management</CardTitle>
+              <CardDescription className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">
                 Manage and track your budget allocations ({budget.length} total budgets)
               </CardDescription>
             </div>
           </div>
-          <Button asChild>
-            <Link href="/pages/user/budget/setBudget">
-              <Plus className="h-4 w-4 mr-2" />
-              Add Budget
-            </Link>
-          </Button>
+          <Link href="/pages/user/budget/setBudget" className="inline-flex items-center px-4 py-2 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-500 text-white shadow-[0_5px_20px_rgba(14,165,233,0.3)] hover:from-sky-400 hover:to-indigo-400 text-sm font-semibold transition-all">
+            <Plus className="h-4 w-4 mr-2" />
+            Add Budget
+          </Link>
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="rounded-md border">
+      <CardContent className="p-8">
+        <div className="rounded-2xl border border-sky-400/20 overflow-hidden shadow-sm">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Title</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Amount</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead className="text-center">Actions</TableHead>
+              <TableRow className="hover:bg-transparent border-sky-400/10 text-slate-500 dark:text-slate-400 bg-slate-50/50 dark:bg-[#0a0e1a]/50">
+                <TableHead className="font-semibold px-6 py-4">Title</TableHead>
+                <TableHead className="font-semibold px-6 py-4">Type</TableHead>
+                <TableHead className="font-semibold px-6 py-4">Amount</TableHead>
+                <TableHead className="font-semibold px-6 py-4">Date</TableHead>
+                <TableHead className="text-center font-semibold px-6 py-4">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               <AnimatePresence>
                 {paginatedBudgets.map((item) => (
-                  <motion.div
+                  <motion.tr
                     key={item.id}
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    className="contents"
+                    exit={{ opacity: 0, y: -10 }}
+                    className="group border-sky-400/10 glass-surface-hover transition-colors"
                   >
-                    <TableRow className="group">
-                      <TableCell className="font-medium">{item.title}</TableCell>
-                      <TableCell>
-                        <Badge
-                          variant={
-                            item.type === "Deposit" ? "default" : item.type === "Withdrawal" ? "destructive" : "secondary"
-                          }
+                    <TableCell className="font-medium text-slate-700 dark:text-slate-300 px-6 py-4">{item.title}</TableCell>
+                    <TableCell className="px-6 py-4">
+                      <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold ${
+                        item.type === "Deposit" 
+                          ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20" 
+                          : item.type === "Withdrawal"
+                            ? "bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20"
+                            : "bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20"
+                      }`}>
+                        {item.type}
+                      </span>
+                    </TableCell>
+                    <TableCell className="font-bold px-6 py-4">
+                      <span className={item.type === "Deposit" ? "text-emerald-500" : "text-red-500"}>
+                        {item.type === "Deposit" ? "+" : "-"}
+                        {item.amount.toLocaleString()} <span className="text-xs font-medium opacity-70">ETB</span>
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-slate-500 dark:text-slate-400 px-6 py-4 font-medium">
+                      <div className="flex items-center space-x-2">
+                        <Calendar className="h-4 w-4 text-sky-500" />
+                        <span>{new Date(item.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="px-6 py-4">
+                      <div className="flex items-center justify-center space-x-3">
+                        <button
+                          onClick={() => handleEdit(item)}
+                          className="h-8 w-8 rounded-lg flex items-center justify-center bg-sky-500/10 hover:bg-sky-500/20 text-sky-600 dark:text-sky-400 transition-colors cursor-pointer"
                         >
-                          {item.type}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="font-mono">
-                        <span className={item.type === "Deposit" ? "text-green-600" : "text-red-600"}>
-                          {item.type === "Deposit" ? "+" : "-"}
-                          {item.amount.toLocaleString()} ETB
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center space-x-2">
-                          <Calendar className="h-4 w-4 text-muted-foreground" />
-                          <span>{new Date(item.createdAt).toLocaleDateString()}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center justify-center space-x-2">
-                          <Button variant="ghost" size="sm" onClick={() => handleEdit(item)} className="h-8 w-8 p-0">
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleDelete(item.id)}
-                            className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  </motion.div>
+                          <Edit className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(item.id)}
+                          className="h-8 w-8 rounded-lg flex items-center justify-center bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 transition-colors cursor-pointer"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </TableCell>
+                  </motion.tr>
                 ))}
               </AnimatePresence>
             </TableBody>

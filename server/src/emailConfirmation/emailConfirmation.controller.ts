@@ -5,14 +5,12 @@ import {
   Get,
   Post,
   Query,
-  Req,
   Res,
   UseInterceptors,
 } from '@nestjs/common'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
-import { Public } from 'src/auth/guards/auth.decorators'
-import { ConfirmEmailDto } from './confirmEmail.dto'
 import { EmailConfirmationService } from './emailConfirmation.service'
+import { Public } from 'src/modules/auth/guards/auth.decorators'
 
 @Controller('email-confirmation')
 @ApiBearerAuth()

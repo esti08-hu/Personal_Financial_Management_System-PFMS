@@ -19,7 +19,7 @@ type ModelProps = {
   handleUpdate: (e: React.FormEvent<HTMLFormElement>) => void
   handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void
   editBudgetData: {
-    id: number
+    id: string
     createdAt: string
     type: string
     amount: number
@@ -50,11 +50,11 @@ const Model: React.FC<ModelProps> = ({ isEditing, setIsEditing, handleUpdate, ha
   const getBudgetIcon = (type: string) => {
     switch (type) {
       case "Deposit":
-        return <TrendingUp className="h-4 w-4 text-green-600" />
+        return <TrendingUp className="h-4 w-4 text-emerald-500" />
       case "Withdrawal":
-        return <TrendingDown className="h-4 w-4 text-red-600" />
+        return <TrendingDown className="h-4 w-4 text-destructive" />
       case "Transfer":
-        return <ArrowUpDown className="h-4 w-4 text-blue-600" />
+        return <ArrowUpDown className="h-4 w-4 text-primary" />
       default:
         return <Target className="h-4 w-4" />
     }
@@ -110,7 +110,7 @@ const Model: React.FC<ModelProps> = ({ isEditing, setIsEditing, handleUpdate, ha
                 <SelectContent>
                   <SelectItem value="Deposit">
                     <div className="flex items-center gap-2">
-                      <TrendingUp className="h-4 w-4 text-green-600" />
+                      <TrendingUp className="h-4 w-4 text-emerald-500" />
                       <div>
                         <div className="font-medium">Income Budget</div>
                         <div className="text-xs text-muted-foreground">Expected income or deposits</div>
@@ -119,7 +119,7 @@ const Model: React.FC<ModelProps> = ({ isEditing, setIsEditing, handleUpdate, ha
                   </SelectItem>
                   <SelectItem value="Withdrawal">
                     <div className="flex items-center gap-2">
-                      <TrendingDown className="h-4 w-4 text-red-600" />
+                      <TrendingDown className="h-4 w-4 text-destructive" />
                       <div>
                         <div className="font-medium">Expense Budget</div>
                         <div className="text-xs text-muted-foreground">Planned expenses or withdrawals</div>
@@ -128,7 +128,7 @@ const Model: React.FC<ModelProps> = ({ isEditing, setIsEditing, handleUpdate, ha
                   </SelectItem>
                   <SelectItem value="Transfer">
                     <div className="flex items-center gap-2">
-                      <ArrowUpDown className="h-4 w-4 text-blue-600" />
+                      <ArrowUpDown className="h-4 w-4 text-primary" />
                       <div>
                         <div className="font-medium">Transfer Budget</div>
                         <div className="text-xs text-muted-foreground">Planned transfers between accounts</div>

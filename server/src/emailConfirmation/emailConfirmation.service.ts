@@ -6,11 +6,11 @@ import {
 import { ConfigService } from '@nestjs/config'
 import { JwtService } from '@nestjs/jwt'
 import { eq, sql } from 'drizzle-orm'
-import { databaseSchema } from 'src/database/database-schema'
-import { DrizzleService } from 'src/database/drizzle.service'
-import EmailService from 'src/email/email.service'
-import { UsersService } from 'src/users/users.service'
+import { databaseSchema } from '../database/database-schema'
+import { DrizzleService } from '../database/drizzle.service'
+import EmailService from '../email/email.service'
 import VerificationTokenPayload from './emailVerification.interface'
+import { UsersService } from 'src/modules/users/users.service'
 
 @Injectable()
 export class EmailConfirmationService {
@@ -24,9 +24,12 @@ export class EmailConfirmationService {
 
   public sendVerificationLink(email: string) {
     const payload: VerificationTokenPayload = { email }
+    const expiration = this.configService.get<number>(
+      'EMAIL_VERIFICATION_SECRET_EXPIRATION',
+    )
     const token = this.jwtService.sign(payload, {
       secret: this.configService.get('EMAIL_VERIFICATION_SECRET'),
-      expiresIn: `${this.configService.get('EMAIL_VERIFICATION_SECRET_EXPIRATION')}`,
+      expiresIn: expiration,
     })
 
     const url = `${this.configService.get('EMAIL_CONFIRMATION_URL')}?token=${token}`

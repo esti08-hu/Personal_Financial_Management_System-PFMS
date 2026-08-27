@@ -5,6 +5,7 @@
 /server/build
 
 /client/.next
+/client/__tests__
 /server/test
 # Node modules
 /client/node_modules
@@ -50,6 +51,7 @@ lerna-debug.log*
 .env.test.local
 .env.production.local
 .env.local
+docker.env
 
 # Client-specific environment files
 /client/.env

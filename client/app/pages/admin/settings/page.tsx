@@ -1,22 +1,29 @@
 "use client";
 
 import Breadcrumb from "../../../common/Breadcrumbs/Breadcrumb";
-import DefaultLayout from "../../../components/admin components/Layouts/DefaultLayout";
-import { HiOutlineUser, HiOutlineMail } from "react-icons/hi";
+import { User, Mail } from "lucide-react";
 import { useEffect, useState } from "react";
 import apiClient from "@/app/lib/axiosConfig";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "sonner";
 import type { Admin } from "@/app/types/user";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 
 const Settings = () => {
   const [admin, setAdmin] = useState<Admin | null>(null);
   const [formData, setFormData] = useState({
     fullName: "",
-    // phoneNumber: "",
     emailAddress: "",
   });
   const [isFormChanged, setIsFormChanged] = useState(false);
+  
   const fetchAdminData = async () => {
     try {
       const response = await apiClient.get("/auth/admin-profile");
@@ -24,12 +31,10 @@ const Settings = () => {
       setAdmin(response.data);
       setFormData({
         fullName: adminData.name || "",
-        // phoneNumber: "+990 3343 7865", // Assuming the phone number is static for now
         emailAddress: adminData.email || "",
       });
     } catch (error) {
       toast.error("An error occurred while fetching user data.");
-    } finally {
     }
   };
 
@@ -50,12 +55,12 @@ const Settings = () => {
       const isChanged =
         formData.fullName !== admin.name ||
         formData.emailAddress !== admin.email;
-      // formData.phoneNumber !== "+990 3343 7865";
       setIsFormChanged(isChanged);
     }
   }, [formData, admin]);
 
-  const handleEditAdmin = async () => {
+  const handleEditAdmin = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
       const response = await apiClient.put(
         `/user/update-admin${admin?.pid}`,
@@ -67,121 +72,90 @@ const Settings = () => {
       }
     } catch (error) {
       toast.error("An error occurred while fetching user data.");
-    } finally {
     }
   };
 
   return (
-    <DefaultLayout>
+    <>
       <div className="mx-auto max-w-270">
         <Breadcrumb pageName="Settings" />
 
         <div className="grid gap-8 w-full">
           <div className="col-span-5 xl:col-span-3">
-            <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-              <div className="border-b border-stroke px-7 py-4 dark:border-strokedark">
-                <h3 className="font-medium text-black dark:text-white">
-                  Personal Information
-                </h3>
-              </div>
-              <div className="p-7">
-                <form action="#">
+            <Card>
+              <CardHeader className="border-b border-border mb-4">
+                <CardTitle>Personal Information</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleEditAdmin}>
                   <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
                     <div className="w-full sm:w-1/2">
-                      <label
-                        className="mb-3 block text-sm font-medium text-black dark:text-white"
-                        htmlFor="fullName"
-                      >
+                      <Label htmlFor="fullName" className="mb-3 block">
                         Full Name
-                      </label>
+                      </Label>
                       <div className="relative">
-                        <span className="absolute left-4.5 top-4">
-                          <HiOutlineUser className="text-xl" />
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
+                          <User className="h-5 w-5" />
                         </span>
-                        <input
-                          className="w-full rounded border border-stroke bg-gray-2 py-3 pl-11.5 pr-4.5 text-black focus:border-[#00ABCD] focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-[#00ABCD]"
+                        <Input
                           type="text"
                           name="fullName"
                           id="fullName"
                           placeholder="Devid Jhon"
                           value={formData.fullName}
                           onChange={handleInputChange}
+                          className="pl-11"
                         />
                       </div>
                     </div>
 
                     <div className="w-full sm:w-1/2">
-                      <label
-                        className="mb-3 block text-sm font-medium text-black dark:text-white"
-                        htmlFor="phoneNumber"
-                      >
-                        Phone Number
-                      </label>
-                      <input
-                        className="w-full rounded border border-stroke bg-gray-2 px-4.5 py-3 text-black focus:border-[#00ABCD] focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-[#00ABCD]"
+                      <Label htmlFor="phoneNumber" className="mb-3 block text-muted-foreground">
+                        Phone Number (Disabled)
+                      </Label>
+                      <Input
                         type="text"
                         name="phoneNumber"
                         id="phoneNumber"
                         placeholder="+990 *** ****"
-                        value={"formData.phoneNumber"}
-                        onChange={handleInputChange}
+                        value={"+990 3343 7865"}
+                        disabled
                       />
                     </div>
                   </div>
 
                   <div className="mb-5.5">
-                    <label
-                      className="mb-3 block text-sm font-medium text-black dark:text-white"
-                      htmlFor="emailAddress"
-                    >
+                    <Label htmlFor="emailAddress" className="mb-3 block">
                       Email Address
-                    </label>
+                    </Label>
                     <div className="relative">
-                      <span className="absolute left-4.5 top-4">
-                        <HiOutlineMail className="text-xl" />
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
+                        <Mail className="h-5 w-5" />
                       </span>
-                      <input
-                        className="w-full rounded border border-stroke bg-gray-2 py-3 pl-11.5 pr-4.5 text-black focus:border-[#00ABCD] focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-[#00ABCD]"
+                      <Input
                         type="email"
                         name="emailAddress"
                         id="emailAddress"
                         placeholder="devidjond45@gmail.com"
                         value={formData.emailAddress}
                         onChange={handleInputChange}
+                        className="pl-11"
                       />
                     </div>
                   </div>
 
-                  <div className="flex justify-end gap-4.5">
-                    <button
-                      onClick={handleEditAdmin}
-                      className={`flex justify-center rounded px-6 py-2 font-medium text-white ${
-                        isFormChanged
-                          ? "bg-[#00ABCD] hover:bg-opacity-90"
-                          : "bg-gray cursor-not-allowed"
-                      }`}
-                      type="submit"
-                      disabled={!isFormChanged}
-                    >
-                      Save
-                    </button>
+                  <div className="flex justify-end gap-4.5 mt-6">
+                    <Button type="submit" disabled={!isFormChanged}>
+                      Save Changes
+                    </Button>
                   </div>
                 </form>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
-      <ToastContainer
-        position="top-center"
-        autoClose={5000}
-        hideProgressBar={false}
-        closeOnClick
-        pauseOnHover
-        draggable
-        pauseOnFocusLoss
-      />
-    </DefaultLayout>
+    </>
   );
 };
 

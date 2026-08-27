@@ -1,180 +1,188 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import Image from "next/image"
 import Link from "next/link"
-import { Link as ScrollLink } from "react-scroll"
-import { Menu, X } from "lucide-react"
-import { motion, AnimatePresence } from "framer-motion"
-import { Button } from "@/components/ui/button"
-import { usePathname } from "next/navigation"
-import { cn } from "@/lib/utils"
+import { Menu, X, ArrowRight, Sparkles, Sun, Moon } from "lucide-react"
+import { useGlacierTheme } from "../context/ThemeContext"
 
 const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const pathname = usePathname()
+  const { theme, toggleTheme } = useGlacierTheme()
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50)
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20)
+    }
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
-  const navItems = [
-    { name: "HOME", to: "hero" },
-    { name: "PROCESS", to: "working-process" },
-    { name: "SERVICES", to: "services" },
-    { name: "TESTIMONIALS", to: "testimonials" },
-  ]
-
-  const isLanding = pathname === "/"
-  const navStyle: React.CSSProperties = isLanding
-    ? scrolled
-      ? { background: "hsl(var(--color-primary) / 0.8)" }
-      : { background: "hsl(var(--color-primary) / 0.2)" }
-    : scrolled
-    ? { background: "hsl(var(--color-primary) / 0.95)" }
-    : { background: "hsl(var(--color-primary) / 0.95)" };
+  const scrollToSection = (id: string) => {
+    setMobileMenuOpen(false)
+    const element = document.getElementById(id)
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' })
+    }
+  }
 
   return (
-    <motion.nav
-      style={navStyle}
-      className={cn(
-        "fixed top-0 left-0 w-full z-50 transition-all duration-300",
-        isLanding
-          ? scrolled
-            ? "backdrop-blur border-b border-primary/30 navbar-bg-strong"
-            : "backdrop-blur-sm navbar-bg-opaque"
-          : scrolled
-          ? "backdrop-blur-sm border-b border-gray-200 navbar-bg"
-          : "backdrop-blur-sm navbar-bg"
-      )}
+    <header 
+      className={`fixed top-0 left-0 right-0 z-50 w-full px-4 sm:px-6 lg:px-12 transition-all duration-300 ${
+        scrolled 
+          ? "bg-[#f0f6fc]/80 dark:bg-[#0a0e1a]/80 backdrop-blur-xl border-b border-sky-400/20 py-3 shadow-[0_4px_30px_rgba(0,0,0,0.05)] dark:shadow-black/40" 
+          : "bg-transparent py-5"
+      }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16 md:h-20">
-          {/* Logo */}
-          <Link href="/" className="flex-shrink-0">
-            <Image
-              width={110}
-              height={32}
-              src="/images/logo/moneymaster.png"
-              alt="MoneyMaster Logo"
-              className="w-auto h-8 md:h-10"
-            />
-          </Link>
-
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            {navItems.map((item) => (
-              <ScrollLink
-                key={item.name}
-                to={item.to}
-                smooth={true}
-                duration={500}
-                offset={-80}
-                spy={true}
-                activeClass="active-nav"
-                className={cn(
-                  "group relative inline-flex items-center text-sm font-medium transition-transform duration-200",
-                  "hover:scale-105",
-                  "cursor-pointer",
-                  scrolled ? "text-white" : "text-slate-700"
-                )}
-              >
-                <span className="relative z-10">{item.name}</span>
-                <span
-                  className={cn(
-                    "absolute left-0 -bottom-1 h-0.5 bg-current transition-all duration-200 nav-underline",
-                    "group-hover:w-full",
-                    "w-0"
-                  )}
-                />
-              </ScrollLink>
-            ))}
-          </div>
-
-          {/* Desktop Auth Buttons */}
-          <div className="hidden md:flex items-center space-x-3">
-            <Button
-              variant="ghost"
-              asChild
-              className={cn(
-                "rounded-full px-4 py-2 text-sm transition transform hover:scale-105 hover:bg-white/10 border",
-                scrolled ? "text-white border-white" : "text-slate-700 border-slate-700"
-              )}
-            >
-              <Link href="/pages/login">Sign In</Link>
-            </Button>
-            <Button
-              asChild
-              className="rounded-full bg-primary text-primary-foreground px-4 py-2 text-sm shadow-md hover:shadow-lg transform transition hover:scale-105"
-            >
-              <Link href="/pages/signup">Sign Up</Link>
-            </Button>
-          </div>
-
-          {/* Mobile Menu Button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="md:hidden"
-            onClick={() => setIsOpen(!isOpen)}
-          >
-            <span className="sr-only">Open main menu</span>
-            {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          </Button>
-        </div>
-      </div>
-
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2 }}
-            className="md:hidden !bg-primary/95 backdrop-blur-sm border-b border-gray-200"
-          >
-            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-              {navItems.map((item) => (
-                <ScrollLink
-                  key={item.name}
-                  to={item.to}
-                  smooth={true}
-                  duration={500}
-                  offset={-80}
-                  spy={true}
-                  activeClass="active-nav"
-                  onClick={() => setIsOpen(false)}
-                  className={cn(
-                    "block px-3 py-2 text-base font-medium transition-transform duration-200 rounded-md",
-                    "hover:scale-105",
-                    "cursor-pointer",
-                    scrolled ? "text-white" : "text-gray-900 hover:text-primary"
-                  )}
-                >
-                  <span className="relative">{item.name}</span>
-                </ScrollLink>
-              ))}
-              <div className="pt-4 space-y-2">
-                <Button
-                  variant="ghost"
-                  className={cn("w-full justify-start border px-3 py-2 rounded-md", scrolled ? "text-white border-white" : "text-slate-700 border-slate-700")}
-                  asChild
-                >
-                  <Link href="/pages/login">Sign In</Link>
-                </Button>
-                <Button className="w-full" asChild>
-                  <Link href="/pages/signup">Sign Up</Link>
-                </Button>
-              </div>
+      <nav
+        id="main-navigation"
+        className="max-w-7xl mx-auto flex items-center justify-between"
+      >
+        {/* Brand Logo */}
+        <Link
+          href="/"
+          className="flex items-center gap-2.5 group"
+          id="brand-logo-btn"
+        >
+          <div className="relative w-8 h-8 rounded-lg bg-gradient-to-br from-sky-400 to-sky-600 p-[1px] shadow-[0_0_15px_rgba(125,211,252,0.4)] group-hover:shadow-[0_0_22px_rgba(125,211,252,0.65)] transition-all">
+            <div className="w-full h-full bg-sky-950 dark:bg-[#0d1322] rounded-[7px] flex items-center justify-center">
+              <div className="w-3.5 h-3.5 rounded-sm bg-gradient-to-tr from-sky-400 via-sky-300 to-indigo-300 rotate-45 group-hover:rotate-90 transition-transform duration-500" />
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.nav>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-lg font-semibold tracking-tight text-slate-900 dark:text-white flex items-center gap-1.5">
+              MoneyMaster
+              <span className="inline-block w-1.5 h-1.5 rounded-full bg-sky-500 animate-ping" />
+            </span>
+          </div>
+        </Link>
+
+        {/* Desktop Navigation Links */}
+        <div className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600 dark:text-slate-300">
+          <button
+            id="nav-link-home"
+            onClick={() => scrollToSection('hero-section')}
+            className="hover:text-sky-600 dark:hover:text-sky-300 transition-all duration-300 hover:-translate-y-0.5 cursor-pointer"
+          >
+            Home
+          </button>
+          <button
+            id="nav-link-services"
+            onClick={() => scrollToSection('services-section')}
+            className="hover:text-sky-600 dark:hover:text-sky-300 transition-all duration-300 hover:-translate-y-0.5 cursor-pointer"
+          >
+            Services
+          </button>
+          <button
+            id="nav-link-process"
+            onClick={() => scrollToSection('process-section')}
+            className="hover:text-sky-600 dark:hover:text-sky-300 transition-all duration-300 hover:-translate-y-0.5 cursor-pointer"
+          >
+            Our Process
+          </button>
+          <button
+            id="nav-link-testimonials"
+            onClick={() => scrollToSection('testimonials-section')}
+            className="hover:text-sky-600 dark:hover:text-sky-300 transition-all duration-300 hover:-translate-y-0.5 cursor-pointer"
+          >
+            Testimonials
+          </button>
+        </div>
+
+        {/* Action Buttons & Theme Toggle */}
+        <div className="hidden sm:flex items-center gap-3">
+          {/* Theme Toggle Button */}
+          <button
+            id="theme-toggle-btn"
+            onClick={toggleTheme}
+            className="p-2 rounded-xl glass-surface border border-sky-400/20 text-slate-700 dark:text-sky-300 hover:text-sky-600 dark:hover:text-white hover:border-sky-400/50 shadow-sm transition-all cursor-pointer flex items-center justify-center"
+            title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
+            aria-label="Toggle Theme"
+          >
+            {theme === 'dark' ? (
+              <Sun className="w-4 h-4 text-amber-300 filter drop-shadow-[0_0_6px_rgba(252,211,77,0.7)]" />
+            ) : (
+              <Moon className="w-4 h-4 text-sky-600" />
+            )}
+          </button>
+
+          <Link
+            href="/pages/login"
+            id="nav-signin-btn"
+            className="px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
+          >
+            Log In
+          </Link>
+          <Link
+            href="/pages/signup"
+            id="nav-signup-btn"
+            className="group flex items-center gap-2 px-5 py-2 rounded-full text-xs font-semibold text-sky-950 bg-gradient-to-r from-sky-300 via-sky-200 to-sky-400 hover:from-sky-200 hover:to-sky-300 shadow-[0_0_20px_rgba(125,211,252,0.45)] hover:shadow-[0_0_28px_rgba(125,211,252,0.7)] transition-all transform active:scale-95 cursor-pointer"
+          >
+            Sign Up
+            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform text-sky-950" />
+          </Link>
+        </div>
+
+        {/* Mobile menu trigger & Mobile Theme Toggle */}
+        <div className="flex sm:hidden items-center gap-2">
+          <button
+            id="mobile-theme-toggle-btn"
+            onClick={toggleTheme}
+            className="p-2 rounded-lg glass-surface text-slate-700 dark:text-sky-300"
+            aria-label="Toggle Theme"
+          >
+            {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-300" /> : <Moon className="w-4 h-4 text-sky-600" />}
+          </button>
+          <button
+            id="mobile-menu-toggle"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="p-2 rounded-lg text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-slate-800/40"
+            aria-label="Toggle Navigation Menu"
+          >
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+        </div>
+      </nav>
+
+      {/* Mobile Drawer */}
+      {mobileMenuOpen && (
+        <div className="md:hidden mt-4 p-4 rounded-2xl glass-surface-elevated border border-sky-400/20 flex flex-col gap-3 text-sm animate-fade-in shadow-xl">
+          <button
+            onClick={() => scrollToSection('hero-section')}
+            className="text-left py-2 px-3 rounded-lg text-slate-800 dark:text-slate-200 hover:bg-sky-500/10 hover:text-sky-600 dark:hover:text-sky-300 transition-colors"
+          >
+            Home
+          </button>
+          <button
+            onClick={() => scrollToSection('services-section')}
+            className="text-left py-2 px-3 rounded-lg text-slate-800 dark:text-slate-200 hover:bg-sky-500/10 hover:text-sky-600 dark:hover:text-sky-300 transition-colors"
+          >
+            Services
+          </button>
+          <button
+            onClick={() => scrollToSection('process-section')}
+            className="text-left py-2 px-3 rounded-lg text-slate-800 dark:text-slate-200 hover:bg-sky-500/10 hover:text-sky-600 dark:hover:text-sky-300"
+          >
+            Our Process
+          </button>
+          <button
+            onClick={() => scrollToSection('testimonials-section')}
+            className="text-left py-2 px-3 rounded-lg text-slate-800 dark:text-slate-200 hover:bg-sky-500/10 hover:text-sky-600 dark:hover:text-sky-300"
+          >
+            Testimonials
+          </button>
+          <div className="pt-2 border-t border-slate-300 dark:border-slate-700/50 flex gap-2">
+            <Link
+              href="/pages/signup"
+              onClick={() => setMobileMenuOpen(false)}
+              className="w-full py-2.5 rounded-xl font-semibold text-xs text-sky-950 bg-sky-300 shadow-[0_0_15px_rgba(125,211,252,0.4)] text-center"
+            >
+              Sign Up Now
+            </Link>
+          </div>
+        </div>
+      )}
+    </header>
   )
 }
 

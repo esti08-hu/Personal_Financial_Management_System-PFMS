@@ -1,40 +1,53 @@
-import type { CredentialResponse } from "@react-oauth/google";
+import { auth, provider } from "@/firebaseConfig";
+import { signInWithPopup } from "firebase/auth";
+import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { toast } from "react-toastify";
+import { useAuthStore } from "../pages/store/authStore";
+import apiClient from "../lib/axiosConfig";
 
-function useGoogleAuthentication() {
+const useGoogleAuthentication = () => {
   const router = useRouter();
+  const setToken = useAuthStore((state) => state.setToken);
 
-  const handleSuccess = (response: CredentialResponse, isSignup: boolean) => {
-    if (response.credential) {
-      const credential = response.credential;
-      const endpoint = isSignup ? "signup" : "signin";
+  const handleGoogleSignIn = async (isSignup = false) => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      const idToken = await user.getIdToken();
 
-      fetch(`http://localhost:3001/google/${endpoint}`, {
-        method: "POST",
-        body: JSON.stringify({ token: credential, endpoint: endpoint }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include", // This ensures cookies are sent with the request
-      })
-        .then((res) => res.json()) // Handle the response
-        .then((data) => {
-          if (data.redirectUrl) {
-            router.push(data.redirectUrl);
-          } else if (data.message) {
-            toast.error(data.message);
-          } else {
-            toast.error("Sign-in successful, but no redirect URL found. Please try again.");
-          }
-        })
-        .catch((error) => {
-          toast.error("An error occurred. Please try again.");
-        });
+      const endpoint = isSignup ? "/google/signup" : "/google/signin";
+      const response = await apiClient.post(endpoint, { token: idToken });
+
+      const data = response.data?.data || response.data;
+      const { accessToken, userId, redirectUrl } = data || {};
+
+      if (accessToken) {
+        setToken(accessToken);
+        document.cookie = `token=${accessToken}; path=/; secure; samesite=strict`;
+      }
+      if (userId) {
+        document.cookie = `userId=${userId}; path=/; secure; samesite=strict`;
+      }
+
+      toast.success(isSignup ? "Sign up successful!" : "Login successful!");
+      router.push(redirectUrl || "/pages/user");
+
+      return data;
+    } catch (error: any) {
+      console.error(
+        "Google Sign-In Error:",
+        error.response?.data || error.message
+      );
+      toast.error(
+        error.response?.data?.message ||
+          error.message ||
+          "Google authentication failed. Please try again."
+      );
+      throw error;
     }
   };
 
-  return { handleSuccess };
-}
+  return { handleGoogleSignIn };
+};
 
 export default useGoogleAuthentication;
