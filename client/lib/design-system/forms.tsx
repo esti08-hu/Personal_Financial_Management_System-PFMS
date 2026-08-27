@@ -284,7 +284,7 @@ export function RadioGroup({
 }
 
 // Enhanced Switch Component
-interface SwitchProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> {
+interface SwitchProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type' | 'size'> {
   label?: string
   description?: string
   size?: 'sm' | 'default' | 'lg'
