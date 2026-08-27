@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,24 +9,8 @@ import type { z } from "zod";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
-import Confetti from "react-confetti";
 
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormField, FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import GoogleSignUpButton from "./GoogleSignUpButton";
 import { signupSchema } from "../common/validationSchema";
@@ -39,7 +22,7 @@ type SignupFormData = z.infer<typeof signupSchema>;
 const SignupForm = () => {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfetti, setShowConfetti] = useState(false);
+
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<SignupFormData>({
@@ -76,12 +59,10 @@ const SignupForm = () => {
     try {
       const response = await apiClient.post("/auth/register", data);
       toast.success(response.data.message);
-      setShowConfetti(true);
 
       setTimeout(() => {
-        setShowConfetti(false);
         router.push("/pages/login");
-      }, 4000);
+      }, 1500);
     } catch (err) {
       if (err instanceof AxiosError) {
         toast.error(err.response?.data.message || "Registration failed");
@@ -95,11 +76,7 @@ const SignupForm = () => {
 
   return (
     <>
-      {showConfetti && (
-        <div className="fixed inset-0 pointer-events-none z-50">
-          <Confetti width={window.innerWidth} height={window.innerHeight} />
-        </div>
-      )}
+
 
       <AnimatePresence>
         {isLoading && (
