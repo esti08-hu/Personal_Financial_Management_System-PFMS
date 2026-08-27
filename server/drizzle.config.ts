@@ -11,6 +11,6 @@ export default defineConfig({
     user: process.env.POSTGRES_USER ?? "postgres",
     password: process.env.POSTGRES_PASSWORD ?? "admin",
     database: process.env.POSTGRES_DB ?? "full_stack_auth_db",
-    ssl: false,
+    ssl: true,
   },
 });

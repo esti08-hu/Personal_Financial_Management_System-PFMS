@@ -1,13 +1,22 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Menu, X, ArrowRight, Sparkles, Sun, Moon } from "lucide-react"
 import { useGlacierTheme } from "../context/ThemeContext"
 
 const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
   const { theme, toggleTheme } = useGlacierTheme()
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20)
+    }
+    window.addEventListener("scroll", handleScroll)
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
 
   const scrollToSection = (id: string) => {
     setMobileMenuOpen(false)
@@ -18,10 +27,16 @@ const Navbar = () => {
   }
 
   return (
-    <header className="sticky top-0 z-40 w-full px-4 sm:px-6 lg:px-12 pt-4 pb-2 transition-all">
+    <header 
+      className={`fixed top-0 left-0 right-0 z-50 w-full px-4 sm:px-6 lg:px-12 transition-all duration-300 ${
+        scrolled 
+          ? "bg-[#f0f6fc]/80 dark:bg-[#0a0e1a]/80 backdrop-blur-xl border-b border-sky-400/20 py-3 shadow-[0_4px_30px_rgba(0,0,0,0.05)] dark:shadow-black/40" 
+          : "bg-transparent py-5"
+      }`}
+    >
       <nav
         id="main-navigation"
-        className="max-w-7xl mx-auto flex items-center justify-between px-5 py-3 rounded-2xl glass-surface border border-sky-400/20 backdrop-blur-xl shadow-lg dark:shadow-black/40 shadow-sky-200/50"
+        className="max-w-7xl mx-auto flex items-center justify-between"
       >
         {/* Brand Logo */}
         <Link
@@ -45,23 +60,30 @@ const Navbar = () => {
         {/* Desktop Navigation Links */}
         <div className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600 dark:text-slate-300">
           <button
+            id="nav-link-home"
+            onClick={() => scrollToSection('hero-section')}
+            className="hover:text-sky-600 dark:hover:text-sky-300 transition-all duration-300 hover:-translate-y-0.5 cursor-pointer"
+          >
+            Home
+          </button>
+          <button
             id="nav-link-services"
             onClick={() => scrollToSection('services-section')}
-            className="hover:text-sky-600 dark:hover:text-sky-300 transition-colors cursor-pointer"
+            className="hover:text-sky-600 dark:hover:text-sky-300 transition-all duration-300 hover:-translate-y-0.5 cursor-pointer"
           >
             Services
           </button>
           <button
             id="nav-link-process"
             onClick={() => scrollToSection('process-section')}
-            className="hover:text-sky-600 dark:hover:text-sky-300 transition-colors cursor-pointer"
+            className="hover:text-sky-600 dark:hover:text-sky-300 transition-all duration-300 hover:-translate-y-0.5 cursor-pointer"
           >
             Our Process
           </button>
           <button
             id="nav-link-testimonials"
             onClick={() => scrollToSection('testimonials-section')}
-            className="hover:text-sky-600 dark:hover:text-sky-300 transition-colors cursor-pointer"
+            className="hover:text-sky-600 dark:hover:text-sky-300 transition-all duration-300 hover:-translate-y-0.5 cursor-pointer"
           >
             Testimonials
           </button>
@@ -124,10 +146,16 @@ const Navbar = () => {
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden mt-2 p-4 rounded-2xl glass-surface-elevated border border-sky-400/20 flex flex-col gap-3 text-sm animate-fade-in">
+        <div className="md:hidden mt-4 p-4 rounded-2xl glass-surface-elevated border border-sky-400/20 flex flex-col gap-3 text-sm animate-fade-in shadow-xl">
+          <button
+            onClick={() => scrollToSection('hero-section')}
+            className="text-left py-2 px-3 rounded-lg text-slate-800 dark:text-slate-200 hover:bg-sky-500/10 hover:text-sky-600 dark:hover:text-sky-300 transition-colors"
+          >
+            Home
+          </button>
           <button
             onClick={() => scrollToSection('services-section')}
-            className="text-left py-2 px-3 rounded-lg text-slate-800 dark:text-slate-200 hover:bg-sky-500/10 hover:text-sky-600 dark:hover:text-sky-300"
+            className="text-left py-2 px-3 rounded-lg text-slate-800 dark:text-slate-200 hover:bg-sky-500/10 hover:text-sky-600 dark:hover:text-sky-300 transition-colors"
           >
             Services
           </button>

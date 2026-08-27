@@ -6,7 +6,7 @@ import HolographicGraphic from "./HolographicGraphic"
 
 const Hero = () => {
   return (
-    <section className="relative w-full px-4 sm:px-6 lg:px-12 pt-6 pb-16 overflow-hidden">
+    <section id="hero-section" className="relative w-full px-4 sm:px-6 lg:px-12 pt-6 pb-16 overflow-hidden">
       {/* Background Ambient Radial Glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] sm:w-[900px] h-[500px] bg-sky-500/10 blur-[130px] rounded-full pointer-events-none -z-10" />
 

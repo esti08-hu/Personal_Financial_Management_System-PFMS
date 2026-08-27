@@ -41,7 +41,7 @@ function LandingPage() {
       <Navbar />
 
       {/* Primary Landing & Experience Content */}
-      <main className="flex flex-col items-center w-full">
+      <main className="flex flex-col items-center w-full pt-20">
         <Hero />
         <Content />
         <Services />

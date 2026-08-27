@@ -44,7 +44,7 @@ const Footer = () => {
 
           {/* Product Links */}
           <div className="flex flex-col gap-3 text-sm">
-            <h4 className="text-xs font-mono uppercase tracking-widest text-white font-semibold mb-1">
+            <h4 className="text-xs font-mono uppercase tracking-widest text-slate-900 dark:text-white font-semibold mb-1">
               Product
             </h4>
             {["Features", "Pricing", "Security", "Roadmap"].map((item) => (
@@ -60,7 +60,7 @@ const Footer = () => {
 
           {/* Company Links */}
           <div className="flex flex-col gap-3 text-sm">
-            <h4 className="text-xs font-mono uppercase tracking-widest text-white font-semibold mb-1">
+            <h4 className="text-xs font-mono uppercase tracking-widest text-slate-900 dark:text-white font-semibold mb-1">
               Company
             </h4>
             {["About", "Careers", "Press", "Contact"].map((item) => (
@@ -76,7 +76,7 @@ const Footer = () => {
 
           {/* Connect / Socials */}
           <div className="flex flex-col gap-3 text-sm">
-            <h4 className="text-xs font-mono uppercase tracking-widest text-white font-semibold mb-1">
+            <h4 className="text-xs font-mono uppercase tracking-widest text-slate-900 dark:text-white font-semibold mb-1">
               Connect
             </h4>
             <div className="flex items-center gap-3 mb-2">
