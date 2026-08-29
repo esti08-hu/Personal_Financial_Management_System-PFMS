@@ -20,7 +20,7 @@ function GoogleLoginButton() {
         onClick={onLogin}
         disabled={isLoading}
         type="button"
-        className="w-full flex items-center justify-center gap-3 px-6 py-3 rounded-xl glass-surface border border-sky-400/20 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-sky-500/5 hover:border-sky-400/40 transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
+        className="w-full flex items-center justify-center gap-3 px-6 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white/90 dark:bg-[#0d1322]/90 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#131b2e] hover:border-sky-400/50 shadow-sm hover:shadow transition-all duration-200 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
       >
         <svg viewBox="0 0 24 24" className="w-5 h-5">
           <path
