@@ -8,7 +8,7 @@ import { useGlacierTheme } from "../context/ThemeContext"
 const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const { theme, toggleTheme } = useGlacierTheme()
+  const { theme, toggleTheme, mounted } = useGlacierTheme()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -95,14 +95,18 @@ const Navbar = () => {
           <button
             id="theme-toggle-btn"
             onClick={toggleTheme}
-            className="p-2 rounded-xl glass-surface border border-sky-400/20 text-slate-700 dark:text-sky-300 hover:text-sky-600 dark:hover:text-white hover:border-sky-400/50 shadow-sm transition-all cursor-pointer flex items-center justify-center"
-            title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
+            className="p-2 rounded-xl glass-surface border border-sky-400/20 text-slate-700 dark:text-sky-300 hover:text-sky-600 dark:hover:text-white hover:border-sky-400/50 shadow-sm transition-all cursor-pointer flex items-center justify-center min-w-[36px] min-h-[36px]"
+            title={mounted ? `Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode` : "Toggle Theme"}
             aria-label="Toggle Theme"
           >
-            {theme === 'dark' ? (
-              <Sun className="w-4 h-4 text-amber-300 filter drop-shadow-[0_0_6px_rgba(252,211,77,0.7)]" />
+            {mounted ? (
+              theme === 'dark' ? (
+                <Sun className="w-4 h-4 text-amber-300 filter drop-shadow-[0_0_6px_rgba(252,211,77,0.7)]" />
+              ) : (
+                <Moon className="w-4 h-4 text-sky-600" />
+              )
             ) : (
-              <Moon className="w-4 h-4 text-sky-600" />
+              <span className="w-4 h-4 block" />
             )}
           </button>
 
@@ -128,10 +132,14 @@ const Navbar = () => {
           <button
             id="mobile-theme-toggle-btn"
             onClick={toggleTheme}
-            className="p-2 rounded-lg glass-surface text-slate-700 dark:text-sky-300"
+            className="p-2 rounded-lg glass-surface text-slate-700 dark:text-sky-300 min-w-[36px] min-h-[36px] flex items-center justify-center"
             aria-label="Toggle Theme"
           >
-            {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-300" /> : <Moon className="w-4 h-4 text-sky-600" />}
+            {mounted ? (
+              theme === 'dark' ? <Sun className="w-4 h-4 text-amber-300" /> : <Moon className="w-4 h-4 text-sky-600" />
+            ) : (
+              <span className="w-4 h-4 block" />
+            )}
           </button>
           <button
             id="mobile-menu-toggle"
