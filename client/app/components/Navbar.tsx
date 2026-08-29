@@ -67,18 +67,18 @@ const Navbar = () => {
             Home
           </button>
           <button
-            id="nav-link-services"
-            onClick={() => scrollToSection('services-section')}
-            className="hover:text-sky-600 dark:hover:text-sky-300 transition-all duration-300 hover:-translate-y-0.5 cursor-pointer"
-          >
-            Services
-          </button>
-          <button
             id="nav-link-process"
             onClick={() => scrollToSection('process-section')}
             className="hover:text-sky-600 dark:hover:text-sky-300 transition-all duration-300 hover:-translate-y-0.5 cursor-pointer"
           >
             Our Process
+          </button>
+          <button
+            id="nav-link-services"
+            onClick={() => scrollToSection('services-section')}
+            className="hover:text-sky-600 dark:hover:text-sky-300 transition-all duration-300 hover:-translate-y-0.5 cursor-pointer"
+          >
+            Services
           </button>
           <button
             id="nav-link-testimonials"
@@ -154,16 +154,16 @@ const Navbar = () => {
             Home
           </button>
           <button
-            onClick={() => scrollToSection('services-section')}
-            className="text-left py-2 px-3 rounded-lg text-slate-800 dark:text-slate-200 hover:bg-sky-500/10 hover:text-sky-600 dark:hover:text-sky-300 transition-colors"
-          >
-            Services
-          </button>
-          <button
             onClick={() => scrollToSection('process-section')}
             className="text-left py-2 px-3 rounded-lg text-slate-800 dark:text-slate-200 hover:bg-sky-500/10 hover:text-sky-600 dark:hover:text-sky-300"
           >
             Our Process
+          </button>
+          <button
+            onClick={() => scrollToSection('services-section')}
+            className="text-left py-2 px-3 rounded-lg text-slate-800 dark:text-slate-200 hover:bg-sky-500/10 hover:text-sky-600 dark:hover:text-sky-300 transition-colors"
+          >
+            Services
           </button>
           <button
             onClick={() => scrollToSection('testimonials-section')}

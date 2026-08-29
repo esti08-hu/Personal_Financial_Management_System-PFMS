@@ -3,7 +3,7 @@ import { useAuthStore } from "@/app/pages/store/authStore";
 
 // Create an Axios instance
 const apiClient: AxiosInstance = axios.create({
-  baseURL: "http://localhost:3001/api/v1",
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3001/api/v1",
   withCredentials: true, // Needed to send cookies with requests
 });
 
