@@ -23,6 +23,7 @@ import { DrizzleService } from './drizzle.service'
           user: databaseOptions.user,
           password: databaseOptions.password,
           database: databaseOptions.database,
+          ssl: databaseOptions.ssl,
         })
       },
     },

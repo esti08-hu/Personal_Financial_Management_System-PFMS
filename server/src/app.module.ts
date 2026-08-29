@@ -37,6 +37,7 @@ import { RequestLoggingMiddleware } from './common/middleware/request-logging.mi
         POSTGRES_USER: Joi.string().required(),
         POSTGRES_PASSWORD: Joi.string().required(),
         POSTGRES_DB: Joi.string().required(),
+        POSTGRES_SSL: Joi.boolean().default(false).optional(),
 
         JWT_ACCESS_TOKEN_SECRET: Joi.string().required(),
         JWT_REFRESH_TOKEN_SECRET: Joi.string().required(),
@@ -79,13 +80,21 @@ import { RequestLoggingMiddleware } from './common/middleware/request-logging.mi
     DatabaseModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        host: configService.get<string>('POSTGRES_HOST'),
-        port: configService.get<number>('POSTGRES_PORT'),
-        user: configService.get<string>('POSTGRES_USER'),
-        password: configService.get<string>('POSTGRES_PASSWORD'),
-        database: configService.get<string>('POSTGRES_DB'),
-      }),
+      useFactory: (configService: ConfigService) => {
+        const host = configService.get<string>('POSTGRES_HOST')
+        const isExplicitSsl = configService.get<boolean>('POSTGRES_SSL')
+        const isRemoteHost = host && !['localhost', '127.0.0.1', 'db'].includes(host)
+        const enableSsl = isExplicitSsl ?? isRemoteHost
+
+        return {
+          host,
+          port: configService.get<number>('POSTGRES_PORT'),
+          user: configService.get<string>('POSTGRES_USER'),
+          password: configService.get<string>('POSTGRES_PASSWORD'),
+          database: configService.get<string>('POSTGRES_DB'),
+          ssl: enableSsl ? { rejectUnauthorized: false } : false,
+        }
+      },
     }),
   ],
   controllers: [AppController],

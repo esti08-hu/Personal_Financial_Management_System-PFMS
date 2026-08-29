@@ -9,12 +9,17 @@ import { eq } from 'drizzle-orm'
 const configService = new ConfigService()
 
 const main = async () => {
+  const host = configService.get('POSTGRES_HOST')
+  const isSsl = configService.get('POSTGRES_SSL') === 'true' || Boolean(configService.get('POSTGRES_SSL'))
+  const shouldUseSsl = isSsl || (host && !['localhost', '127.0.0.1', 'db'].includes(host))
+
   const pool = new Pool({
     host: configService.get('POSTGRES_HOST'),
     port: configService.get('POSTGRES_PORT'),
     user: configService.get('POSTGRES_USER'),
     password: configService.get('POSTGRES_PASSWORD'),
     database: configService.get('POSTGRES_DB'),
+    ssl: shouldUseSsl ? { rejectUnauthorized: false } : false,
   })
 
   const db = drizzle(pool)

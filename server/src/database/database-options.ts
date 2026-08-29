@@ -4,4 +4,5 @@ export interface DatabaseOptions {
   user: string
   password: string
   database: string
+  ssl?: boolean | { rejectUnauthorized?: boolean }
 }
